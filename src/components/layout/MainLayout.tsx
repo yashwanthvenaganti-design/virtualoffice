@@ -1,5 +1,8 @@
 import React from 'react';
-import { Box, useTheme } from '@mui/material';
+import { Box } from '@mui/material';
+import { useAuth } from '../../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import { useNotifications } from '../../hooks/useNotifications';
 import Header from './Header';
 
 interface MainLayoutProps {
@@ -7,48 +10,64 @@ interface MainLayoutProps {
 }
 
 const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
-  const theme = useTheme();
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+  const { unreadCount, markAllAsRead } = useNotifications();
 
-  const currentUser = {
-    name: 'John Doe',
-    email: 'john.doe@company.com',
-    role: 'admin',
-    avatar: undefined, // Add avatar URL if available
+  // Transform auth user to Header component user format
+  const headerUser = user
+    ? {
+        name: user.username,
+        email: user.email,
+        role: user.role,
+        avatar: user.avatar,
+      }
+    : undefined;
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
+  const handleUserSettings = () => {
+    navigate('/settings');
+  };
+
+  const handleProfileClick = () => {
+    navigate('/profile');
   };
 
   const handleSearch = (query: string) => {
     console.log('Search query:', query);
-    // Implement search functionality
+    // TODO: Implement your search logic here
+    // You could navigate to a search results page or filter current content
   };
 
-  const handleLogout = () => {
-    console.log('Logout clicked');
-    // Implement logout functionality
-    // For example: redirect to login page, clear auth tokens, etc.
-  };
-
-  const handleUserSettings = () => {
-    console.log('User settings clicked');
-    // Implement navigation to user settings page
-    // For example: navigate to /settings or open settings modal
+  const handleNotificationClick = () => {
+    console.log('Notification clicked');
+    // TODO: Implement your notification logic here
+    // You could open a notification panel or navigate to notifications page
+    markAllAsRead(); // Mark all notifications as read when clicked
   };
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+    <Box sx={{ flexGrow: 1, minHeight: '100vh' }}>
       <Header
-        user={currentUser}
+        user={headerUser}
         onSearch={handleSearch}
         onLogout={handleLogout}
         onUserSettings={handleUserSettings}
-        notifications={3}
+        onNotificationClick={handleNotificationClick}
+        notifications={unreadCount}
       />
 
+      {/* Main Content */}
       <Box
         component='main'
         sx={{
-          flexGrow: 1,
-          backgroundColor: theme.palette.background.default,
+          p: 3,
           minHeight: 'calc(100vh - 64px)',
+          backgroundColor: 'background.default',
         }}
       >
         {children}

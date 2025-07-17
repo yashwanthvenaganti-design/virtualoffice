@@ -60,7 +60,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ user, onLogout, onUserSettings, onP
   };
 
   const getRoleColor = (role: string) => {
-    switch (role.toLowerCase()) {
+    switch (role?.toLowerCase()) {
       case 'admin':
         return theme.palette.error.main;
       case 'user':
@@ -130,7 +130,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ user, onLogout, onUserSettings, onP
                 height: 18,
                 fontSize: '0.6875rem',
                 fontWeight: 600,
-                backgroundColor: alpha(getRoleColor(user.role), 0.1),
+                backgroundColor: alpha(getRoleColor(user?.role ?? ''), 0.1),
                 color: getRoleColor(user.role),
                 '& .MuiChip-label': {
                   px: 1,

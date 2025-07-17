@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { AppBar, Toolbar, Box, useTheme, alpha } from '@mui/material';
-import SearchBar from '../common/SearchBar';
 import Logo from '../common/Logo';
-import Notifications from '../common/Notifications';
+import SearchBar from '../common/SearchBar';
 import UserMenu from '../common/UserMenu';
+import Notifications from '../common/Notifications';
 
 interface User {
   name: string;
@@ -17,6 +17,7 @@ interface HeaderProps {
   onSearch?: (query: string) => void;
   onLogout?: () => void;
   onUserSettings?: () => void;
+  onProfileClick?: () => void;
   onNotificationClick?: () => void;
   notifications?: number;
 }
@@ -30,6 +31,7 @@ const Header: React.FC<HeaderProps> = ({
   onSearch,
   onLogout,
   onUserSettings,
+  onProfileClick,
   onNotificationClick,
   notifications = 0,
 }) => {
@@ -58,13 +60,17 @@ const Header: React.FC<HeaderProps> = ({
       >
         <Box className='flex items-center justify-start gap-1 w-full'>
           <Logo />
-
           <SearchBar value={searchQuery} onChange={handleSearchChange} onSearch={onSearch} />
         </Box>
 
-        <Box className='flex items-center justify-end gap-1 w-full '>
+        <Box className='flex items-center justify-end gap-1 w-full'>
           <Notifications count={notifications} onClick={onNotificationClick} />
-          <UserMenu user={user} onLogout={onLogout} onUserSettings={onUserSettings} />
+          <UserMenu
+            user={user}
+            onLogout={onLogout}
+            onUserSettings={onUserSettings}
+            onProfileClick={onProfileClick}
+          />
         </Box>
       </Toolbar>
     </AppBar>
