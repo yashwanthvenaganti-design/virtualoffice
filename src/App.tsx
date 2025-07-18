@@ -11,6 +11,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import ProtectedRoute from './components/common/ProtectedRoute';
 import AuthenticatedRedirect from './components/common/AuthenticatedRedirect';
 import ProfilePage from './pages/ProfilePage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
 
 function App() {
   const enhancedTheme = React.useMemo(
@@ -32,6 +33,8 @@ function App() {
           <div className='App'>
             <Routes>
               <Route path='/login' element={<LoginPage />} />
+
+              <Route path='/forgot-password' element={<ForgotPasswordPage />} />
 
               <Route
                 path='/home'
