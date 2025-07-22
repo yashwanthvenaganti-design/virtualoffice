@@ -1,39 +1,31 @@
-import React from 'react';
-import { ThemeProvider, CssBaseline } from '@mui/material';
+import React, { useMemo } from 'react';
+import { ThemeProvider as MuiThemeProvider, CssBaseline } from '@mui/material';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { theme } from './theme/theme';
-import { componentOverrides } from './theme/components';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
-import './App.css';
+import './index.css';
 import MainLayout from './components/layout/MainLayout';
 import { AuthProvider } from './contexts/AuthContext';
 import ProtectedRoute from './components/common/ProtectedRoute';
 import AuthenticatedRedirect from './components/common/AuthenticatedRedirect';
 import ProfilePage from './pages/ProfilePage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import { ThemeProvider, useTheme } from './theme/ThemeContext';
+import { createAppTheme } from './theme/mui-theme';
 
-function App() {
-  const enhancedTheme = React.useMemo(
-    () => ({
-      ...theme,
-      components: {
-        ...theme.components,
-        ...componentOverrides(theme),
-      },
-    }),
-    []
-  );
+const AppContent: React.FC = () => {
+  const { isDark } = useTheme();
+
+  const muiTheme = useMemo(() => createAppTheme(isDark), [isDark]);
 
   return (
-    <ThemeProvider theme={enhancedTheme}>
+    <MuiThemeProvider theme={muiTheme}>
       <CssBaseline />
       <AuthProvider>
         <Router>
-          <div className='App'>
+          <div className='min-h-screen bg-background text-foreground'>
             <Routes>
               <Route path='/login' element={<LoginPage />} />
-
               <Route path='/forgot-password' element={<ForgotPasswordPage />} />
 
               <Route
@@ -63,7 +55,14 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <MainLayout>
-                      <div>Virtual Office Page - Coming Soon</div>
+                      <div className='p-8'>
+                        <div className='card text-center'>
+                          <h1 className='text-2xl font-bold text-foreground mb-4'>
+                            Virtual Office
+                          </h1>
+                          <p className='text-muted'>Coming Soon</p>
+                        </div>
+                      </div>
                     </MainLayout>
                   </ProtectedRoute>
                 }
@@ -74,7 +73,12 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <MainLayout>
-                      <div>Settings Page - Coming Soon</div>
+                      <div className='p-8'>
+                        <div className='card text-center'>
+                          <h1 className='text-2xl font-bold text-foreground mb-4'>Settings</h1>
+                          <p className='text-muted'>Coming Soon</p>
+                        </div>
+                      </div>
                     </MainLayout>
                   </ProtectedRoute>
                 }
@@ -89,6 +93,14 @@ function App() {
           </div>
         </Router>
       </AuthProvider>
+    </MuiThemeProvider>
+  );
+};
+
+function App() {
+  return (
+    <ThemeProvider>
+      <AppContent />
     </ThemeProvider>
   );
 }

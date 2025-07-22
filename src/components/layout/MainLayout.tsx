@@ -1,5 +1,4 @@
 import React from 'react';
-import { Box } from '@mui/material';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { useNotifications } from '../../hooks/useNotifications';
@@ -14,7 +13,6 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   const navigate = useNavigate();
   const { unreadCount, markAllAsRead } = useNotifications();
 
-  // Transform auth user to Header component user format
   const headerUser = user
     ? {
         name: user.username,
@@ -51,28 +49,22 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   };
 
   return (
-    <Box sx={{ flexGrow: 1, minHeight: '100vh' }}>
+    <div className='min-h-screen bg-background'>
       <Header
         user={headerUser}
         onSearch={handleSearch}
         onLogout={handleLogout}
         onUserSettings={handleUserSettings}
+        onProfileClick={handleProfileClick}
         onNotificationClick={handleNotificationClick}
         notifications={unreadCount}
       />
 
       {/* Main Content */}
-      <Box
-        component='main'
-        sx={{
-          p: 3,
-          minHeight: 'calc(100vh - 64px)',
-          backgroundColor: 'background.default',
-        }}
-      >
-        {children}
-      </Box>
-    </Box>
+      <main className='min-h-[calc(100vh-64px)] bg-background'>
+        <div className='scrollbar-thin'>{children}</div>
+      </main>
+    </div>
   );
 };
 

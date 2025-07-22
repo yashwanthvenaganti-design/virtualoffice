@@ -1,5 +1,5 @@
 import React from 'react';
-import { IconButton, Badge, useTheme, alpha } from '@mui/material';
+import { IconButton, Badge } from '@mui/material';
 import { NotificationsNone as NotificationsIcon } from '@mui/icons-material';
 
 interface NotificationsProps {
@@ -9,22 +9,33 @@ interface NotificationsProps {
 }
 
 const Notifications: React.FC<NotificationsProps> = ({ count, onClick, maxCount = 99 }) => {
-  const theme = useTheme();
-
   return (
     <IconButton
       size='large'
       onClick={onClick}
+      className='text-muted hover:text-foreground hover:bg-surface-alt transition-colors duration-200'
       sx={{
-        color: theme.palette.text.secondary,
+        color: 'rgb(var(--color-text-secondary))',
         '&:hover': {
-          backgroundColor: alpha(theme.palette.primary.main, 0.08),
-          color: theme.palette.primary.main,
+          backgroundColor: 'rgba(var(--color-primary), 0.08)',
+          color: 'rgb(var(--color-primary))',
         },
       }}
     >
-      <Badge badgeContent={count > 0 ? count : null} color='error' max={maxCount}>
-        <NotificationsIcon />
+      <Badge
+        badgeContent={count > 0 ? count : null}
+        color='error'
+        max={maxCount}
+        sx={{
+          '& .MuiBadge-badge': {
+            backgroundColor: 'rgb(var(--color-error))',
+            color: 'white',
+            fontWeight: 600,
+            fontSize: '0.75rem',
+          },
+        }}
+      >
+        <NotificationsIcon sx={{ fontSize: 22 }} />
       </Badge>
     </IconButton>
   );

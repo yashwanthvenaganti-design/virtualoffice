@@ -38,6 +38,9 @@ importers:
       axios:
         specifier: ^1.6.8
         version: 1.10.0
+      clsx:
+        specifier: ^2.1.1
+        version: 2.1.1
       js-cookie:
         specifier: ^3.0.5
         version: 3.0.5

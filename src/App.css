@@ -35,109 +35,50 @@
   background: rgba(0, 122, 255, 0.5);
 }
 
-/* Animation classes */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes scaleIn {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-.animate-fade-in-up {
-  animation: fadeInUp 0.3s ease-out;
-}
-
-.animate-fade-in {
-  animation: fadeIn 0.3s ease-out;
-}
-
-.animate-scale-in {
-  animation: scaleIn 0.2s ease-out;
-}
-
-/* Loading states */
-.loading-spinner {
-  display: inline-block;
-  width: 20px;
-  height: 20px;
-  border: 2px solid #f3f3f3;
-  border-top: 2px solid #007aff;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-/* Focus management */
+/* Focus management - Keep for accessibility */
 .skip-to-content {
   position: absolute;
   top: -40px;
   left: 6px;
-  background: #007aff;
+  background: rgb(var(--color-primary));
   color: white;
   padding: 8px;
   text-decoration: none;
   border-radius: 4px;
   z-index: 1000;
+  transition: top 0.3s;
 }
 
 .skip-to-content:focus {
   top: 6px;
 }
 
-/* Print styles */
+/* Print styles - Keep for functionality */
 @media print {
   .no-print {
     display: none !important;
   }
 
-  .App {
-    background: white !important;
-  }
-}
-
-/* High contrast mode support */
-@media (prefers-contrast: high) {
-  .glass-effect {
-    background: white !important;
-    border: 2px solid black !important;
-  }
-}
-
-/* Reduced motion support */
-@media (prefers-reduced-motion: reduce) {
   * {
+    background: white !important;
+    color: black !important;
+  }
+}
+
+/* High contrast mode support - Keep for accessibility */
+@media (prefers-contrast: high) {
+  .glass,
+  .glass-strong {
+    background: rgb(var(--color-surface)) !important;
+    border: 2px solid rgb(var(--color-border)) !important;
+  }
+}
+
+/* Reduced motion support - Keep for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, InputBase, IconButton, Paper, useTheme, alpha, Fade } from '@mui/material';
+import { InputBase, IconButton, Fade } from '@mui/material';
 import { Search as SearchIcon, Clear as ClearIcon } from '@mui/icons-material';
 
 interface SearchBarProps {
@@ -14,10 +14,9 @@ const SearchBar: React.FC<SearchBarProps> = ({
   value,
   onChange,
   onSearch,
-  placeholder = 'Search...',
+  placeholder = 'Search workspace...',
   maxWidth = 480,
 }) => {
-  const theme = useTheme();
   const [isSearchFocused, setIsSearchFocused] = useState(false);
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -38,31 +37,20 @@ const SearchBar: React.FC<SearchBarProps> = ({
   };
 
   return (
-    <Box sx={{ flexGrow: 1, maxWidth, mx: 3 }}>
-      <Paper
-        elevation={0}
-        sx={{
-          position: 'relative',
-          borderRadius: 3,
-          backgroundColor: alpha(theme.palette.grey[100], 0.8),
-          border: `1px solid ${isSearchFocused ? theme.palette.primary.main : 'transparent'}`,
-          transition: 'all 0.2s ease-in-out',
-          '&:hover': {
-            backgroundColor: alpha(theme.palette.grey[100], 1),
-          },
-          ...(isSearchFocused && {
-            boxShadow: `0 0 0 3px ${alpha(theme.palette.primary.main, 0.1)}`,
-          }),
-        }}
+    <div className='flex-1' style={{ maxWidth }}>
+      <div
+        className={`
+          relative rounded-xl border transition-all duration-200 ease-in-out
+          ${
+            isSearchFocused
+              ? 'border-primary-500 bg-surface shadow-sm ring-2 ring-primary-500/10'
+              : 'border-border bg-surface-alt hover:bg-surface hover:border-border-hover'
+          }
+        `}
       >
-        <Box sx={{ display: 'flex', alignItems: 'center', px: 2, py: 1 }}>
-          <SearchIcon
-            sx={{
-              color: theme.palette.text.secondary,
-              mr: 1,
-              fontSize: 20,
-            }}
-          />
+        <div className='flex items-center px-4 py-2.5'>
+          <SearchIcon className='text-muted mr-3 flex-shrink-0' sx={{ fontSize: 20 }} />
+
           <InputBase
             placeholder={placeholder}
             value={value}
@@ -70,28 +58,39 @@ const SearchBar: React.FC<SearchBarProps> = ({
             onKeyDown={handleKeyPress}
             onFocus={() => setIsSearchFocused(true)}
             onBlur={() => setIsSearchFocused(false)}
+            className='flex-1 text-sm'
             sx={{
-              flex: 1,
-              fontSize: '0.875rem',
               '& .MuiInputBase-input': {
                 padding: 0,
+                color: 'rgb(var(--color-text-primary))',
                 '&::placeholder': {
-                  color: theme.palette.text.secondary,
+                  color: 'rgb(var(--color-text-secondary))',
                   opacity: 1,
                 },
               },
             }}
           />
+
           {value && (
             <Fade in>
-              <IconButton size='small' onClick={handleClear} sx={{ ml: 1 }}>
+              <IconButton
+                size='small'
+                onClick={handleClear}
+                className='ml-2 hover:bg-surface-alt'
+                sx={{
+                  color: 'rgb(var(--color-text-secondary))',
+                  '&:hover': {
+                    backgroundColor: 'rgba(var(--color-text-secondary), 0.1)',
+                  },
+                }}
+              >
                 <ClearIcon sx={{ fontSize: 16 }} />
               </IconButton>
             </Fade>
           )}
-        </Box>
-      </Paper>
-    </Box>
+        </div>
+      </div>
+    </div>
   );
 };
 

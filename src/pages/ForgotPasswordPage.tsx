@@ -1,19 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-  Box,
-  Button,
-  TextField,
-  Typography,
-  Paper,
-  Container,
-  Link,
-  useTheme,
-  alpha,
-  InputAdornment,
-  Alert,
-  CircularProgress,
-} from '@mui/material';
+import { TextField, InputAdornment, Alert } from '@mui/material';
 import { Business, Person, ArrowBack } from '@mui/icons-material';
 import Logo from '../components/common/Logo';
 
@@ -23,7 +10,6 @@ interface ForgotPasswordFormData {
 }
 
 const ForgotPasswordPage: React.FC = () => {
-  const theme = useTheme();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -39,7 +25,6 @@ const ForgotPasswordPage: React.FC = () => {
         ...prev,
         [field]: event.target.value,
       }));
-      // Clear error when user starts typing
       if (error) setError(null);
     };
 
@@ -51,10 +36,6 @@ const ForgotPasswordPage: React.FC = () => {
     try {
       // Simulate API call for password reset
       await new Promise(resolve => setTimeout(resolve, 2000));
-
-      // Here you would typically call your password reset API
-      // await resetPassword(formData);
-
       setSuccess(true);
     } catch (err) {
       setError('Unable to reset password. Please check your details and try again.');
@@ -67,279 +48,158 @@ const ForgotPasswordPage: React.FC = () => {
     navigate('/login');
   };
 
+  // Success state
   if (success) {
     return (
-      <Box
-        sx={{
-          minHeight: '100vh',
-          background: `linear-gradient(135deg, 
-            ${alpha(theme.palette.primary.main, 0.1)} 0%, 
-            ${alpha(theme.palette.secondary.main, 0.1)} 100%)`,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          p: 2,
-        }}
-      >
-        <Container maxWidth='sm'>
-          <Paper
-            elevation={0}
-            sx={{
-              p: 6,
-              borderRadius: 4,
-              background: `linear-gradient(135deg, 
-                ${alpha(theme.palette.background.paper, 0.95)} 0%, 
-                ${alpha(theme.palette.background.paper, 0.9)} 100%)`,
-              backdropFilter: 'blur(20px)',
-              border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
-              boxShadow: `0 8px 32px ${alpha(theme.palette.common.black, 0.1)}`,
-              textAlign: 'center',
-            }}
-          >
+      <div className='min-h-screen flex items-center justify-center bg-background p-4'>
+        <div className='absolute inset-0 bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-gray-950 dark:via-blue-950 dark:to-purple-950' />
+
+        <div className='relative z-10 w-full max-w-md'>
+          <div className='card-strong text-center animate-in'>
             <Logo size='large' />
-            <Typography variant='h5' sx={{ mt: 3, mb: 2, fontWeight: 600 }}>
-              Reset Link Sent!
-            </Typography>
-            <Typography variant='body1' color='text.secondary' sx={{ mb: 4 }}>
+
+            <h1 className='text-2xl font-bold text-foreground mt-6 mb-2'>Reset Link Sent!</h1>
+
+            <p className='text-muted mb-8 leading-relaxed'>
               We've sent password reset instructions to your registered email address. Please check
-              your inbox and follow the instructions to reset your password.
-            </Typography>
-            <Button
-              variant='contained'
+              your inbox (and spam folder) and follow the instructions to reset your password.
+            </p>
+
+            <button
               onClick={handleBackToLogin}
-              startIcon={<ArrowBack />}
-              sx={{
-                mt: 2,
-                py: 1.5,
-                px: 4,
-                borderRadius: 2,
-                fontWeight: 600,
-                background: `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
-                boxShadow: `0 4px 16px ${alpha(theme.palette.primary.main, 0.3)}`,
-                '&:hover': {
-                  background: `linear-gradient(135deg, ${theme.palette.primary.dark}, ${theme.palette.secondary.dark})`,
-                  boxShadow: `0 6px 20px ${alpha(theme.palette.primary.main, 0.4)}`,
-                  transform: 'translateY(-1px)',
-                },
-                transition: 'all 0.3s ease',
-              }}
+              className='w-full btn-primary flex items-center justify-center gap-2'
             >
-              Back to Login
-            </Button>
-          </Paper>
-        </Container>
-      </Box>
+              <ArrowBack sx={{ fontSize: 18 }} />
+              Back to Sign In
+            </button>
+          </div>
+        </div>
+      </div>
     );
   }
 
   return (
-    <Box
-      sx={{
-        minHeight: '100vh',
-        background: `linear-gradient(135deg, 
-          ${alpha(theme.palette.primary.main, 0.1)} 0%, 
-          ${alpha(theme.palette.secondary.main, 0.1)} 100%)`,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        p: 2,
-      }}
-    >
-      <Container maxWidth='sm'>
-        <Paper
-          elevation={0}
-          sx={{
-            p: 6,
-            borderRadius: 4,
-            background: `linear-gradient(135deg, 
-              ${alpha(theme.palette.background.paper, 0.95)} 0%, 
-              ${alpha(theme.palette.background.paper, 0.9)} 100%)`,
-            backdropFilter: 'blur(20px)',
-            border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
-            boxShadow: `0 8px 32px ${alpha(theme.palette.common.black, 0.1)}`,
-          }}
-        >
-          {/* Logo Section */}
-          <Box sx={{ textAlign: 'center', mb: 4 }}>
+    <div className='min-h-screen flex items-center justify-center bg-background p-4'>
+      <div className='absolute inset-0 bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-gray-950 dark:via-blue-950 dark:to-purple-950' />
+
+      <div className='absolute top-20 right-20 w-32 h-32 bg-gradient-to-r from-pink-400 to-blue-400 rounded-full opacity-10 animate-float' />
+      <div className='absolute bottom-32 left-10 w-24 h-24 bg-gradient-to-r from-green-400 to-blue-500 rounded-2xl opacity-10 animate-pulse-slow' />
+
+      <div className='relative z-10 w-full max-w-md'>
+        <div className='card-strong animate-in'>
+          {/* Header */}
+          <div className='text-center mb-8'>
             <Logo size='large' />
-            <Typography
-              variant='h5'
-              sx={{
-                mt: 3,
-                mb: 1,
-                fontWeight: 600,
-                color: theme.palette.error.main,
-              }}
-            >
-              FORGOT DETAILS
-            </Typography>
-            <Typography variant='body1' color='text.secondary' sx={{ fontWeight: 500 }}>
-              Please enter your details to reset your password.
-            </Typography>
-          </Box>
+
+            <h1 className='text-3xl font-bold text-foreground mt-6 mb-2'>Password Reset</h1>
+
+            <p className='text-muted'>Enter your details below to reset your password</p>
+          </div>
 
           {/* Error Alert */}
           {error && (
-            <Alert severity='error' sx={{ mb: 2, borderRadius: 2 }}>
+            <Alert
+              severity='error'
+              className='mb-6 rounded-xl'
+              sx={{
+                backgroundColor: 'rgba(var(--color-error), 0.1)',
+                color: 'rgb(var(--color-error))',
+                border: '1px solid rgba(var(--color-error), 0.2)',
+                '& .MuiAlert-icon': {
+                  color: 'rgb(var(--color-error))',
+                },
+              }}
+            >
               {error}
             </Alert>
           )}
 
-          {/* Forgot Password Form */}
-          <Box component='form' onSubmit={handleSubmit} sx={{ mt: 3 }}>
-            <TextField
-              fullWidth
-              label='Virtual Office Name'
-              variant='outlined'
-              value={formData.virtualOfficeName}
-              onChange={handleInputChange('virtualOfficeName')}
-              required
-              disabled={isLoading}
-              sx={{
-                mb: 2,
-                '& .MuiOutlinedInput-root': {
-                  borderRadius: 2,
-                  backgroundColor: alpha(theme.palette.background.paper, 0.8),
-                  outline: 'none',
-                  boxShadow: 'none',
-                  '&:focus': {
-                    outline: 'none',
-                    boxShadow: 'none',
-                  },
-                  '&:hover': {
-                    backgroundColor: alpha(theme.palette.background.paper, 0.9),
-                  },
-                  '&.Mui-focused': {
-                    backgroundColor: theme.palette.background.paper,
-                    outline: 'none',
-                    boxShadow: 'none',
-                  },
-                },
-                '& .MuiOutlinedInput-input': {
-                  outline: 'none',
-                  boxShadow: 'none',
-                  '&:focus': {
-                    outline: 'none',
-                    boxShadow: 'none',
-                  },
-                },
-              }}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position='start'>
-                    <Business color='action' />
-                  </InputAdornment>
-                ),
-              }}
-            />
+          {/* Form */}
+          <form onSubmit={handleSubmit} className='space-y-6'>
+            <div>
+              <label
+                htmlFor='virtualOfficeName'
+                className='block text-sm font-medium text-foreground mb-2'
+              >
+                Virtual Office Name
+              </label>
+              <TextField
+                id='virtualOfficeName'
+                fullWidth
+                variant='outlined'
+                value={formData.virtualOfficeName}
+                onChange={handleInputChange('virtualOfficeName')}
+                required
+                disabled={isLoading}
+                placeholder='Enter your virtual office name'
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position='start'>
+                      <Business className='text-muted' sx={{ fontSize: 20 }} />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            </div>
 
-            <TextField
-              fullWidth
-              label='Username'
-              variant='outlined'
-              value={formData.username}
-              onChange={handleInputChange('username')}
-              required
-              disabled={isLoading}
-              sx={{
-                mb: 4,
-                '& .MuiOutlinedInput-root': {
-                  borderRadius: 2,
-                  backgroundColor: alpha(theme.palette.background.paper, 0.8),
-                  outline: 'none',
-                  boxShadow: 'none',
-                  '&:focus': {
-                    outline: 'none',
-                    boxShadow: 'none',
-                  },
-                  '&:hover': {
-                    backgroundColor: alpha(theme.palette.background.paper, 0.9),
-                  },
-                  '&.Mui-focused': {
-                    backgroundColor: theme.palette.background.paper,
-                    outline: 'none',
-                    boxShadow: 'none',
-                  },
-                },
-                '& .MuiOutlinedInput-input': {
-                  outline: 'none',
-                  boxShadow: 'none',
-                  '&:focus': {
-                    outline: 'none',
-                    boxShadow: 'none',
-                  },
-                },
-              }}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position='start'>
-                    <Person color='action' />
-                  </InputAdornment>
-                ),
-              }}
-            />
+            <div>
+              <label htmlFor='username' className='block text-sm font-medium text-foreground mb-2'>
+                Username
+              </label>
+              <TextField
+                id='username'
+                fullWidth
+                variant='outlined'
+                value={formData.username}
+                onChange={handleInputChange('username')}
+                required
+                disabled={isLoading}
+                placeholder='Enter your username'
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position='start'>
+                      <Person className='text-muted' sx={{ fontSize: 20 }} />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            </div>
 
-            <Button
+            <button
               type='submit'
-              fullWidth
-              variant='contained'
-              size='large'
               disabled={isLoading}
-              sx={{
-                mt: 2,
-                mb: 3,
-                py: 1.5,
-                borderRadius: 2,
-                fontWeight: 600,
-                fontSize: '1.1rem',
-                backgroundColor: theme.palette.info.main,
-                '&:hover': {
-                  backgroundColor: theme.palette.info.dark,
-                  transform: 'translateY(-1px)',
-                },
-                '&:disabled': {
-                  background: theme.palette.action.disabledBackground,
-                  transform: 'none',
-                },
-                transition: 'all 0.3s ease',
-              }}
+              className='w-full py-4 px-6 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none focus-ring'
             >
               {isLoading ? (
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <CircularProgress size={20} color='inherit' />
+                <div className='flex items-center justify-center gap-3'>
+                  <div className='loading-spinner' />
                   Sending Reset Link...
-                </Box>
+                </div>
               ) : (
-                'Reset password'
+                'Send Reset Link'
               )}
-            </Button>
+            </button>
 
-            <Box sx={{ textAlign: 'center' }}>
-              <Link
-                component='button'
+            <div className='text-center pt-4'>
+              <button
                 type='button'
-                variant='body2'
                 onClick={handleBackToLogin}
-                sx={{
-                  color: theme.palette.error.main,
-                  textDecoration: 'none',
-                  fontWeight: 600,
-                  textTransform: 'uppercase',
-                  cursor: 'pointer',
-                  border: 'none',
-                  background: 'none',
-                  '&:hover': {
-                    textDecoration: 'underline',
-                  },
-                }}
+                className='text-primary-600 hover:text-primary-700 font-medium hover:underline focus-ring rounded-md px-2 py-1 text-sm'
               >
-                Remembered your login? Click here
-              </Link>
-            </Box>
-          </Box>
-        </Paper>
-      </Container>
-    </Box>
+                ← Back to Sign In
+              </button>
+            </div>
+          </form>
+
+          <div className='mt-8 p-4 bg-blue-50 dark:bg-blue-950/30 rounded-xl border border-blue-100 dark:border-blue-900/50'>
+            <p className='text-sm text-blue-800 dark:text-blue-200'>
+              <strong>Need help?</strong> If you're having trouble accessing your account, please
+              contact your virtual office administrator or our support team.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 
