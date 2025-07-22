@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { TextField, InputAdornment, Alert } from '@mui/material';
 import { Business, Person, ArrowBack } from '@mui/icons-material';
-import Logo from '../components/common/Logo';
+import { useTheme } from '../theme/ThemeContext';
 
 interface ForgotPasswordFormData {
   virtualOfficeName: string;
@@ -11,6 +11,8 @@ interface ForgotPasswordFormData {
 
 const ForgotPasswordPage: React.FC = () => {
   const navigate = useNavigate();
+  const { isDark } = useTheme();
+
   const [isLoading, setIsLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -51,23 +53,85 @@ const ForgotPasswordPage: React.FC = () => {
   // Success state
   if (success) {
     return (
-      <div className='min-h-screen flex items-center justify-center bg-background p-4'>
-        <div className='absolute inset-0 bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-gray-950 dark:via-blue-950 dark:to-purple-950' />
+      <div
+        className={`h-screen w-screen flex overflow-hidden ${
+          isDark
+            ? 'bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900'
+            : 'bg-gradient-to-br from-purple-100 via-blue-50 to-teal-50'
+        }`}
+      >
+        {/* Floating background elements */}
+        <div className='absolute top-20 right-20 w-32 h-32 bg-gradient-to-r from-pink-400 to-blue-400 rounded-full opacity-10 animate-pulse'></div>
+        <div
+          className='absolute bottom-32 left-10 w-24 h-24 bg-gradient-to-r from-green-400 to-blue-500 rounded-2xl opacity-10 animate-bounce'
+          style={{ animationDuration: '3s' }}
+        ></div>
 
-        <div className='relative z-10 w-full max-w-md'>
-          <div className='card-strong text-center animate-in'>
-            <Logo size='large' />
+        <div className='flex items-center justify-center w-full h-full p-6'>
+          <div
+            className={`w-full max-w-md p-8 rounded-3xl shadow-2xl text-center ${
+              isDark
+                ? 'bg-gray-800/90 backdrop-blur-xl border border-gray-700/50'
+                : 'bg-white/90 backdrop-blur-xl border border-white/20'
+            }`}
+          >
+            {/* Logo */}
+            <div className='mb-8'>
+              <div className='flex items-center justify-center gap-2 mb-6'>
+                <div
+                  className={`w-12 h-12 rounded-full flex items-center justify-center ${
+                    isDark ? 'bg-white' : 'bg-black'
+                  }`}
+                >
+                  <span className={`font-bold text-lg ${isDark ? 'text-black' : 'text-white'}`}>
+                    V
+                  </span>
+                </div>
+                <span
+                  className={`text-xl font-semibold ${isDark ? 'text-white' : 'text-gray-800'}`}
+                >
+                  Virtual Office
+                </span>
+              </div>
+            </div>
 
-            <h1 className='text-2xl font-bold text-foreground mt-6 mb-2'>Reset Link Sent!</h1>
+            {/* Success Icon */}
+            <div className='w-20 h-20 mx-auto mb-6 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center'>
+              <svg
+                className='w-10 h-10 text-green-600 dark:text-green-400'
+                fill='none'
+                stroke='currentColor'
+                viewBox='0 0 24 24'
+              >
+                <path
+                  strokeLinecap='round'
+                  strokeLinejoin='round'
+                  strokeWidth='2'
+                  d='M5 13l4 4L19 7'
+                ></path>
+              </svg>
+            </div>
 
-            <p className='text-muted mb-8 leading-relaxed'>
+            <h1 className={`text-3xl font-bold mb-4 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+              Reset Link Sent!
+            </h1>
+
+            <p
+              className={`text-base leading-relaxed mb-8 ${
+                isDark ? 'text-gray-300' : 'text-gray-600'
+              }`}
+            >
               We've sent password reset instructions to your registered email address. Please check
               your inbox (and spam folder) and follow the instructions to reset your password.
             </p>
 
             <button
               onClick={handleBackToLogin}
-              className='w-full btn-primary flex items-center justify-center gap-2'
+              className={`w-full py-4 rounded-xl font-semibold text-sm transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg flex items-center justify-center gap-2 ${
+                isDark
+                  ? 'bg-white text-black hover:bg-gray-200'
+                  : 'bg-black text-white hover:bg-gray-800'
+              }`}
             >
               <ArrowBack sx={{ fontSize: 18 }} />
               Back to Sign In
@@ -78,22 +142,58 @@ const ForgotPasswordPage: React.FC = () => {
     );
   }
 
+  // Main forgot password form
   return (
-    <div className='min-h-screen flex items-center justify-center bg-background p-4'>
-      <div className='absolute inset-0 bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-gray-950 dark:via-blue-950 dark:to-purple-950' />
+    <div
+      className={`h-screen w-screen flex overflow-hidden ${
+        isDark
+          ? 'bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900'
+          : 'bg-gradient-to-br from-purple-100 via-blue-50 to-teal-50'
+      }`}
+    >
+      {/* Floating background elements */}
+      <div className='absolute top-20 right-20 w-32 h-32 bg-gradient-to-r from-pink-400 to-blue-400 rounded-full opacity-10 animate-pulse'></div>
+      <div
+        className='absolute bottom-32 left-10 w-24 h-24 bg-gradient-to-r from-green-400 to-blue-500 rounded-2xl opacity-10 animate-bounce'
+        style={{ animationDuration: '3s' }}
+      ></div>
+      <div
+        className='absolute top-1/3 left-1/4 w-16 h-16 bg-gradient-to-r from-yellow-400 to-pink-500 rounded-2xl opacity-10 animate-pulse'
+        style={{ animationDelay: '1s' }}
+      ></div>
 
-      <div className='absolute top-20 right-20 w-32 h-32 bg-gradient-to-r from-pink-400 to-blue-400 rounded-full opacity-10 animate-float' />
-      <div className='absolute bottom-32 left-10 w-24 h-24 bg-gradient-to-r from-green-400 to-blue-500 rounded-2xl opacity-10 animate-pulse-slow' />
-
-      <div className='relative z-10 w-full max-w-md'>
-        <div className='card-strong animate-in'>
+      <div className='flex items-center justify-center w-full h-full p-6'>
+        <div
+          className={`w-full max-w-md p-8 rounded-3xl shadow-2xl ${
+            isDark
+              ? 'bg-gray-800/90 backdrop-blur-xl border border-gray-700/50'
+              : 'bg-white/90 backdrop-blur-xl border border-white/20'
+          }`}
+        >
           {/* Header */}
           <div className='text-center mb-8'>
-            <Logo size='large' />
+            <div className='flex items-center justify-center gap-2 mb-6'>
+              <div
+                className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                  isDark ? 'bg-white' : 'bg-black'
+                }`}
+              >
+                <span className={`font-bold text-sm ${isDark ? 'text-black' : 'text-white'}`}>
+                  V
+                </span>
+              </div>
+              <span className={`text-lg font-semibold ${isDark ? 'text-white' : 'text-gray-800'}`}>
+                Virtual Office
+              </span>
+            </div>
 
-            <h1 className='text-3xl font-bold text-foreground mt-6 mb-2'>Password Reset</h1>
+            <h1 className={`text-3xl font-bold mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+              Password Reset
+            </h1>
 
-            <p className='text-muted'>Enter your details below to reset your password</p>
+            <p className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
+              Enter your details below to reset your password
+            </p>
           </div>
 
           {/* Error Alert */}
@@ -102,11 +202,11 @@ const ForgotPasswordPage: React.FC = () => {
               severity='error'
               className='mb-6 rounded-xl'
               sx={{
-                backgroundColor: 'rgba(var(--color-error), 0.1)',
-                color: 'rgb(var(--color-error))',
-                border: '1px solid rgba(var(--color-error), 0.2)',
+                backgroundColor: isDark ? 'rgba(239, 68, 68, 0.1)' : '#fef2f2',
+                color: isDark ? '#f87171' : '#dc2626',
+                border: isDark ? '1px solid rgba(239, 68, 68, 0.2)' : '1px solid #fecaca',
                 '& .MuiAlert-icon': {
-                  color: 'rgb(var(--color-error))',
+                  color: isDark ? '#f87171' : '#dc2626',
                 },
               }}
             >
@@ -115,11 +215,14 @@ const ForgotPasswordPage: React.FC = () => {
           )}
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className='space-y-6'>
+          <form onSubmit={handleSubmit} className='space-y-5'>
+            {/* Virtual Office Name Field */}
             <div>
               <label
                 htmlFor='virtualOfficeName'
-                className='block text-sm font-medium text-foreground mb-2'
+                className={`block text-sm font-medium mb-2 ${
+                  isDark ? 'text-gray-200' : 'text-gray-700'
+                }`}
               >
                 Virtual Office Name
               </label>
@@ -132,18 +235,49 @@ const ForgotPasswordPage: React.FC = () => {
                 required
                 disabled={isLoading}
                 placeholder='Enter your virtual office name'
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : '#f8f9fa',
+                    borderRadius: '12px',
+                    border: 'none',
+                    '& fieldset': {
+                      border: isDark ? '1px solid rgba(255, 255, 255, 0.1)' : 'none',
+                    },
+                    '&:hover fieldset': {
+                      border: isDark ? '1px solid rgba(255, 255, 255, 0.2)' : 'none',
+                    },
+                    '&.Mui-focused fieldset': {
+                      border: '1px solid #3b82f6',
+                    },
+                  },
+                  '& .MuiOutlinedInput-input': {
+                    padding: '14px 16px',
+                    fontSize: '14px',
+                    color: isDark ? '#ffffff' : '#1f2937',
+                    '&::placeholder': {
+                      color: '#9ca3af',
+                      opacity: 1,
+                    },
+                  },
+                }}
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position='start'>
-                      <Business className='text-muted' sx={{ fontSize: 20 }} />
+                      <Business sx={{ color: '#9ca3af', fontSize: 20 }} />
                     </InputAdornment>
                   ),
                 }}
               />
             </div>
 
+            {/* Username Field */}
             <div>
-              <label htmlFor='username' className='block text-sm font-medium text-foreground mb-2'>
+              <label
+                htmlFor='username'
+                className={`block text-sm font-medium mb-2 ${
+                  isDark ? 'text-gray-200' : 'text-gray-700'
+                }`}
+              >
                 Username
               </label>
               <TextField
@@ -155,24 +289,50 @@ const ForgotPasswordPage: React.FC = () => {
                 required
                 disabled={isLoading}
                 placeholder='Enter your username'
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : '#f8f9fa',
+                    borderRadius: '12px',
+                    border: 'none',
+                    '& fieldset': {
+                      border: isDark ? '1px solid rgba(255, 255, 255, 0.1)' : 'none',
+                    },
+                    '&:hover fieldset': {
+                      border: isDark ? '1px solid rgba(255, 255, 255, 0.2)' : 'none',
+                    },
+                    '&.Mui-focused fieldset': {
+                      border: '1px solid #3b82f6',
+                    },
+                  },
+                  '& .MuiOutlinedInput-input': {
+                    padding: '14px 16px',
+                    fontSize: '14px',
+                    color: isDark ? '#ffffff' : '#1f2937',
+                    '&::placeholder': {
+                      color: '#9ca3af',
+                      opacity: 1,
+                    },
+                  },
+                }}
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position='start'>
-                      <Person className='text-muted' sx={{ fontSize: 20 }} />
+                      <Person sx={{ color: '#9ca3af', fontSize: 20 }} />
                     </InputAdornment>
                   ),
                 }}
               />
             </div>
 
+            {/* Submit Button */}
             <button
               type='submit'
               disabled={isLoading}
-              className='w-full py-4 px-6 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none focus-ring'
+              className='w-full py-4 px-6 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white font-semibold rounded-xl transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none'
             >
               {isLoading ? (
                 <div className='flex items-center justify-center gap-3'>
-                  <div className='loading-spinner' />
+                  <div className='w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin'></div>
                   Sending Reset Link...
                 </div>
               ) : (
@@ -180,19 +340,27 @@ const ForgotPasswordPage: React.FC = () => {
               )}
             </button>
 
+            {/* Back to Login */}
             <div className='text-center pt-4'>
               <button
                 type='button'
                 onClick={handleBackToLogin}
-                className='text-primary-600 hover:text-primary-700 font-medium hover:underline focus-ring rounded-md px-2 py-1 text-sm'
+                className={`font-medium hover:underline text-sm px-2 py-1 rounded-md transition-colors ${
+                  isDark ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-700'
+                }`}
               >
                 ← Back to Sign In
               </button>
             </div>
           </form>
 
-          <div className='mt-8 p-4 bg-blue-50 dark:bg-blue-950/30 rounded-xl border border-blue-100 dark:border-blue-900/50'>
-            <p className='text-sm text-blue-800 dark:text-blue-200'>
+          {/* Help Section */}
+          <div
+            className={`mt-8 p-4 rounded-xl border ${
+              isDark ? 'bg-blue-950/30 border-blue-900/50' : 'bg-blue-50 border-blue-100'
+            }`}
+          >
+            <p className={`text-sm ${isDark ? 'text-blue-200' : 'text-blue-800'}`}>
               <strong>Need help?</strong> If you're having trouble accessing your account, please
               contact your virtual office administrator or our support team.
             </p>
