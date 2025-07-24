@@ -146,19 +146,19 @@ const LoginPage: React.FC = () => {
   return (
     <main
       className={clsx(
-        `min-h-screen w-full flex items-center justify-center p-4 sm:p-6 lg:p-8 xl:p-8 rounded-xl overflow-auto shadow-2xl ${
+        `min-h-screen w-full flex items-center justify-center rounded-xl overflow-auto shadow-2xl ${
           isDark
             ? 'bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900'
             : 'bg-gradient-to-br from-purple-100 via-blue-50 to-teal-50'
         }`,
-        error && 'p-0 sm:p-0 lg:p-0 xl:p-0'
+        error ? 'p-0 sm:p-0 lg:p-0 xl:p-0' : 'p-4 sm:p-6 lg:p-8 xl:p-8'
       )}
     >
       {/* Main Container Card */}
       <div
         className={clsx(
           'w-full max-w-7xl h-auto min-h-[600px]  flex flex-col lg:flex-row shadow-2xl rounded-xl',
-          error ? 'lg:h-[600px] xl:h-[700px]' : 'lg:h-[600px] xl:h-[650px]',
+          error ? 'h-[700px]' : 'h-[650px]',
           isDark
             ? 'bg-gray-800/90 backdrop-blur-xl border border-gray-700/50'
             : 'bg-white/90 backdrop-blur-xl border border-white/20'
