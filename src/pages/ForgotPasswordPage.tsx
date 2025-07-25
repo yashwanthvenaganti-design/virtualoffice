@@ -107,7 +107,7 @@ const ForgotPasswordPage: React.FC = () => {
   if (success) {
     return (
       <main
-        className={`min-h-screen w-full flex items-center justify-center p-4 sm:p-6 lg:p-8 xl:p-8 rounded-xl overflow-auto shadow-2xl ${
+        className={`min-h-screen w-full flex items-center justify-center p-3 sm:p-2 lg:p-3 xl:p-3 rounded-xl overflow-auto shadow-2xl ${
           isDark
             ? 'bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900'
             : 'bg-gradient-to-br from-purple-100 via-blue-50 to-teal-50'
@@ -116,19 +116,19 @@ const ForgotPasswordPage: React.FC = () => {
         {/* Main Container Card */}
         <div
           className={clsx(
-            'w-full max-w-7xl h-auto min-h-[600px] lg:h-[600px] xl:h-[655px] flex flex-col lg:flex-row shadow-2xl rounded-xl',
+            'w-full max-w-7xl h-auto min-h-[650px] flex flex-col lg:flex-row shadow-2xl rounded-xl',
             isDark
               ? 'bg-gray-800/90 backdrop-blur-xl border border-gray-700/50'
               : 'bg-white/90 backdrop-blur-xl border border-white/20'
           )}
         >
           <section
-            className='flex-1 flex items-center justify-center lg:rounded-l-xl lg:rounded-tr-none p-6 sm:p-8 lg:p-8 xl:p-12'
+            className='flex-1 flex items-center justify-center lg:rounded-l-xl lg:rounded-tr-none px-6 sm:px-8 lg:px-8 xl:px-12 py-3'
             aria-labelledby='success-heading'
           >
             <div className='w-full max-w-md lg:max-w-lg xl:max-w-2xl'>
               {/* Header */}
-              <header className='mb-6 lg:mb-8'>
+              <header className='mb-1 lg:mb-1'>
                 <div className='flex items-center gap-2 mb-6 lg:mb-8'>
                   <Logo />
                 </div>
@@ -144,7 +144,7 @@ const ForgotPasswordPage: React.FC = () => {
                 </p>
               </header>
 
-              <div className='text-center mb-6'>
+              <div className='text-center mb-10'>
                 <SuccessIcon
                   size='md'
                   variant='green'
@@ -275,7 +275,7 @@ const ForgotPasswordPage: React.FC = () => {
   return (
     <main
       className={clsx(
-        `min-h-screen w-full flex items-center justify-center p-4 sm:p-6 lg:p-8 xl:p-8 rounded-xl overflow-auto shadow-2xl ${
+        `min-h-screen w-full flex items-center justify-center p-2 sm:p-2 lg:p-3 xl:p-3 rounded-xl overflow-auto shadow-2xl ${
           isDark
             ? 'bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900'
             : 'bg-gradient-to-br from-purple-100 via-blue-50 to-teal-50'
@@ -285,7 +285,7 @@ const ForgotPasswordPage: React.FC = () => {
       {/* Main Container Card */}
       <div
         className={clsx(
-          'w-full max-w-7xl h-auto min-h-[600px] lg:h-[600px] xl:h-[650px] flex flex-col lg:flex-row shadow-2xl rounded-xl',
+          'w-full max-w-7xl h-auto min-h-[650px] flex flex-col lg:flex-row shadow-2xl rounded-xl',
           isDark
             ? 'bg-gray-800/90 backdrop-blur-xl border border-gray-700/50'
             : 'bg-white/90 backdrop-blur-xl border border-white/20'
@@ -293,12 +293,12 @@ const ForgotPasswordPage: React.FC = () => {
       >
         {/* Left Side - Forgot Password Form */}
         <section
-          className='flex-1 flex items-center justify-center lg:rounded-l-xl lg:rounded-tr-none p-6 sm:p-8 lg:p-8 xl:p-12'
+          className='flex-1 flex items-center justify-center lg:rounded-l-xl lg:rounded-tr-none px-6 sm:px-8 lg:px-8 xl:px-12 py-3'
           aria-labelledby='forgot-password-heading'
         >
           <div className='w-full max-w-md lg:max-w-lg xl:max-w-2xl'>
             {/* Header */}
-            <header className='mb-8 lg:mb-10'>
+            <header className='mb-1 lg:mb-1'>
               <div className='flex items-center gap-2 mb-6 lg:mb-3'>
                 <Logo />
               </div>

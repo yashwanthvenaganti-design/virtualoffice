@@ -146,19 +146,17 @@ const LoginPage: React.FC = () => {
   return (
     <main
       className={clsx(
-        `min-h-screen w-full flex items-center justify-center rounded-xl overflow-auto shadow-2xl ${
+        `min-h-screen w-full flex items-center justify-center rounded-xl overflow-auto shadow-2xl p-3 sm:p-2 lg:p-3 xl:p-3 ${
           isDark
             ? 'bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900'
             : 'bg-gradient-to-br from-purple-100 via-blue-50 to-teal-50'
-        }`,
-        error ? 'p-0 sm:p-0 lg:p-0 xl:p-0' : 'p-4 sm:p-6 lg:p-8 xl:p-8'
+        }`
       )}
     >
       {/* Main Container Card */}
       <div
         className={clsx(
-          'w-full max-w-7xl h-auto min-h-[600px]  flex flex-col lg:flex-row shadow-2xl rounded-xl',
-          error ? 'h-[700px]' : 'h-[650px]',
+          'w-full max-w-7xl h-auto min-h-[650px] flex flex-col lg:flex-row shadow-2xl rounded-xl',
           isDark
             ? 'bg-gray-800/90 backdrop-blur-xl border border-gray-700/50'
             : 'bg-white/90 backdrop-blur-xl border border-white/20'
@@ -166,19 +164,19 @@ const LoginPage: React.FC = () => {
       >
         {/* Left Side - Login Form */}
         <section
-          className='flex-1 flex items-center justify-center lg:rounded-l-xl lg:rounded-tr-none p-6 sm:p-8 lg:p-8 xl:p-12'
+          className='flex-1 flex items-center justify-center lg:rounded-l-xl lg:rounded-tr-none px-6 sm:px-8 lg:px-8 xl:px-12 py-3'
           aria-labelledby='login-heading'
         >
           <div className='w-full max-w-md lg:max-w-lg xl:max-w-2xl'>
             {/* Header */}
-            <header className='mb-4 lg:mb-3'>
-              <div className='flex items-center gap-2 mb-6 lg:mb-3'>
+            <header className='mb-1 lg:mb-1'>
+              <div className='flex items-center gap-2 mb-1 lg:mb-1'>
                 <Logo />
               </div>
 
               <h1
                 id='login-heading'
-                className={`text-2xl sm:text-3xl lg:text-4xl font-bold mb-1 ${isDark ? 'text-white' : 'text-gray-900'}`}
+                className={`text-2xl sm:text-2xl lg:text-3xl font-bold mb-1 ${isDark ? 'text-white' : 'text-gray-900'}`}
               >
                 Welcome Back!
               </h1>
@@ -208,8 +206,8 @@ const LoginPage: React.FC = () => {
             )} */}
 
             {/* Login Form */}
-            <form onSubmit={handleSubmit} className='space-y-4 lg:space-y-5' noValidate>
-              <fieldset className='space-y-4 lg:space-y-4' disabled={isLoading}>
+            <form onSubmit={handleSubmit} className='space-y-3 lg:space-y-4' noValidate>
+              <fieldset className='space-y-3 lg:space-y-3' disabled={isLoading}>
                 <legend className='sr-only'>Login Credentials</legend>
 
                 {/* Virtual Office Name Field */}
