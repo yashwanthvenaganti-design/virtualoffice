@@ -1,5 +1,6 @@
 import React from 'react';
 import { Box, Typography, useTheme } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 interface LogoProps {
   companyName?: string;
@@ -13,6 +14,7 @@ const Logo: React.FC<LogoProps> = ({
   size = 'medium',
 }) => {
   const theme = useTheme();
+  const navigate = useNavigate();
 
   const sizes = {
     small: { logo: 24, text: '1rem' },
@@ -22,8 +24,15 @@ const Logo: React.FC<LogoProps> = ({
 
   const currentSize = sizes[size];
 
+  const handleNavigate = () => {
+    navigate('/home', { replace: true });
+  };
+
   return (
-    <Box sx={{ display: 'flex', alignItems: 'center', mr: 4 }}>
+    <Box
+      className='flex items-center mr-4 sm:mr-1 md:mr-1 sm:ml-4 md:ml-4 ml-0 cursor-pointer'
+      onClick={handleNavigate}
+    >
       {showIcon && (
         <img
           src='https://virtualoffice.dev.adhkistaging.com/static/img/adp-logo-white.png'

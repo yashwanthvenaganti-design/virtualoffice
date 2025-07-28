@@ -152,10 +152,10 @@ const UserMenu: React.FC<UserMenuProps> = ({ user, onLogout, onUserSettings, onP
             isDark ? 'bg-gray-800/95 border-gray-700/50' : 'bg-white/95 border-gray-200/50'
           }`,
           sx: {
-            borderRadius: '16px',
+            borderRadius: '8px',
             '& .MuiMenuItem-root': {
               borderRadius: '12px',
-              margin: '4px 12px',
+              margin: '2px 12px',
               padding: '12px 16px',
               fontSize: '0.875rem',
               fontWeight: 500,
@@ -202,7 +202,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ user, onLogout, onUserSettings, onP
         </div>
 
         {/* Menu Items */}
-        <div className='py-2'>
+        <div className='py-1'>
           <MenuItem onClick={handleProfileClick}>
             <ListItemIcon>
               <PersonIcon
@@ -291,7 +291,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ user, onLogout, onUserSettings, onP
           }}
         />
 
-        <div className='py-2'>
+        <div>
           <MenuItem onClick={handleLogout}>
             <ListItemIcon>
               <LogoutIcon

@@ -44,7 +44,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
     <div className='flex-1' style={{ maxWidth }}>
       <div
         className={`
-          relative rounded-2xl border transition-all duration-300 ease-out group
+          relative rounded-lg border transition-all duration-300 ease-out group
           ${
             isSearchFocused
               ? isDark

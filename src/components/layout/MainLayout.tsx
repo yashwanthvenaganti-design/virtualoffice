@@ -1,8 +1,10 @@
 import React from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useNotifications } from '../../hooks/useNotifications';
+import { useTheme } from '../../theme/ThemeContext';
 import Header from './Header';
+import Sidebar from './Sidebar';
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -11,14 +13,16 @@ interface MainLayoutProps {
 const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const { isDark } = useTheme();
   const { unreadCount, markAllAsRead } = useNotifications();
 
   const headerUser = user
     ? {
         name: user.username,
-        email: user.email,
-        role: user.role,
-        avatar: user.avatar,
+        email: user.email ?? '',
+        role: user.role ?? '',
+        avatar: user.avatar ?? '',
       }
     : undefined;
 
@@ -48,21 +52,33 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
     markAllAsRead(); // Mark all notifications as read when clicked
   };
 
+  const handleNavigate = (path: string) => {
+    navigate(path);
+  };
+
   return (
-    <div className='min-h-screen bg-background'>
-      <Header
-        user={headerUser}
-        onSearch={handleSearch}
-        onLogout={handleLogout}
-        onUserSettings={handleUserSettings}
-        onProfileClick={handleProfileClick}
-        onNotificationClick={handleNotificationClick}
-        notifications={unreadCount}
-      />
+    <div className={`min-h-screen ${isDark ? 'bg-gray-900' : 'bg-gray-50'}`}>
+      {/* Fixed Header */}
+      <div className='fixed top-0 left-0 right-0 z-40'>
+        <Header
+          user={headerUser}
+          onSearch={handleSearch}
+          onLogout={handleLogout}
+          onUserSettings={handleUserSettings}
+          onProfileClick={handleProfileClick}
+          onNotificationClick={handleNotificationClick}
+          notifications={unreadCount}
+        />
+      </div>
 
       {/* Main Content */}
-      <main className='min-h-[calc(100vh-64px)] bg-background'>
-        <div className='scrollbar-thin'>{children}</div>
+      <main className='lg:ml-64 pt-16 min-h-screen'>
+        {/* Sidebar */}
+        <Sidebar currentPath={location.pathname} onNavigate={handleNavigate} isDark={isDark} />
+
+        <div className={`p-6 ${isDark ? 'bg-gray-900' : 'bg-gray-50'} min-h-[calc(100vh-64px)]`}>
+          <div className='scrollbar-thin'>{children}</div>
+        </div>
       </main>
     </div>
   );

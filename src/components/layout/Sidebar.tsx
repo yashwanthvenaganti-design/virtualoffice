@@ -1,313 +1,237 @@
 import React, { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
 import {
-  Drawer,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-  Collapse,
-  IconButton,
-} from '@mui/material';
-import {
-  Home as HomeIcon,
-  Schedule as AvailabilityIcon,
-  Email as MessagesIcon,
-  Devices as DevicesIcon,
-  LocationOn as AddressesIcon,
-  EmojiPeople as GreetingsIcon,
-  Receipt as InvoicesIcon,
-  Edit as ModifyIcon,
-  Notifications as NotifyIcon,
-  People as StaffIcon,
-  BarChart as StatisticsIcon,
-  HelpOutline as SupportIcon,
-  Star as VIPsIcon,
-  ExpandLess,
-  ExpandMore,
-  ChevronLeft as CollapseIcon,
+  Home,
+  CalendarToday,
+  Mail,
+  PhoneAndroid,
+  LocationOn,
+  Chat,
+  Description,
+  Edit,
+  Notifications,
   People,
-  Schedule,
+  BarChart,
+  HelpOutline,
+  Star,
+  ChevronLeft,
+  ChevronRight,
+  Menu,
+  Close,
 } from '@mui/icons-material';
-import { useTheme } from '../../theme/ThemeContext';
+import clsx from 'clsx';
 
-interface SidebarProps {
-  open: boolean;
-  onToggle: () => void;
-  variant?: 'permanent' | 'persistent' | 'temporary';
-  width?: number;
-}
-
-interface MenuItemProps {
-  icon: React.ReactElement;
+interface SidebarItemProps {
+  icon: React.ReactNode;
   label: string;
   path: string;
-  badge?: number;
-  children?: MenuItemProps[];
+  isActive?: boolean;
+  isCollapsed?: boolean;
+  onClick?: () => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({
-  open,
-  onToggle,
-  variant = 'persistent',
-  width = 260,
+interface SidebarProps {
+  className?: string;
+  currentPath?: string;
+  onNavigate?: (path: string) => void;
+  isDark?: boolean;
+}
+
+const SidebarItem: React.FC<SidebarItemProps & { isDark: boolean }> = ({
+  icon,
+  label,
+  path,
+  isActive = false,
+  isCollapsed = false,
+  onClick,
+  isDark,
 }) => {
-  const { isDark } = useTheme();
-  const navigate = useNavigate();
-  const location = useLocation();
-  const [expandedItems, setExpandedItems] = useState<string[]>([]);
-
-  const menuItems: MenuItemProps[] = [
-    {
-      icon: <HomeIcon />,
-      label: 'Home',
-      path: '/home',
-    },
-    {
-      icon: <AvailabilityIcon />,
-      label: 'Your availability',
-      path: '/availability',
-    },
-    {
-      icon: <MessagesIcon />,
-      label: 'Your messages',
-      path: '/messages',
-      badge: 3,
-    },
-    {
-      icon: <DevicesIcon />,
-      label: 'Your app devices',
-      path: '/devices',
-    },
-    {
-      icon: <AddressesIcon />,
-      label: 'Addresses',
-      path: '/addresses',
-    },
-    {
-      icon: <GreetingsIcon />,
-      label: 'Greetings',
-      path: '/greetings',
-    },
-    {
-      icon: <InvoicesIcon />,
-      label: 'Invoices',
-      path: '/invoices',
-    },
-    {
-      icon: <ModifyIcon />,
-      label: 'Modify',
-      path: '/modify',
-    },
-    {
-      icon: <NotifyIcon />,
-      label: 'Notify your PA',
-      path: '/notify',
-    },
-    {
-      icon: <StaffIcon />,
-      label: 'Staff',
-      path: '/staff',
-      children: [
-        { icon: <People />, label: 'Manage Staff', path: '/staff/manage' },
-        { icon: <Schedule />, label: 'Staff Schedule', path: '/staff/schedule' },
-      ],
-    },
-    {
-      icon: <StatisticsIcon />,
-      label: 'Statistics',
-      path: '/statistics',
-    },
-    {
-      icon: <SupportIcon />,
-      label: 'Support',
-      path: '/support',
-    },
-    {
-      icon: <VIPsIcon />,
-      label: 'VIPs',
-      path: '/vips',
-    },
-  ];
-
-  const handleItemClick = (item: MenuItemProps) => {
-    if (item.children) {
-      toggleExpanded(item.path);
-    } else {
-      navigate(item.path);
+  const handleClick = () => {
+    if (onClick) {
+      onClick();
     }
   };
 
-  const toggleExpanded = (path: string) => {
-    setExpandedItems(prev =>
-      prev.includes(path) ? prev.filter(item => item !== path) : [...prev, path]
-    );
-  };
-
-  const isActive = (path: string) => {
-    return location.pathname === path || location.pathname.startsWith(path + '/');
-  };
-
-  const isExpanded = (path: string) => {
-    return expandedItems.includes(path);
-  };
-
-  const renderMenuItem = (item: MenuItemProps, depth = 0) => {
-    const active = isActive(item.path);
-    const hasChildren = item.children && item.children.length > 0;
-    const expanded = isExpanded(item.path);
-
-    return (
-      <React.Fragment key={item.path}>
-        <ListItem disablePadding sx={{ display: 'block' }}>
-          <ListItemButton
-            onClick={() => handleItemClick(item)}
-            sx={{
-              minHeight: 48,
-              mx: 1,
-              mb: 0.5,
-              borderRadius: '12px',
-              pl: depth > 0 ? 4 : 2,
-              pr: 2,
-              backgroundColor: active
-                ? isDark
-                  ? 'rgba(59, 130, 246, 0.15)'
-                  : 'rgba(59, 130, 246, 0.08)'
-                : 'transparent',
-              color: active ? (isDark ? '#60a5fa' : '#2563eb') : isDark ? '#e5e7eb' : '#374151',
-              border: active
-                ? `1px solid ${isDark ? 'rgba(96, 165, 250, 0.3)' : 'rgba(37, 99, 235, 0.2)'}`
-                : '1px solid transparent',
-              '&:hover': {
-                backgroundColor: active
-                  ? isDark
-                    ? 'rgba(59, 130, 246, 0.2)'
-                    : 'rgba(59, 130, 246, 0.12)'
-                  : isDark
-                    ? 'rgba(55, 65, 81, 0.8)'
-                    : 'rgba(243, 244, 246, 0.8)',
-              },
-              transition: 'all 0.2s ease',
-            }}
-          >
-            <ListItemIcon
-              sx={{
-                minWidth: 40,
-                color: 'inherit',
-              }}
-            >
-              {React.cloneElement(item.icon, { sx: { fontSize: 20 } })}
-            </ListItemIcon>
-
-            <ListItemText
-              primary={item.label}
-              sx={{
-                '& .MuiListItemText-primary': {
-                  fontSize: '0.875rem',
-                  fontWeight: active ? 600 : 500,
-                  color: 'inherit',
-                },
-              }}
-            />
-
-            {/* Badge */}
-            {item.badge && (
-              <div
-                className={`min-w-[20px] h-5 px-1.5 rounded-full text-xs font-semibold flex items-center justify-center ${
-                  isDark ? 'bg-red-500/90 text-white' : 'bg-red-500 text-white'
-                }`}
-              >
-                {item.badge}
-              </div>
-            )}
-
-            {hasChildren && (expanded ? <ExpandLess /> : <ExpandMore />)}
-          </ListItemButton>
-        </ListItem>
-
-        {hasChildren && (
-          <Collapse in={expanded} timeout='auto' unmountOnExit>
-            <List component='div' disablePadding>
-              {item.children!.map(child => renderMenuItem(child, depth + 1))}
-            </List>
-          </Collapse>
-        )}
-      </React.Fragment>
-    );
-  };
-
-  const drawerContent = (
-    <div
-      className={`h-full flex flex-col ${
-        isDark ? 'bg-gray-900 border-gray-700' : 'bg-white border-gray-200'
-      }`}
+  return (
+    <button
+      onClick={handleClick}
+      className={clsx(
+        'w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200 group relative',
+        'focus:outline-none focus:ring-2 focus:ring-blue-500/20',
+        {
+          // Active state
+          [isDark
+            ? 'bg-blue-600/20 text-blue-400 border border-blue-500/30'
+            : 'bg-blue-50 text-blue-600 border border-blue-200']: isActive,
+          // Inactive state
+          [isDark
+            ? 'text-gray-300 hover:bg-gray-700/50 hover:text-white'
+            : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900']: !isActive,
+          'justify-center': isCollapsed,
+          'justify-start': !isCollapsed,
+        }
+      )}
+      title={isCollapsed ? label : undefined}
     >
-      <div
-        className={`p-4 border-b flex items-center justify-between ${
-          isDark ? 'border-gray-700' : 'border-gray-200'
-        }`}
-      >
-        <div className='flex items-center gap-3'>
-          <div className='w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center'>
-            <span className='text-white font-bold text-sm'>V</span>
-          </div>
-          <div>
-            <h2 className={`font-semibold text-base ${isDark ? 'text-white' : 'text-gray-900'}`}>
-              Virtual Office
-            </h2>
-            <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-              Professional Suite
-            </p>
-          </div>
+      <div className='flex-shrink-0'>{icon}</div>
+
+      {!isCollapsed && (
+        <span className='font-medium text-sm whitespace-nowrap overflow-hidden'>{label}</span>
+      )}
+
+      {/* Tooltip for collapsed state */}
+      {isCollapsed && (
+        <div
+          className={clsx(
+            'absolute left-full ml-2 px-2 py-1 rounded-md text-xs font-medium',
+            'opacity-0 group-hover:opacity-100 transition-opacity duration-200',
+            'pointer-events-none whitespace-nowrap z-30',
+            isDark
+              ? 'bg-gray-800 text-white border border-gray-600'
+              : 'bg-white text-gray-900 border border-gray-200 shadow-lg'
+          )}
+        >
+          {label}
         </div>
-
-        {variant === 'persistent' && (
-          <IconButton
-            onClick={onToggle}
-            size='small'
-            sx={{
-              color: isDark ? '#9ca3af' : '#6b7280',
-              '&:hover': {
-                backgroundColor: isDark ? 'rgba(55, 65, 81, 0.8)' : 'rgba(243, 244, 246, 0.8)',
-              },
-            }}
-          >
-            <CollapseIcon sx={{ fontSize: 18 }} />
-          </IconButton>
-        )}
-      </div>
-
-      <div className='flex-1 overflow-y-auto py-4'>
-        <List sx={{ px: 1 }}>{menuItems.map(item => renderMenuItem(item))}</List>
-      </div>
-
-      <div className={`p-4 border-t ${isDark ? 'border-gray-700' : 'border-gray-200'}`}>
-        <div className={`text-xs text-center ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
-          Virtual Office v2.0
-        </div>
-      </div>
-    </div>
+      )}
+    </button>
   );
+};
+
+const Sidebar: React.FC<SidebarProps> = ({
+  className,
+  currentPath = '/home',
+  onNavigate,
+  isDark = false,
+}) => {
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
+
+  const navigationItems = [
+    { icon: <Home sx={{ fontSize: 20 }} />, label: 'Home', path: '/home' },
+    {
+      icon: <CalendarToday sx={{ fontSize: 20 }} />,
+      label: 'Your availability',
+      path: '/availability',
+    },
+    { icon: <Mail sx={{ fontSize: 20 }} />, label: 'Your messages', path: '/messages' },
+    { icon: <PhoneAndroid sx={{ fontSize: 20 }} />, label: 'Your app devices', path: '/devices' },
+    { icon: <LocationOn sx={{ fontSize: 20 }} />, label: 'Addresses', path: '/addresses' },
+    { icon: <Chat sx={{ fontSize: 20 }} />, label: 'Greetings', path: '/greetings' },
+    { icon: <Description sx={{ fontSize: 20 }} />, label: 'Invoices', path: '/invoices' },
+    { icon: <Edit sx={{ fontSize: 20 }} />, label: 'Modify', path: '/modify' },
+    { icon: <Notifications sx={{ fontSize: 20 }} />, label: 'Notify your PA', path: '/notify-pa' },
+    { icon: <People sx={{ fontSize: 20 }} />, label: 'Staff', path: '/staff' },
+    { icon: <BarChart sx={{ fontSize: 20 }} />, label: 'Statistics', path: '/statistics' },
+    { icon: <HelpOutline sx={{ fontSize: 20 }} />, label: 'Support', path: '/support' },
+    { icon: <Star sx={{ fontSize: 20 }} />, label: 'VIPs', path: '/vips' },
+  ];
+
+  const toggleCollapse = () => {
+    setIsCollapsed(!isCollapsed);
+  };
+
+  const toggleMobile = () => {
+    setIsMobileOpen(!isMobileOpen);
+  };
+
+  const closeMobile = () => {
+    setIsMobileOpen(false);
+  };
 
   return (
-    <Drawer
-      variant={variant}
-      open={open}
-      onClose={onToggle}
-      sx={{
-        width: open ? width : 0,
-        flexShrink: 0,
-        '& .MuiDrawer-paper': {
-          width: width,
-          boxSizing: 'border-box',
-          borderRight: 'none',
-          boxShadow: isDark ? '4px 0 24px rgba(0, 0, 0, 0.4)' : '4px 0 24px rgba(0, 0, 0, 0.08)',
-        },
-      }}
-    >
-      {drawerContent}
-    </Drawer>
+    <>
+      {/* Mobile Menu Button */}
+      <button
+        onClick={toggleMobile}
+        className={clsx(
+          'lg:hidden fixed top-4 left-1 z-50 p-1 rounded-md transition-all duration-200',
+          'focus:outline-none focus:ring-2 focus:ring-blue-500/20',
+          isDark
+            ? 'bg-gray-800/90 text-white hover:bg-gray-700/90 border border-gray-700'
+            : 'bg-white/90 text-gray-900 hover:bg-gray-50/90 border border-gray-200 shadow-lg',
+          'backdrop-blur-xl'
+        )}
+        aria-label='Toggle mobile menu'
+      >
+        {isMobileOpen ? <Close sx={{ fontSize: 20 }} /> : <Menu sx={{ fontSize: 20 }} />}
+      </button>
+
+      {/* Mobile Overlay */}
+      {isMobileOpen && (
+        <div
+          className='lg:hidden fixed inset-0 bg-black/50 backdrop-blur-sm'
+          onClick={closeMobile}
+        />
+      )}
+
+      {/* Sidebar */}
+      <aside
+        className={clsx(
+          'fixed left-0 h-full transition-all duration-300 ease-in-out m-0.5 z-40',
+          'flex flex-col border-r',
+          {
+            // Desktop states
+            'lg:translate-x-0': true,
+            'lg:w-64': !isCollapsed,
+            'lg:w-20': isCollapsed,
+            // Mobile states
+            'translate-x-0 w-64': isMobileOpen,
+            '-translate-x-full w-64': !isMobileOpen,
+          },
+          isDark
+            ? 'bg-gray-900/95 border-gray-700/50 backdrop-blur-xl'
+            : 'bg-white/95 border-gray-200/50 backdrop-blur-xl',
+          className
+        )}
+      >
+        {/* Collapse Toggle (Desktop only) */}
+        <button
+          onClick={toggleCollapse}
+          className={clsx(
+            'hidden lg:flex p-0.5 rounded-lg transition-all duration-200 z-50',
+            'focus:outline-none absolute -top-2 -right-4',
+            'backdrop-blur-xl border shadow-lg hover:shadow-xl',
+            isDark
+              ? 'bg-gray-800/80 border-gray-600/50 text-gray-300 hover:text-white hover:bg-gray-700/80'
+              : 'bg-white/80 border-gray-200/50 text-gray-600 hover:text-gray-900 hover:bg-white/90'
+          )}
+          aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+        >
+          {isCollapsed ? (
+            <ChevronRight sx={{ fontSize: 22 }} />
+          ) : (
+            <ChevronLeft sx={{ fontSize: 22 }} />
+          )}
+        </button>
+
+        {/* Navigation */}
+        <nav className='flex-1 p-2 space-y-1 overflow-y-auto scrollbar-thin pt-2'>
+          {navigationItems?.map(item => (
+            <SidebarItem
+              key={item.path}
+              icon={item.icon}
+              label={item.label}
+              path={item.path}
+              isActive={currentPath === item.path}
+              isCollapsed={isCollapsed}
+              isDark={isDark}
+              onClick={() => {
+                onNavigate?.(item.path);
+                closeMobile();
+              }}
+            />
+          ))}
+        </nav>
+      </aside>
+
+      {/* Spacer for main content */}
+      <div
+        className={clsx(
+          'hidden lg:block transition-all duration-300',
+          isCollapsed ? 'lg:w-20' : 'lg:w-64'
+        )}
+      />
+    </>
   );
 };
 

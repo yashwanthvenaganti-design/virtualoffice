@@ -57,6 +57,7 @@ const Header: React.FC<HeaderProps> = ({
           color: 'inherit',
           borderBottom: '1px solid',
           borderColor: 'rgb(var(--color-border))',
+          borderRadius: '0 0 5px 5px',
         }}
         className={`backdrop-blur-xl ${
           isDark ? 'bg-gray-900/80 shadow-xl' : 'bg-white/80 shadow-sm'
@@ -115,7 +116,7 @@ const Header: React.FC<HeaderProps> = ({
         {/* Mobile Search Bar */}
         {showMobileSearch && (
           <div
-            className={`lg:hidden px-6 pb-4 border-t ${
+            className={`lg:hidden px-6 p-2 border-t ${
               isDark ? 'border-gray-700 bg-gray-800/50' : 'border-gray-200 bg-gray-50/50'
             }`}
           >
