@@ -1,17 +1,20 @@
 import React from 'react';
 import { Box, Typography, useTheme } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import clsx from 'clsx';
 
 interface LogoProps {
   companyName?: string;
   showIcon?: boolean;
   size?: 'small' | 'medium' | 'large';
+  isHeader?: boolean;
 }
 
 const Logo: React.FC<LogoProps> = ({
   companyName = 'alldayPA',
   showIcon = true,
   size = 'medium',
+  isHeader = false,
 }) => {
   const theme = useTheme();
   const navigate = useNavigate();
@@ -30,7 +33,10 @@ const Logo: React.FC<LogoProps> = ({
 
   return (
     <Box
-      className='flex items-center mr-4 sm:mr-1 md:mr-1 sm:ml-4 md:ml-4 ml-0 cursor-pointer'
+      className={clsx(
+        'flex items-center mr-4 cursor-pointer sm:mr-1 md:mr-1',
+        isHeader ? 'sm:ml-4 md:ml-4 xl:ml-1' : 'ml-1'
+      )}
       onClick={handleNavigate}
     >
       {showIcon && (

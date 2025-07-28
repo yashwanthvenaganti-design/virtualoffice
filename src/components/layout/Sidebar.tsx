@@ -19,15 +19,7 @@ import {
   Close,
 } from '@mui/icons-material';
 import clsx from 'clsx';
-
-interface SidebarItemProps {
-  icon: React.ReactNode;
-  label: string;
-  path: string;
-  isActive?: boolean;
-  isCollapsed?: boolean;
-  onClick?: () => void;
-}
+import SidebarItem from './SidebarItem';
 
 interface SidebarProps {
   className?: string;
@@ -35,67 +27,6 @@ interface SidebarProps {
   onNavigate?: (path: string) => void;
   isDark?: boolean;
 }
-
-const SidebarItem: React.FC<SidebarItemProps & { isDark: boolean }> = ({
-  icon,
-  label,
-  path,
-  isActive = false,
-  isCollapsed = false,
-  onClick,
-  isDark,
-}) => {
-  const handleClick = () => {
-    if (onClick) {
-      onClick();
-    }
-  };
-
-  return (
-    <button
-      onClick={handleClick}
-      className={clsx(
-        'w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200 group relative',
-        'focus:outline-none focus:ring-2 focus:ring-blue-500/20',
-        {
-          // Active state
-          [isDark
-            ? 'bg-blue-600/20 text-blue-400 border border-blue-500/30'
-            : 'bg-blue-50 text-blue-600 border border-blue-200']: isActive,
-          // Inactive state
-          [isDark
-            ? 'text-gray-300 hover:bg-gray-700/50 hover:text-white'
-            : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900']: !isActive,
-          'justify-center': isCollapsed,
-          'justify-start': !isCollapsed,
-        }
-      )}
-      title={isCollapsed ? label : undefined}
-    >
-      <div className='flex-shrink-0'>{icon}</div>
-
-      {!isCollapsed && (
-        <span className='font-medium text-sm whitespace-nowrap overflow-hidden'>{label}</span>
-      )}
-
-      {/* Tooltip for collapsed state */}
-      {isCollapsed && (
-        <div
-          className={clsx(
-            'absolute left-full ml-2 px-2 py-1 rounded-md text-xs font-medium',
-            'opacity-0 group-hover:opacity-100 transition-opacity duration-200',
-            'pointer-events-none whitespace-nowrap z-30',
-            isDark
-              ? 'bg-gray-800 text-white border border-gray-600'
-              : 'bg-white text-gray-900 border border-gray-200 shadow-lg'
-          )}
-        >
-          {label}
-        </div>
-      )}
-    </button>
-  );
-};
 
 const Sidebar: React.FC<SidebarProps> = ({
   className,
@@ -173,7 +104,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             // Desktop states
             'lg:translate-x-0': true,
             'lg:w-64': !isCollapsed,
-            'lg:w-20': isCollapsed,
+            'lg:w-16': isCollapsed,
             // Mobile states
             'translate-x-0 w-64': isMobileOpen,
             '-translate-x-full w-64': !isMobileOpen,

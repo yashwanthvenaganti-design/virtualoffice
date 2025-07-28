@@ -1,496 +1,669 @@
-import React from 'react';
+import React, { useState, createContext, useContext } from 'react';
 import {
-  Container,
-  Typography,
+  Menu,
+  MenuItem,
   Button,
-  Card,
-  CardContent,
-  Grid,
+  Checkbox,
+  TextField,
+  InputAdornment,
+  IconButton,
+  Divider,
   Box,
-  Chip,
-  Avatar,
-  Stack,
-  Fade,
-  Slide,
-  useTheme,
-  alpha,
 } from '@mui/material';
 import {
-  Home as HomeIcon,
-  Business,
-  Group,
+  Search,
+  ExpandMore,
   Settings,
-  ArrowForward,
-  Star,
-  Security,
-  Speed,
-  TrendingUp,
-  People,
-  Timeline,
+  Mail,
+  MoreVert,
+  Forward,
+  Delete,
+  Visibility,
+  VisibilityOff,
+  Fullscreen,
+  FullscreenExit,
+  Edit,
+  Add,
+  Close,
 } from '@mui/icons-material';
+import { useTheme } from '../theme/ThemeContext';
+import CustomTooltip from '../components/mui/CustomTooltip';
 
-interface FeatureCardProps {
-  icon: React.ReactNode;
-  title: string;
-  description: string;
-  delay?: number;
-}
+const HomePage = () => {
+  const { isDark } = useTheme();
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedFilter, setSelectedFilter] = useState('Everything (inc. msg)');
+  const [selectedMessages, setSelectedMessages] = useState([]);
+  const [expandedMessage, setExpandedMessage] = useState(null);
+  const [selectAll, setSelectAll] = useState(false);
 
-const FeatureCard: React.FC<FeatureCardProps> = ({ icon, title, description, delay = 0 }) => {
-  const theme = useTheme();
+  // Menu states
+  const [filterMenuAnchor, setFilterMenuAnchor] = useState<null | HTMLElement>(null);
+  const [actionsMenuAnchor, setActionsMenuAnchor] = useState<null | HTMLElement>(null);
+  const [messageMenuAnchor, setMessageMenuAnchor] = useState<null | HTMLElement>(null);
+  const [selectedMessageId, setSelectedMessageId] = useState<null | number>(null);
+
+  // Sample data with more messages
+  const messages = [
+    {
+      id: 1,
+      from: 'Alldaypa',
+      subject: 'alldayPA: New Account Details',
+      company: '',
+      date: '2025-07-09 20:43:03',
+      content: `!! AWAITING REVISED COPY !!
+
+Dear John,
+
+Welcome to alldayPA, and congratulations on registering your new account.
+
+You can download the welcome pack at https://www.alldaypa.co.uk/alldayPA-Welcome.pdf
+
+We are proud to inform you that you have joined the call answering market leader since 1999, and we pride ourselves on offering the best front line support for businesses - regardless of your business size.
+
+In order for you to get started we have included our Welcome Pack which will explain how to get the most out of our service. Please see attached document.
+
+For your reference, here is your alldayPA account information:
+
+Virtual office name: adpcx_dev
+Virtual office url: https://virtualoffice.alldaypa.com/login?company=adpcx_dev
+
+The attached document will explain in full what to do with your account information.
+
+Kind regards,
+
+Gareth Jeffery
+Head of Customer Service`,
+    },
+    {
+      id: 2,
+      from: 'Support Team',
+      subject: 'Your support ticket has been resolved',
+      company: 'TechCorp',
+      date: '2025-07-08 14:22:15',
+      content: 'Your support request has been successfully resolved. Thank you for your patience.',
+    },
+    {
+      id: 3,
+      from: 'Billing Department',
+      subject: 'Monthly Invoice Available',
+      company: 'ServicePro',
+      date: '2025-07-07 09:15:30',
+      content: 'Your monthly invoice is now available for download from your account dashboard.',
+    },
+  ];
+
+  const filterOptions = [
+    { value: 'Everything (inc. msg)', placeholder: 'Search by everything...' },
+    { value: 'Company name', placeholder: 'Search by company name...' },
+    { value: 'From', placeholder: 'Search by sender...' },
+    { value: 'Subject', placeholder: 'Search by subject...' },
+  ];
+
+  const actionItems = [
+    {
+      icon: <FullscreenExit sx={{ fontSize: 16 }} />,
+      label: 'Collapse',
+      action: () => {
+        setExpandedMessage(null);
+        setActionsMenuAnchor(null);
+      },
+    },
+    {
+      icon: <Forward sx={{ fontSize: 16 }} />,
+      label: 'Forward',
+      action: () => {
+        console.log('Forward selected messages:', selectedMessages);
+        setActionsMenuAnchor(null);
+      },
+    },
+    {
+      icon: <Delete sx={{ fontSize: 16 }} />,
+      label: 'Delete',
+      action: () => {
+        console.log('Delete selected messages:', selectedMessages);
+        setActionsMenuAnchor(null);
+      },
+      danger: true,
+    },
+    {
+      icon: <Fullscreen sx={{ fontSize: 16 }} />,
+      label: 'Expand',
+      action: () => {
+        if (selectedMessages.length > 0) {
+          setExpandedMessage(selectedMessages[0]);
+        }
+        setActionsMenuAnchor(null);
+      },
+    },
+    {
+      icon: <Visibility sx={{ fontSize: 16 }} />,
+      label: 'Mark as read',
+      action: () => {
+        console.log('Mark as read:', selectedMessages);
+        setActionsMenuAnchor(null);
+      },
+    },
+    {
+      icon: <VisibilityOff sx={{ fontSize: 16 }} />,
+      label: 'Mark as unread',
+      action: () => {
+        console.log('Mark as unread:', selectedMessages);
+        setActionsMenuAnchor(null);
+      },
+    },
+  ];
+
+  // Get current placeholder based on selected filter
+  const getCurrentPlaceholder = () => {
+    const filterOption = filterOptions.find(option => option.value === selectedFilter);
+    return filterOption ? filterOption.placeholder : 'Search...';
+  };
+
+  const handleSelectMessage = messageId => {
+    setSelectedMessages(prev => {
+      const newSelection = prev.includes(messageId)
+        ? prev.filter(id => id !== messageId)
+        : [...prev, messageId];
+
+      // Update select all state
+      setSelectAll(newSelection.length === messages.length);
+      return newSelection;
+    });
+  };
+
+  const handleSelectAll = checked => {
+    setSelectAll(checked);
+    if (checked) {
+      setSelectedMessages(messages.map(msg => msg.id));
+    } else {
+      setSelectedMessages([]);
+    }
+  };
+
+  const handleMessageMenuClick = (event, messageId) => {
+    setMessageMenuAnchor(event.currentTarget);
+    setSelectedMessageId(messageId);
+  };
+
+  const handleMessageMenuAction = (action, messageId) => {
+    if (messageId) {
+      // Individual message action
+      if (action.label === 'Expand') {
+        setExpandedMessage(messageId);
+      } else if (action.label === 'Collapse') {
+        setExpandedMessage(null);
+      } else {
+        console.log(`${action.label} message:`, messageId);
+      }
+    }
+    setMessageMenuAnchor(null);
+    setSelectedMessageId(null);
+  };
 
   return (
-    <Slide direction='up' in timeout={500 + delay}>
-      <Card
+    <Box
+      sx={{
+        minHeight: '100%',
+        backgroundColor: isDark ? '#111827' : '#f9fafb',
+        color: isDark ? 'white' : '#111827',
+        transition: 'all 0.2s ease',
+      }}
+    >
+      {/* Header */}
+      <Box
         sx={{
-          height: '100%',
-          cursor: 'pointer',
-          transition: 'all 0.3s ease-in-out',
-          '&:hover': {
-            transform: 'translateY(-8px)',
-            boxShadow: `0 12px 40px ${alpha(theme.palette.primary.main, 0.15)}`,
+          borderBottom: `1px solid ${isDark ? '#374151' : '#e5e7eb'}`,
+          backdropFilter: 'blur(20px)',
+          backgroundColor: isDark ? 'rgba(31, 41, 55, 0.5)' : 'rgba(255, 255, 255, 0.5)',
+          position: 'sticky',
+          top: 0,
+          zIndex: 10,
+        }}
+      >
+        <Box sx={{ px: 3, py: 2 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
+            <Mail sx={{ fontSize: 20, color: '#6b7280' }} />
+            <Box component='h1' sx={{ fontSize: '1.25rem', fontWeight: 600, margin: 0 }}>
+              Your messages
+            </Box>
+          </Box>
+
+          {/* Search and Filter Bar */}
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: { xs: 'column', sm: 'row' },
+              gap: 2,
+              alignItems: { xs: 'stretch', sm: 'center' },
+            }}
+          >
+            {/* Filter Dropdown */}
+            <Button
+              variant='outlined'
+              onClick={event => setFilterMenuAnchor(event.currentTarget)}
+              endIcon={<ExpandMore />}
+              sx={{
+                borderRadius: 2,
+                textTransform: 'none',
+                fontWeight: 500,
+                minWidth: '200px',
+                backgroundColor: isDark ? '#374151' : '#f3f4f6',
+                borderColor: isDark ? '#4b5563' : '#d1d5db',
+                color: isDark ? 'white' : '#374151',
+                '&:hover': {
+                  backgroundColor: isDark ? '#4b5563' : 'white',
+                  borderColor: isDark ? '#6b7280' : '#9ca3af',
+                },
+              }}
+            >
+              {selectedFilter}
+            </Button>
+
+            <Menu
+              anchorEl={filterMenuAnchor}
+              open={Boolean(filterMenuAnchor)}
+              onClose={() => setFilterMenuAnchor(null)}
+              PaperProps={{
+                sx: {
+                  borderRadius: 3,
+                  backdropFilter: 'blur(20px)',
+                  backgroundColor: isDark ? 'rgba(31, 41, 55, 0.95)' : 'rgba(255, 255, 255, 0.95)',
+                  border: `1px solid ${isDark ? '#4b5563' : '#e5e7eb'}`,
+                  boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+                  minWidth: '200px',
+                },
+              }}
+            >
+              {filterOptions.map(option => (
+                <MenuItem
+                  key={option.value}
+                  onClick={() => {
+                    setSelectedFilter(option.value);
+                    setFilterMenuAnchor(null);
+                    setSearchQuery(''); // Clear search when changing filter
+                  }}
+                  selected={selectedFilter === option.value}
+                  sx={{
+                    borderRadius: 2,
+                    mx: 1,
+                    my: 0.5,
+                    color: isDark ? 'white' : '#374151',
+                    '&.Mui-selected': {
+                      backgroundColor: isDark
+                        ? 'rgba(59, 130, 246, 0.2)'
+                        : 'rgba(219, 234, 254, 1)',
+                      color: isDark ? '#60a5fa' : '#2563eb',
+                    },
+                  }}
+                >
+                  {option.value}
+                </MenuItem>
+              ))}
+            </Menu>
+
+            {/* Search Input */}
+            <TextField
+              variant='outlined'
+              placeholder={getCurrentPlaceholder()}
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              size='small'
+              sx={{
+                flexGrow: 1,
+                maxWidth: '400px',
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: 2,
+                  backgroundColor: isDark ? '#374151' : 'white',
+                  '& fieldset': {
+                    borderColor: isDark ? '#4b5563' : '#d1d5db',
+                  },
+                  '&:hover fieldset': {
+                    borderColor: isDark ? '#60a5fa' : '#3b82f6',
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: isDark ? '#60a5fa' : '#3b82f6',
+                    boxShadow: `0 0 0 3px ${isDark ? 'rgba(59, 130, 246, 0.1)' : 'rgba(59, 130, 246, 0.1)'}`,
+                  },
+                },
+                '& .MuiInputBase-input': {
+                  color: isDark ? 'white' : '#111827',
+                  '&::placeholder': {
+                    color: isDark ? '#9ca3af' : '#6b7280',
+                    opacity: 1,
+                  },
+                },
+              }}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position='start'>
+                    <Search sx={{ fontSize: 16, color: isDark ? '#9ca3af' : '#6b7280' }} />
+                  </InputAdornment>
+                ),
+              }}
+            />
+
+            {/* Actions Button */}
+            <CustomTooltip title='Actions'>
+              <Button
+                variant='outlined'
+                onClick={event => setActionsMenuAnchor(event.currentTarget)}
+                startIcon={<Settings sx={{ fontSize: 16 }} />}
+                endIcon={<ExpandMore />}
+                sx={{
+                  borderRadius: 2,
+                  textTransform: 'none',
+                  fontWeight: 500,
+                  backgroundColor: isDark ? '#374151' : 'white',
+                  borderColor: isDark ? '#4b5563' : '#d1d5db',
+                  color: isDark ? 'white' : '#374151',
+                  '&:hover': {
+                    backgroundColor: isDark ? '#4b5563' : '#f9fafb',
+                    borderColor: isDark ? '#6b7280' : '#9ca3af',
+                  },
+                }}
+              >
+                Actions
+              </Button>
+            </CustomTooltip>
+
+            <Menu
+              anchorEl={actionsMenuAnchor}
+              open={Boolean(actionsMenuAnchor)}
+              onClose={() => setActionsMenuAnchor(null)}
+              PaperProps={{
+                sx: {
+                  borderRadius: 3,
+                  backdropFilter: 'blur(20px)',
+                  backgroundColor: isDark ? 'rgba(31, 41, 55, 0.95)' : 'rgba(255, 255, 255, 0.95)',
+                  border: `1px solid ${isDark ? '#4b5563' : '#e5e7eb'}`,
+                  boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+                  minWidth: '180px',
+                },
+              }}
+            >
+              {actionItems.map((item, index) => (
+                <MenuItem
+                  key={item.label}
+                  onClick={item.action}
+                  sx={{
+                    borderRadius: 2,
+                    mx: 1,
+                    my: 0.5,
+                    color: item.danger ? '#ef4444' : isDark ? 'white' : '#374151',
+                    '&:hover': {
+                      backgroundColor: item.danger
+                        ? isDark
+                          ? 'rgba(127, 29, 29, 0.2)'
+                          : 'rgba(254, 242, 242, 1)'
+                        : isDark
+                          ? '#374151'
+                          : '#f3f4f6',
+                    },
+                  }}
+                >
+                  <Box sx={{ mr: 1, display: 'flex', alignItems: 'center' }}>{item.icon}</Box>
+                  {item.label}
+                </MenuItem>
+              ))}
+            </Menu>
+          </Box>
+        </Box>
+      </Box>
+
+      {/* Messages Table */}
+      <Box sx={{ p: 3 }}>
+        <Box
+          sx={{
+            borderRadius: 3,
+            border: `1px solid ${isDark ? '#374151' : '#e5e7eb'}`,
+            overflow: 'hidden',
+            backgroundColor: isDark ? 'rgba(31, 41, 55, 0.5)' : 'white',
+          }}
+        >
+          {/* Table Header */}
+          <Box
+            sx={{
+              display: 'grid',
+              gridTemplateColumns: '60px 1fr 2fr 1fr 1fr 60px',
+              gap: 2,
+              px: 3,
+              py: 2,
+              borderBottom: `1px solid ${isDark ? '#374151' : '#e5e7eb'}`,
+              backgroundColor: isDark ? 'rgba(31, 41, 55, 0.3)' : 'rgba(249, 250, 251, 0.5)',
+              fontWeight: 500,
+              fontSize: '0.875rem',
+            }}
+          >
+            <Box>
+              <Checkbox
+                size='small'
+                checked={selectAll}
+                indeterminate={
+                  selectedMessages.length > 0 && selectedMessages.length < messages.length
+                }
+                onChange={e => handleSelectAll(e.target.checked)}
+                sx={{
+                  color: isDark ? '#9ca3af' : '#6b7280',
+                  '&.Mui-checked': {
+                    color: isDark ? '#3b82f6' : '#2563eb',
+                  },
+                  '&.MuiCheckbox-indeterminate': {
+                    color: isDark ? '#3b82f6' : '#2563eb',
+                  },
+                }}
+              />
+            </Box>
+            <Box>From</Box>
+            <Box>Subject</Box>
+            <Box>Company</Box>
+            <Box>Date</Box>
+            <Box></Box>
+          </Box>
+
+          {/* Message Rows */}
+          {messages.map(message => (
+            <React.Fragment key={message.id}>
+              <Box
+                sx={{
+                  display: 'grid',
+                  gridTemplateColumns: '60px 1fr 2fr 1fr 1fr 60px',
+                  gap: 2,
+                  px: 3,
+                  py: 2,
+                  borderBottom: `1px solid ${isDark ? '#374151' : '#e5e7eb'}`,
+                  transition: 'background-color 0.2s ease',
+                  '&:hover': {
+                    backgroundColor: isDark ? 'rgba(55, 65, 81, 0.3)' : 'rgba(249, 250, 251, 1)',
+                  },
+                  alignItems: 'center',
+                }}
+              >
+                <Box>
+                  <Checkbox
+                    size='small'
+                    checked={selectedMessages.includes(message.id)}
+                    onChange={() => handleSelectMessage(message.id)}
+                    sx={{
+                      color: isDark ? '#9ca3af' : '#6b7280',
+                      '&.Mui-checked': {
+                        color: isDark ? '#3b82f6' : '#2563eb',
+                      },
+                    }}
+                  />
+                </Box>
+                <Box>
+                  <Box component='span' sx={{ color: '#ef4444', fontWeight: 500 }}>
+                    {message.from}
+                  </Box>
+                </Box>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Edit sx={{ fontSize: 14, color: '#9ca3af' }} />
+                  <Box
+                    component='span'
+                    sx={{
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    {message.subject}
+                  </Box>
+                </Box>
+                <Box>{message.company}</Box>
+                <Box sx={{ fontSize: '0.875rem' }}>{message.date}</Box>
+                <Box>
+                  <CustomTooltip title='Message actions'>
+                    <IconButton
+                      size='small'
+                      onClick={event => handleMessageMenuClick(event, message.id)}
+                      sx={{
+                        color: isDark ? '#9ca3af' : '#6b7280',
+                        '&:hover': {
+                          backgroundColor: isDark
+                            ? 'rgba(55, 65, 81, 0.5)'
+                            : 'rgba(243, 244, 246, 1)',
+                        },
+                      }}
+                    >
+                      <MoreVert sx={{ fontSize: 16 }} />
+                    </IconButton>
+                  </CustomTooltip>
+                </Box>
+              </Box>
+
+              {/* Expanded Message Content */}
+              {expandedMessage === message.id && (
+                <Box
+                  sx={{
+                    gridColumn: '1 / -1',
+                    borderBottom: `1px solid ${isDark ? '#374151' : '#e5e7eb'}`,
+                    backgroundColor: isDark ? 'rgba(31, 41, 55, 0.2)' : 'rgba(249, 250, 251, 0.5)',
+                  }}
+                >
+                  <Box sx={{ p: 3 }}>
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        mb: 2,
+                      }}
+                    >
+                      <Box sx={{ display: 'flex', gap: 2 }}>
+                        <Button
+                          variant='contained'
+                          startIcon={<Add sx={{ fontSize: 14 }} />}
+                          sx={{
+                            borderRadius: 2,
+                            textTransform: 'none',
+                            fontWeight: 500,
+                            backgroundColor: isDark ? '#3b82f6' : '#2563eb',
+                            '&:hover': {
+                              backgroundColor: isDark ? '#2563eb' : '#1d4ed8',
+                            },
+                          }}
+                        >
+                          Create new VIP
+                        </Button>
+                        <Button
+                          variant='contained'
+                          startIcon={<Delete sx={{ fontSize: 14 }} />}
+                          sx={{
+                            borderRadius: 2,
+                            textTransform: 'none',
+                            fontWeight: 500,
+                            backgroundColor: '#ef4444',
+                            '&:hover': {
+                              backgroundColor: '#dc2626',
+                            },
+                          }}
+                        >
+                          Delete
+                        </Button>
+                      </Box>
+                      <IconButton
+                        onClick={() => setExpandedMessage(null)}
+                        sx={{
+                          color: isDark ? '#9ca3af' : '#6b7280',
+                          '&:hover': {
+                            backgroundColor: isDark
+                              ? 'rgba(55, 65, 81, 0.5)'
+                              : 'rgba(243, 244, 246, 1)',
+                          },
+                        }}
+                      >
+                        <Close sx={{ fontSize: 16 }} />
+                      </IconButton>
+                    </Box>
+
+                    <Box
+                      sx={{
+                        borderLeft: '4px solid #ef4444',
+                        pl: 3,
+                        color: isDark ? '#d1d5db' : '#374151',
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          whiteSpace: 'pre-wrap',
+                          fontSize: '0.875rem',
+                          lineHeight: 1.6,
+                        }}
+                      >
+                        {message.content}
+                      </Box>
+                    </Box>
+                  </Box>
+                </Box>
+              )}
+            </React.Fragment>
+          ))}
+        </Box>
+      </Box>
+
+      {/* Message Actions Menu */}
+      <Menu
+        anchorEl={messageMenuAnchor}
+        open={Boolean(messageMenuAnchor)}
+        onClose={() => setMessageMenuAnchor(null)}
+        PaperProps={{
+          sx: {
+            borderRadius: 3,
+            backdropFilter: 'blur(20px)',
+            backgroundColor: isDark ? 'rgba(31, 41, 55, 0.95)' : 'rgba(255, 255, 255, 0.95)',
+            border: `1px solid ${isDark ? '#4b5563' : '#e5e7eb'}`,
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+            minWidth: '180px',
           },
         }}
       >
-        <CardContent sx={{ textAlign: 'center', p: 4 }}>
-          <Box
+        {actionItems.map(item => (
+          <MenuItem
+            key={item.label}
+            onClick={() => handleMessageMenuAction(item, selectedMessageId)}
             sx={{
-              width: 64,
-              height: 64,
-              borderRadius: 3,
-              background: `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: 'white',
-              mb: 3,
-              mx: 'auto',
-              boxShadow: `0 8px 32px ${alpha(theme.palette.primary.main, 0.3)}`,
+              borderRadius: 2,
+              mx: 1,
+              my: 0.5,
+              color: item.danger ? '#ef4444' : isDark ? 'white' : '#374151',
+              '&:hover': {
+                backgroundColor: item.danger
+                  ? isDark
+                    ? 'rgba(127, 29, 29, 0.2)'
+                    : 'rgba(254, 242, 242, 1)'
+                  : isDark
+                    ? '#374151'
+                    : '#f3f4f6',
+              },
             }}
           >
-            {icon}
-          </Box>
-
-          <Typography
-            variant='h6'
-            component='h3'
-            sx={{
-              fontWeight: 600,
-              mb: 2,
-              color: theme.palette.text.primary,
-            }}
-          >
-            {title}
-          </Typography>
-
-          <Typography
-            variant='body2'
-            sx={{
-              color: theme.palette.text.secondary,
-              lineHeight: 1.6,
-            }}
-          >
-            {description}
-          </Typography>
-        </CardContent>
-      </Card>
-    </Slide>
-  );
-};
-
-interface StatCardProps {
-  icon: React.ReactNode;
-  value: string;
-  label: string;
-  delay?: number;
-}
-
-const StatCard: React.FC<StatCardProps> = ({ icon, value, label, delay = 0 }) => {
-  const theme = useTheme();
-
-  return (
-    <Fade in timeout={800 + delay}>
-      <Box sx={{ textAlign: 'center', p: 2 }}>
-        <Box
-          sx={{
-            width: 48,
-            height: 48,
-            borderRadius: 2,
-            backgroundColor: alpha(theme.palette.primary.main, 0.1),
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: theme.palette.primary.main,
-            mb: 2,
-            mx: 'auto',
-          }}
-        >
-          {icon}
-        </Box>
-
-        <Typography
-          variant='h3'
-          component='div'
-          sx={{
-            fontWeight: 700,
-            background: `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            mb: 1,
-          }}
-        >
-          {value}
-        </Typography>
-
-        <Typography
-          variant='body2'
-          sx={{
-            color: theme.palette.text.secondary,
-            fontWeight: 500,
-          }}
-        >
-          {label}
-        </Typography>
-      </Box>
-    </Fade>
-  );
-};
-
-const HomePage: React.FC = () => {
-  const theme = useTheme();
-
-  const features: FeatureCardProps[] = [
-    {
-      icon: <Business sx={{ fontSize: 32 }} />,
-      title: 'Virtual Workspaces',
-      description:
-        "Create beautiful, customizable virtual office spaces that adapt to your team's unique workflow and culture.",
-      delay: 0,
-    },
-    {
-      icon: <Group sx={{ fontSize: 32 }} />,
-      title: 'Team Collaboration',
-      description:
-        'Seamlessly collaborate with real-time chat, video calls, and shared whiteboards in an intuitive environment.',
-      delay: 100,
-    },
-    {
-      icon: <Settings sx={{ fontSize: 32 }} />,
-      title: 'Smart Automation',
-      description:
-        "Intelligent tools that learn from your team's patterns to optimize productivity and reduce repetitive tasks.",
-      delay: 200,
-    },
-  ];
-
-  const stats: StatCardProps[] = [
-    {
-      icon: <People sx={{ fontSize: 24 }} />,
-      value: '10,000+',
-      label: 'Active Users',
-      delay: 0,
-    },
-    {
-      icon: <Business sx={{ fontSize: 24 }} />,
-      value: '500+',
-      label: 'Companies',
-      delay: 100,
-    },
-    {
-      icon: <Timeline sx={{ fontSize: 24 }} />,
-      value: '99.9%',
-      label: 'Uptime',
-      delay: 200,
-    },
-  ];
-
-  return (
-    <Container maxWidth='lg' sx={{ py: 8 }}>
-      {/* Hero Section */}
-      <Box sx={{ textAlign: 'center', mb: 12 }}>
-        <Fade in timeout={600}>
-          <Box sx={{ position: 'relative', mb: 6 }}>
-            {/* Glowing background */}
-            <Box
-              sx={{
-                position: 'absolute',
-                top: '50%',
-                left: '50%',
-                transform: 'translate(-50%, -50%)',
-                width: 120,
-                height: 120,
-                borderRadius: '50%',
-                background: `linear-gradient(135deg, ${alpha(theme.palette.primary.main, 0.2)}, ${alpha(theme.palette.secondary.main, 0.2)})`,
-                filter: 'blur(20px)',
-                animation: 'pulse 2s ease-in-out infinite',
-              }}
-            />
-
-            {/* Icon container */}
-            <Box
-              sx={{
-                position: 'relative',
-                width: 96,
-                height: 96,
-                borderRadius: 4,
-                background: `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: 'white',
-                mx: 'auto',
-                boxShadow: `0 20px 60px ${alpha(theme.palette.primary.main, 0.4)}`,
-              }}
-            >
-              <HomeIcon sx={{ fontSize: 48 }} />
-            </Box>
-          </Box>
-        </Fade>
-
-        <Slide direction='up' in timeout={800}>
-          <Box sx={{ maxWidth: 800, mx: 'auto', mb: 6 }}>
-            <Typography
-              variant='h2'
-              component='h1'
-              sx={{
-                fontWeight: 700,
-                mb: 3,
-                background: `linear-gradient(135deg, ${theme.palette.text.primary}, ${theme.palette.text.secondary})`,
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-              }}
-            >
-              Welcome to Virtual Office
-            </Typography>
-
-            <Typography
-              variant='h5'
-              component='p'
-              sx={{
-                mb: 4,
-                color: theme.palette.text.secondary,
-                fontWeight: 400,
-                lineHeight: 1.6,
-              }}
-            >
-              Your modern workspace solution for seamless remote collaboration
-            </Typography>
-
-            <Stack direction='row' spacing={2} justifyContent='center' sx={{ mb: 4 }}>
-              <Chip label='New Features' color='primary' size='small' sx={{ fontWeight: 600 }} />
-              <Chip label='Free Trial' variant='outlined' size='small' sx={{ fontWeight: 600 }} />
-            </Stack>
-
-            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} justifyContent='center'>
-              <Button
-                variant='contained'
-                size='large'
-                endIcon={<ArrowForward />}
-                sx={{
-                  px: 4,
-                  py: 1.5,
-                  borderRadius: 3,
-                  background: `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
-                  '&:hover': {
-                    background: `linear-gradient(135deg, ${theme.palette.primary.dark}, ${theme.palette.secondary.dark})`,
-                  },
-                }}
-              >
-                Get Started Free
-              </Button>
-
-              <Button
-                variant='outlined'
-                size='large'
-                sx={{
-                  px: 4,
-                  py: 1.5,
-                  borderRadius: 3,
-                  borderWidth: 2,
-                  '&:hover': {
-                    borderWidth: 2,
-                  },
-                }}
-              >
-                Watch Demo
-              </Button>
-            </Stack>
-          </Box>
-        </Slide>
-      </Box>
-
-      {/* Features Section */}
-      <Box sx={{ mb: 12 }}>
-        <Fade in timeout={1000}>
-          <Box sx={{ textAlign: 'center', mb: 8 }}>
-            <Typography
-              variant='h3'
-              component='h2'
-              sx={{
-                fontWeight: 700,
-                mb: 2,
-                color: theme.palette.text.primary,
-              }}
-            >
-              Powerful Features
-            </Typography>
-            <Typography
-              variant='h6'
-              sx={{
-                color: theme.palette.text.secondary,
-                fontWeight: 400,
-                maxWidth: 600,
-                mx: 'auto',
-              }}
-            >
-              Everything you need to create the perfect virtual workspace for your team
-            </Typography>
-          </Box>
-        </Fade>
-
-        <Grid container spacing={4}>
-          {features.map((feature, index) => (
-            <Grid item xs={12} md={4} key={index}>
-              <FeatureCard {...feature} />
-            </Grid>
-          ))}
-        </Grid>
-      </Box>
-
-      {/* Stats Section */}
-      <Fade in timeout={1200}>
-        <Card
-          sx={{
-            background: `linear-gradient(135deg, ${alpha(theme.palette.primary.main, 0.05)}, ${alpha(theme.palette.secondary.main, 0.05)})`,
-            backdropFilter: 'blur(10px)',
-            border: `1px solid ${alpha(theme.palette.primary.main, 0.1)}`,
-          }}
-        >
-          <CardContent sx={{ p: 6 }}>
-            <Box sx={{ textAlign: 'center', mb: 6 }}>
-              <Typography
-                variant='h4'
-                component='h3'
-                sx={{
-                  fontWeight: 700,
-                  mb: 2,
-                  color: theme.palette.text.primary,
-                }}
-              >
-                Trusted by Teams Worldwide
-              </Typography>
-              <Typography
-                variant='body1'
-                sx={{
-                  color: theme.palette.text.secondary,
-                  maxWidth: 500,
-                  mx: 'auto',
-                }}
-              >
-                Join thousands of teams already transforming their remote work experience
-              </Typography>
-            </Box>
-
-            <Grid container spacing={4}>
-              {stats.map((stat, index) => (
-                <Grid item xs={12} sm={4} key={index}>
-                  <StatCard {...stat} />
-                </Grid>
-              ))}
-            </Grid>
-          </CardContent>
-        </Card>
-      </Fade>
-
-      {/* Call to Action */}
-      <Slide direction='up' in timeout={1400}>
-        <Box sx={{ textAlign: 'center', mt: 12 }}>
-          <Card
-            sx={{
-              background: `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
-              color: 'white',
-              overflow: 'hidden',
-              position: 'relative',
-            }}
-          >
-            {/* Background decoration */}
-            <Box
-              sx={{
-                position: 'absolute',
-                top: -50,
-                right: -50,
-                width: 200,
-                height: 200,
-                borderRadius: '50%',
-                background: alpha('#ffffff', 0.1),
-                filter: 'blur(40px)',
-              }}
-            />
-
-            <CardContent sx={{ position: 'relative', p: 6 }}>
-              <Typography
-                variant='h4'
-                component='h3'
-                sx={{
-                  fontWeight: 700,
-                  mb: 2,
-                }}
-              >
-                Ready to Transform Your Workspace?
-              </Typography>
-
-              <Typography
-                variant='h6'
-                sx={{
-                  mb: 4,
-                  opacity: 0.9,
-                  fontWeight: 400,
-                }}
-              >
-                Start your free trial today and experience the future of remote collaboration
-              </Typography>
-
-              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} justifyContent='center'>
-                <Button
-                  variant='contained'
-                  size='large'
-                  sx={{
-                    px: 4,
-                    py: 1.5,
-                    borderRadius: 3,
-                    backgroundColor: 'white',
-                    color: theme.palette.primary.main,
-                    '&:hover': {
-                      backgroundColor: alpha('#ffffff', 0.9),
-                    },
-                  }}
-                >
-                  Start Free Trial
-                </Button>
-
-                <Button
-                  variant='outlined'
-                  size='large'
-                  sx={{
-                    px: 4,
-                    py: 1.5,
-                    borderRadius: 3,
-                    borderColor: 'white',
-                    color: 'white',
-                    '&:hover': {
-                      borderColor: 'white',
-                      backgroundColor: alpha('#ffffff', 0.1),
-                    },
-                  }}
-                >
-                  Contact Sales
-                </Button>
-              </Stack>
-            </CardContent>
-          </Card>
-        </Box>
-      </Slide>
-    </Container>
+            <Box sx={{ mr: 1, display: 'flex', alignItems: 'center' }}>{item.icon}</Box>
+            {item.label}
+          </MenuItem>
+        ))}
+      </Menu>
+    </Box>
   );
 };
 

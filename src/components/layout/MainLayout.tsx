@@ -76,7 +76,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
         {/* Sidebar */}
         <Sidebar currentPath={location.pathname} onNavigate={handleNavigate} isDark={isDark} />
 
-        <div className={`p-6 ${isDark ? 'bg-gray-900' : 'bg-gray-50'} min-h-[calc(100vh-64px)]`}>
+        <div className={`p-0 ${isDark ? 'bg-gray-900' : 'bg-gray-50'} min-h-[calc(100vh-64px)]`}>
           <div className='scrollbar-thin'>{children}</div>
         </div>
       </main>
