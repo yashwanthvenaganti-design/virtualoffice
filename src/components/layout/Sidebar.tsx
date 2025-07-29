@@ -13,8 +13,6 @@ import {
   BarChart,
   HelpOutline,
   Star,
-  ChevronLeft,
-  ChevronRight,
   Menu,
   Close,
 } from '@mui/icons-material';
@@ -26,6 +24,7 @@ interface SidebarProps {
   currentPath?: string;
   onNavigate?: (path: string) => void;
   isDark?: boolean;
+  isCollapsed?: boolean;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({
@@ -33,8 +32,8 @@ const Sidebar: React.FC<SidebarProps> = ({
   currentPath = '/home',
   onNavigate,
   isDark = false,
+  isCollapsed = false,
 }) => {
-  const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
 
   const navigationItems = [
@@ -57,10 +56,6 @@ const Sidebar: React.FC<SidebarProps> = ({
     { icon: <Star sx={{ fontSize: 20 }} />, label: 'VIPs', path: '/vips' },
   ];
 
-  const toggleCollapse = () => {
-    setIsCollapsed(!isCollapsed);
-  };
-
   const toggleMobile = () => {
     setIsMobileOpen(!isMobileOpen);
   };
@@ -75,8 +70,8 @@ const Sidebar: React.FC<SidebarProps> = ({
       <button
         onClick={toggleMobile}
         className={clsx(
-          'lg:hidden fixed top-4 left-1 z-50 p-1 rounded-md transition-all duration-200',
-          'focus:outline-none focus:ring-2 focus:ring-blue-500/20',
+          'lg:hidden fixed top-[4.25rem] left-1 z-[60] p-1 rounded-md transition-all duration-200', // Changed from top-4 to top-[4.25rem]
+          'focus:outline-none',
           isDark
             ? 'bg-gray-800/90 text-white hover:bg-gray-700/90 border border-gray-700'
             : 'bg-white/90 text-gray-900 hover:bg-gray-50/90 border border-gray-200 shadow-lg',
@@ -90,7 +85,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       {/* Mobile Overlay */}
       {isMobileOpen && (
         <div
-          className='lg:hidden fixed inset-0 bg-black/50 backdrop-blur-sm'
+          className='lg:hidden fixed top-16 left-0 right-0 bottom-0 bg-black/50 backdrop-blur-sm z-30'
           onClick={closeMobile}
         />
       )}
@@ -98,45 +93,28 @@ const Sidebar: React.FC<SidebarProps> = ({
       {/* Sidebar */}
       <aside
         className={clsx(
-          'fixed left-0 h-full transition-all duration-300 ease-in-out m-0.5 z-40',
-          'flex flex-col border-r',
+          'h-full flex flex-col border-r transition-all duration-300 ease-in-out relative',
+          // Desktop: natural width based on collapsed state (now from props)
+          isCollapsed ? 'lg:w-16' : 'lg:w-64',
+          // Mobile: overlay behavior
+          'lg:relative lg:translate-x-0',
           {
-            // Desktop states
-            'lg:translate-x-0': true,
-            'lg:w-64': !isCollapsed,
-            'lg:w-16': isCollapsed,
-            // Mobile states
-            'translate-x-0 w-64': isMobileOpen,
-            '-translate-x-full w-64': !isMobileOpen,
+            'fixed inset-y-0 left-0 z-40 translate-x-0 w-64': isMobileOpen,
+            'fixed inset-y-0 left-0 z-40 -translate-x-full w-0': !isMobileOpen,
           },
           isDark
-            ? 'bg-gray-900/95 border-gray-700/50 backdrop-blur-xl'
-            : 'bg-white/95 border-gray-200/50 backdrop-blur-xl',
+            ? 'bg-gray-900/95 border-gray-700/50 lg:bg-gray-900 lg:backdrop-blur-0 backdrop-blur-xl'
+            : 'bg-white/95 border-gray-200/50 lg:bg-white lg:backdrop-blur-0 backdrop-blur-xl',
           className
         )}
       >
-        {/* Collapse Toggle (Desktop only) */}
-        <button
-          onClick={toggleCollapse}
-          className={clsx(
-            'hidden lg:flex p-0.5 rounded-lg transition-all duration-200 z-50',
-            'focus:outline-none absolute -top-2 -right-4',
-            'backdrop-blur-xl border shadow-lg hover:shadow-xl',
-            isDark
-              ? 'bg-gray-800/80 border-gray-600/50 text-gray-300 hover:text-white hover:bg-gray-700/80'
-              : 'bg-white/80 border-gray-200/50 text-gray-600 hover:text-gray-900 hover:bg-white/90'
-          )}
-          aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-        >
-          {isCollapsed ? (
-            <ChevronRight sx={{ fontSize: 22 }} />
-          ) : (
-            <ChevronLeft sx={{ fontSize: 22 }} />
-          )}
-        </button>
-
         {/* Navigation */}
-        <nav className='flex-1 p-2 space-y-1 overflow-y-auto scrollbar-thin pt-2'>
+        <nav
+          className={clsx(
+            'flex-1 lg:p-2 space-y-1 overflow-y-auto scrollbar-thin pt-2 min-h-0',
+            isMobileOpen && 'p-2'
+          )}
+        >
           {navigationItems?.map(item => (
             <SidebarItem
               key={item.path}
@@ -154,14 +132,6 @@ const Sidebar: React.FC<SidebarProps> = ({
           ))}
         </nav>
       </aside>
-
-      {/* Spacer for main content */}
-      <div
-        className={clsx(
-          'hidden lg:block transition-all duration-300',
-          isCollapsed ? 'lg:w-20' : 'lg:w-64'
-        )}
-      />
     </>
   );
 };

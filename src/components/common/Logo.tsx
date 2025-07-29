@@ -35,7 +35,7 @@ const Logo: React.FC<LogoProps> = ({
     <Box
       className={clsx(
         'flex items-center mr-4 cursor-pointer sm:mr-1 md:mr-1',
-        isHeader ? 'sm:ml-4 md:ml-4 xl:ml-1' : 'ml-1'
+        isHeader ? 'sm:ml-4 md:ml-4 xl:ml-1 ml-5' : 'ml-1'
       )}
       onClick={handleNavigate}
     >
