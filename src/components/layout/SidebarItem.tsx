@@ -30,7 +30,7 @@ const SidebarItem: React.FC<SidebarItemProps & { isDark: boolean }> = ({
     <button
       onClick={handleClick}
       className={clsx(
-        'w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200 group relative',
+        'w-full flex items-center gap-3 px-3 py-1.5 rounded-lg transition-all duration-200 group relative',
         'focus:outline-none focus:ring-2 focus:ring-blue-500/20',
         {
           // Active state

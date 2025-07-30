@@ -87,7 +87,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ user, onLogout, onUserSettings, onP
 
   const getStatusDot = () => {
     return (
-      <div className='absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 border-2 border-white dark:border-gray-800 rounded-full'></div>
+      <div className='absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 border-2 border-white dark:border-gray-800 rounded-full shadow-sm'></div>
     );
   };
 
@@ -148,15 +148,21 @@ const UserMenu: React.FC<UserMenuProps> = ({ user, onLogout, onUserSettings, onP
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
         PaperProps={{
           elevation: 0,
-          className: `mt-2 min-w-[280px] backdrop-blur-xl shadow-2xl border ${
-            isDark ? 'bg-gray-800/95 border-gray-700/50' : 'bg-white/95 border-gray-200/50'
+          className: `mt-2 min-w-[280px] backdrop-blur-xl border ${
+            isDark
+              ? 'bg-gray-800/95 border-gray-600/60 shadow-2xl shadow-black/20'
+              : 'bg-white/98 border-gray-300/80 shadow-2xl shadow-gray-900/15'
           }`,
           sx: {
-            borderRadius: '8px',
+            borderRadius: '12px',
+            // Enhanced box shadow for better separation
+            boxShadow: isDark
+              ? '0 25px 50px -12px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(55, 65, 81, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.05)'
+              : '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 8px 16px -8px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.8)',
             '& .MuiMenuItem-root': {
-              borderRadius: '12px',
+              borderRadius: '8px',
               margin: '2px 12px',
-              padding: '12px 16px',
+              padding: '10px 16px',
               fontSize: '0.875rem',
               fontWeight: 500,
               minHeight: 'auto',
@@ -169,18 +175,25 @@ const UserMenu: React.FC<UserMenuProps> = ({ user, onLogout, onUserSettings, onP
       >
         {/* User Info Header */}
         <div
-          className={`px-6 py-4 border-b ${isDark ? 'border-gray-700/50' : 'border-gray-200/50'}`}
+          className={`px-6 py-4 border-b ${
+            isDark ? 'border-gray-600/50 bg-gray-800/30' : 'border-gray-200/70 bg-gray-50/40'
+          }`}
         >
           <div className='flex items-center gap-3'>
             <div className='relative'>
               <Avatar
                 src={user.avatar}
-                className='w-12 h-12 shadow-md'
+                className={`w-12 h-12 ${
+                  isDark ? 'shadow-lg shadow-black/20' : 'shadow-lg shadow-gray-900/15'
+                }`}
                 sx={{
                   background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                   fontSize: '1rem',
                   fontWeight: 600,
                   color: 'white',
+                  border: isDark
+                    ? '2px solid rgba(255, 255, 255, 0.1)'
+                    : '2px solid rgba(255, 255, 255, 0.8)',
                 }}
               >
                 {getInitials(user.name)}
@@ -287,7 +300,8 @@ const UserMenu: React.FC<UserMenuProps> = ({ user, onLogout, onUserSettings, onP
         <Divider
           sx={{
             margin: '8px 16px',
-            borderColor: isDark ? 'rgba(55, 65, 81, 0.5)' : 'rgba(229, 231, 235, 0.5)',
+            borderColor: isDark ? 'rgba(75, 85, 99, 0.6)' : 'rgba(209, 213, 219, 0.8)',
+            borderWidth: '1px',
           }}
         />
 

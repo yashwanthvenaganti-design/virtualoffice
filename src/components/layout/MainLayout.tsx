@@ -85,7 +85,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
         </div>
 
         <main className='overflow-y-auto overflow-x-auto'>
-          <div className={`${isDark ? 'bg-gray-900' : 'bg-gray-50'} w-full p-4`}>{children}</div>
+          <div className={`${isDark ? 'bg-gray-900' : 'bg-gray-50'} w-full`}>{children}</div>
         </main>
       </div>
 
