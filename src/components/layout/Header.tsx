@@ -63,11 +63,11 @@ const Header: React.FC<HeaderProps> = ({
           isDark ? 'bg-gray-900/80 shadow-xl' : 'bg-white/80 shadow-sm'
         }`}
       >
-        <Toolbar className='min-h-16 px-3'>
-          <div className='flex items-center justify-between w-full'>
+        <Toolbar className='min-h-16 xl:px-3 md:px-2 px-1'>
+          <div className='flex items-center justify-between w-full gap-2'>
             {/* Left side - Logo and Search */}
             <div className='flex items-center gap-6 flex-1'>
-              <Logo isHeader={true} />
+              <Logo />
 
               {/* Desktop Search */}
               <div className='hidden lg:block flex-1 max-w-2xl'>

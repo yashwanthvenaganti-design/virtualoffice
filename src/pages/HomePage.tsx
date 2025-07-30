@@ -120,7 +120,7 @@ Head of Customer Service`,
 
       {/* Controls Section */}
       <section
-        className={`flex-shrink-0 p-6 border-b transition-colors ${
+        className={`flex-shrink-0 p-3 border-b transition-colors ${
           isDark ? 'border-gray-700 bg-gray-800/50' : 'border-gray-200 bg-white/80'
         } backdrop-blur-sm`}
         aria-label='Message controls'

@@ -22,10 +22,10 @@ const MessageContent: React.FC<MessageContentProps> = ({ message, isDark }) => {
   return (
     <section
       className={`px-6 pb-6 border-l-4 border-red-500 ${isDark ? 'bg-gray-800/50' : 'bg-gray-50'}`}
-      aria-label={`Content of message from ${message.from}`}
+      aria-label={`Content of message from ${message?.from}`}
     >
       <div className='ml-8'>
-        <MessageActions isDark={isDark} messageId={message.id} />
+        <MessageActions isDark={isDark} messageId={message?.id} />
 
         <div
           className={`p-6 rounded-lg border ${
@@ -39,7 +39,7 @@ const MessageContent: React.FC<MessageContentProps> = ({ message, isDark }) => {
             role='document'
             aria-label='Message content'
           >
-            {message.content}
+            {message?.content}
           </pre>
         </div>
       </div>

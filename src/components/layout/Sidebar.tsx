@@ -70,7 +70,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       <button
         onClick={toggleMobile}
         className={clsx(
-          'lg:hidden fixed top-[4.25rem] left-1 z-[60] p-1 rounded-md transition-all duration-200', // Changed from top-4 to top-[4.25rem]
+          'lg:hidden fixed top-[4.25rem] left-1 z-[60] p-1 rounded-md transition-all duration-200',
           'focus:outline-none',
           isDark
             ? 'bg-gray-800/90 text-white hover:bg-gray-700/90 border border-gray-700'
@@ -94,17 +94,22 @@ const Sidebar: React.FC<SidebarProps> = ({
       <aside
         className={clsx(
           'h-full flex flex-col border-r transition-all duration-300 ease-in-out relative',
-          // Desktop: natural width based on collapsed state (now from props)
-          isCollapsed ? 'lg:w-16' : 'lg:w-64',
-          // Mobile: overlay behavior
-          'lg:relative lg:translate-x-0',
+          // Desktop widths (lg and up)
           {
-            'fixed inset-y-0 left-0 z-40 translate-x-0 w-64': isMobileOpen,
-            'fixed inset-y-0 left-0 z-40 -translate-x-full w-0': !isMobileOpen,
+            'lg:w-16': isCollapsed,
+            'lg:w-64': !isCollapsed,
           },
+          // Mobile and tablet behavior
+          isMobileOpen
+            ? `fixed inset-y-0 left-0 z-40 translate-x-0 ${isCollapsed ? 'w-16' : 'w-48'}`
+            : 'fixed inset-y-0 left-0 z-40 -translate-x-full w-0',
+          // Keep relative layout for desktop
+          'lg:relative lg:translate-x-0',
+          // Dark/light theme
           isDark
             ? 'bg-gray-900/95 border-gray-700/50 lg:bg-gray-900 lg:backdrop-blur-0 backdrop-blur-xl'
             : 'bg-white/95 border-gray-200/50 lg:bg-white lg:backdrop-blur-0 backdrop-blur-xl',
+
           className
         )}
       >
