@@ -70,7 +70,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       <button
         onClick={toggleMobile}
         className={clsx(
-          'lg:hidden fixed top-[4.25rem] left-1 z-[60] p-1 rounded-md transition-all duration-200',
+          'lg:hidden fixed top-[4.25rem] left-1 z-50 p-1 rounded-md transition-all duration-200',
           'focus:outline-none',
           isDark
             ? 'bg-gray-800/90 text-white hover:bg-gray-700/90 border border-gray-700'

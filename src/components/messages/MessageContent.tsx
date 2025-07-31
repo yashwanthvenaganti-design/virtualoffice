@@ -25,7 +25,12 @@ const MessageContent: React.FC<MessageContentProps> = ({ message, isDark }) => {
       aria-label={`Content of message from ${message?.from}`}
     >
       <div className='ml-8'>
-        <MessageActions isDark={isDark} messageId={message?.id} />
+        <MessageActions
+          isDark={isDark}
+          messageId={message.id}
+          messageFrom={message.from}
+          messageCompany={message.company}
+        />
 
         <div
           className={`p-6 rounded-lg border ${

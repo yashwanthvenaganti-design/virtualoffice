@@ -6,6 +6,7 @@ import { useTheme } from '../../theme/ThemeContext';
 import { ChevronLeft, ChevronRight } from '@mui/icons-material';
 import Header from './Header';
 import Sidebar from './Sidebar';
+import { Portal } from '@mui/material';
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -62,7 +63,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 
   return (
     <div className={`min-h-screen ${isDark ? 'bg-gray-900' : 'bg-gray-50'}`}>
-      <header className='fixed top-0 left-0 right-0 z-50 h-16'>
+      <header className='fixed top-0 left-0 right-0 h-16'>
         <Header
           user={headerUser}
           onSearch={handleSearch}
@@ -89,9 +90,10 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
         </main>
       </div>
 
-      <button
-        onClick={toggleSidebar}
-        className={`hidden lg:flex p-0.5 rounded-lg transition-all duration-200 z-[70] 
+      <Portal>
+        <button
+          onClick={toggleSidebar}
+          className={`hidden lg:flex p-0.5 rounded-lg transition-all duration-200 z-10 
                    focus:outline-none fixed top-[4.75rem] items-center justify-center
                    backdrop-blur-xl border shadow-lg hover:shadow-xl
                    ${sidebarCollapsed ? 'left-[3.5rem]' : 'left-[15.5rem]'}
@@ -100,15 +102,16 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                        ? 'bg-gray-800/90 border-gray-600/50 text-gray-300 hover:text-white hover:bg-gray-700/90'
                        : 'bg-white/90 border-gray-200/50 text-gray-600 hover:text-gray-900 hover:bg-white/90'
                    }`}
-        style={{ transform: 'translateX(-50%)' }}
-        aria-label={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-      >
-        {sidebarCollapsed ? (
-          <ChevronRight sx={{ fontSize: 22 }} />
-        ) : (
-          <ChevronLeft sx={{ fontSize: 22 }} />
-        )}
-      </button>
+          style={{ transform: 'translateX(-50%)' }}
+          aria-label={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+        >
+          {sidebarCollapsed ? (
+            <ChevronRight sx={{ fontSize: 22 }} />
+          ) : (
+            <ChevronLeft sx={{ fontSize: 22 }} />
+          )}
+        </button>
+      </Portal>
     </div>
   );
 };
