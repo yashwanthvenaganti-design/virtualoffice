@@ -1,10 +1,15 @@
 import React, { useState } from 'react';
 import { useTheme } from '../theme/ThemeContext';
 import DashboardHeader from '../components/messages/DashboardHeader';
-import FilterDropdown from '../components/messages/FilterDropdown';
+import FilterDropdown from '../components/common/FilterDropdown';
 import SearchInput from '../components/messages/SearchInput';
-import ActionsDropdown from '../components/messages/ActionsDropdown';
+import ActionsDropdown from '../components/common/ActionsDropdown';
 import MessageTable from '../components/messages/MessageTable';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import ArchiveIcon from '@mui/icons-material/Archive';
+import DeleteIcon from '@mui/icons-material/Delete';
+import ForwardIcon from '@mui/icons-material/Forward';
 
 interface Message {
   id: number;
@@ -127,20 +132,50 @@ Head of Customer Service`,
       >
         <div className='flex flex-col lg:flex-row gap-4'>
           <FilterDropdown
-            selectedFilter={selectedFilter}
-            filterOptions={filterOptions}
-            onFilterChange={handleFilterChange}
+            selected={selectedFilter}
+            options={filterOptions}
             isDark={isDark}
+            onChange={handleFilterChange}
           />
 
           <SearchInput
             value={searchQuery}
             onChange={handleSearchChange}
-            placeholder='Search by everything...'
+            placeholder={`Search messages by ${selectedFilter.toLowerCase()}`}
             isDark={isDark}
           />
 
-          <ActionsDropdown isDark={isDark} />
+          <ActionsDropdown
+            isDark={isDark}
+            items={[
+              {
+                icon: VisibilityIcon,
+                label: 'Mark as read',
+                action: () => console.log('Mark as read'),
+              },
+              {
+                icon: VisibilityOffIcon,
+                label: 'Mark as unread',
+                action: () => console.log('Mark as unread'),
+              },
+              {
+                icon: ForwardIcon,
+                label: 'Forward',
+                action: () => console.log('Forward'),
+              },
+              {
+                icon: ArchiveIcon,
+                label: 'Archive',
+                action: () => console.log('Archive'),
+              },
+              {
+                icon: DeleteIcon,
+                label: 'Delete',
+                action: () => console.log('Delete'),
+                isDanger: true,
+              },
+            ]}
+          />
         </div>
       </section>
 

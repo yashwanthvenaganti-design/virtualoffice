@@ -4,6 +4,7 @@ import { Portal } from '@mui/material';
 import { motion, AnimatePresence } from 'framer-motion';
 import DeleteIcon from '@mui/icons-material/Delete';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 
 interface MessageActionsProps {
   isDark: boolean;
@@ -118,11 +119,11 @@ const MessageActions: React.FC<MessageActionsProps> = ({
                 onClick={e => e.stopPropagation()}
               >
                 <div className='flex flex-col items-center text-center'>
-                  <img
-                    src='https://media.giphy.com/media/26xBI73gWquCBBCDe/giphy.gif'
-                    alt='warning'
-                    className='w-20 h-20 mb-4'
+                  <WarningAmberIcon
+                    sx={{ fontSize: 64 }}
+                    className='text-yellow-500 dark:text-yellow-400 mb-4'
                   />
+
                   <h2 className='text-lg font-semibold text-gray-900 dark:text-white mb-2'>
                     Confirm Deletion
                   </h2>
