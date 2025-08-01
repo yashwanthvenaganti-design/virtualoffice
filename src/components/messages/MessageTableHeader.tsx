@@ -1,4 +1,5 @@
 import React from 'react';
+import { Box, Checkbox, Grid, Typography, useTheme } from '@mui/material';
 
 interface MessageTableHeaderProps {
   selectAll: boolean;
@@ -11,6 +12,8 @@ const MessageTableHeader: React.FC<MessageTableHeaderProps> = ({
   onSelectAll,
   isDark,
 }) => {
+  const theme = useTheme();
+
   const headers = [
     { key: 'select', label: '', colSpan: 1 },
     { key: 'from', label: 'From', colSpan: 2 },
@@ -21,38 +24,47 @@ const MessageTableHeader: React.FC<MessageTableHeaderProps> = ({
   ];
 
   return (
-    <header
-      className={`px-6 py-4 border-b ${
-        isDark ? 'bg-gray-800/80 border-gray-700' : 'bg-gray-50/80 border-gray-200'
-      }`}
+    <Box
+      component='header'
       role='rowheader'
+      sx={{
+        px: 1,
+        py: 0.5,
+        borderBottom: `1px solid ${isDark ? theme.palette.grey[700] : theme.palette.grey[200]}`,
+        backgroundColor: isDark ? 'rgba(31,41,55,0.8)' : 'rgba(249,250,251,0.8)',
+        backdropFilter: 'blur(6px)',
+      }}
     >
-      <div className='grid grid-cols-12 gap-4 items-center'>
-        {headers.map(({ key, label, colSpan }) => (
-          <div key={key} className={`col-span-${colSpan}`}>
+      <Grid container alignItems='center' spacing={2}>
+        {headers?.map(({ key, label, colSpan }) => (
+          <Grid item xs={colSpan} key={key}>
             {key === 'select' ? (
-              <input
-                type='checkbox'
-                checked={selectAll}
-                onChange={e => onSelectAll(e.target.checked)}
-                className='w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600'
-                aria-label='Select all messages'
-              />
+              <Box display='flex' alignItems='center' justifyContent='center'>
+                <Checkbox
+                  checked={selectAll}
+                  onChange={e => onSelectAll(e.target.checked)}
+                  inputProps={{ 'aria-label': 'Select all messages' }}
+                />
+              </Box>
             ) : label ? (
-              <span
-                className={`text-xs font-semibold uppercase tracking-wider ${
-                  isDark ? 'text-gray-400' : 'text-gray-500'
-                }`}
+              <Typography
+                variant='caption'
+                sx={{
+                  fontWeight: 600,
+                  textTransform: 'uppercase',
+                  letterSpacing: 0.5,
+                  color: isDark ? theme.palette.grey[400] : theme.palette.grey[600],
+                }}
                 role='columnheader'
                 aria-sort='none'
               >
                 {label}
-              </span>
+              </Typography>
             ) : null}
-          </div>
+          </Grid>
         ))}
-      </div>
-    </header>
+      </Grid>
+    </Box>
   );
 };
 

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useTheme } from '../theme/ThemeContext';
-import DashboardHeader from '../components/messages/DashboardHeader';
+import PageHeader from '../components/common/PageHeader';
 import FilterDropdown from '../components/common/FilterDropdown';
 import SearchInput from '../components/messages/SearchInput';
 import ActionsDropdown from '../components/common/ActionsDropdown';
@@ -10,7 +10,7 @@ import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import ArchiveIcon from '@mui/icons-material/Archive';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ForwardIcon from '@mui/icons-material/Forward';
-
+import MailIcon from '@mui/icons-material/Mail';
 interface Message {
   id: number;
   from: string;
@@ -121,7 +121,12 @@ Head of Customer Service`,
 
   return (
     <main className='flex-1 flex flex-col min-h-0' role='main' aria-label='Message Dashboard'>
-      <DashboardHeader isDark={isDark} />
+      <PageHeader
+        isDark={isDark}
+        icon={MailIcon}
+        title='Your messages'
+        description='Manage your messages across everything from company name to subject.'
+      />
 
       {/* Controls Section */}
       <section
@@ -180,7 +185,7 @@ Head of Customer Service`,
       </section>
 
       {/* Message Table Section */}
-      <section className='flex-1 p-6 overflow-auto' aria-label='Messages'>
+      <section className='flex-1 p-2 overflow-auto' aria-label='Messages'>
         <MessageTable
           messages={messages}
           selectedMessages={selectedMessages}

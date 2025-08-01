@@ -1,4 +1,5 @@
 import React from 'react';
+import { Box, Grid, Typography, Checkbox, IconButton, useTheme } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import MessageContent from './MessageContent';
 
@@ -31,140 +32,127 @@ const MessageRow: React.FC<MessageRowProps> = ({
   onExpand,
   isDark,
 }) => {
+  const theme = useTheme();
+
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return (
-      date.toLocaleDateString('en-GB', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-      }) +
-      ' ' +
-      date.toLocaleTimeString('en-GB', {
-        hour12: false,
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-      })
-    );
+    return `${date.toLocaleDateString('en-GB')} ${date.toLocaleTimeString('en-GB', {
+      hour12: false,
+      hour: '2-digit',
+      minute: '2-digit',
+    })}`;
   };
 
-  const handleRowClick = () => {
-    onExpand(isExpanded ? null : message.id);
-  };
+  const handleRowClick = () => onExpand(isExpanded ? null : message.id);
 
-  const handleKeyDown = (event: React.KeyboardEvent) => {
-    if (event.key === 'Enter' || event.key === ' ') {
-      event.preventDefault();
-      handleRowClick();
-    }
-  };
-
-  const handleCheckboxChange = (event: React.MouseEvent) => {
-    event.stopPropagation();
+  const handleCheckboxClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
     onSelect(message.id);
   };
 
-  const handleMoreClick = (event: React.MouseEvent) => {
-    event.stopPropagation();
-    // Handle more actions
+  const handleMoreClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
   };
 
   return (
-    <article
-      className={`transition-all duration-200 ${
-        !message.isRead ? 'bg-blue-50/30 dark:bg-blue-900/10 border-l-4 border-blue-500' : ''
-      }`}
+    <Box
+      component='article'
       role='row'
       aria-expanded={isExpanded}
       aria-selected={isSelected}
+      onClick={handleRowClick}
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        bgcolor: !message.isRead
+          ? isDark
+            ? 'rgba(30, 64, 175, 0.1)'
+            : 'rgba(59, 130, 246, 0.1)'
+          : 'transparent',
+        transition: 'background-color 0.2s',
+        '&:hover': {
+          bgcolor: isDark ? 'grey.800' : 'grey.100',
+        },
+      }}
     >
-      {/* Main Row */}
-      <div
-        className={`px-6 py-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 group`}
-        onClick={handleRowClick}
-        onKeyDown={handleKeyDown}
-        role='button'
-        tabIndex={0}
-        aria-label={`Message from ${message.from}: ${message.subject}. ${isExpanded ? 'Collapse' : 'Expand'} to ${isExpanded ? 'hide' : 'view'} content`}
-      >
-        <div className='grid grid-cols-12 gap-4 items-center'>
-          {/* Checkbox */}
-          <div className='col-span-1'>
-            <input
-              type='checkbox'
-              checked={isSelected}
-              onChange={() => {}}
-              onClick={handleCheckboxChange}
-              className='w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600'
-              aria-label={`Select message from ${message.from}`}
-            />
-          </div>
+      <Box
+        sx={{
+          width: 4,
+          bgcolor: message.isRead ? 'transparent' : theme.palette.primary.main,
+          flexShrink: 0,
+        }}
+      />
 
-          {/* From */}
-          <div className='col-span-2'>
-            <span
-              className={`text-sm font-medium ${
-                message.from === 'Alldaypa'
-                  ? 'text-red-600 dark:text-red-400'
-                  : isDark
-                    ? 'text-gray-200'
-                    : 'text-gray-900'
-              }`}
+      {/* Content */}
+      <Box px={1} py={1} flex={1}>
+        <Grid container alignItems='center' spacing={2}>
+          <Grid item xs={1}>
+            <Box display='flex' alignItems='center' justifyContent='center'>
+              <Checkbox
+                checked={isSelected}
+                onClick={handleCheckboxClick}
+                inputProps={{ 'aria-label': `Select message from ${message.from}` }}
+              />
+            </Box>
+          </Grid>
+
+          <Grid item xs={2}>
+            <Typography
+              fontWeight='medium'
+              color={message.from === 'Alldaypa' ? 'error.main' : isDark ? 'grey.200' : 'grey.900'}
+              fontSize='0.875rem'
             >
               {message.from}
-            </span>
-          </div>
+            </Typography>
+          </Grid>
 
-          {/* Subject */}
-          <div className='col-span-4'>
-            <div className='flex items-center gap-2'>
-              {/* {message.hasAttachment && <AttachmentIndicator />} */}
-              <span
-                className={`text-sm truncate ${
-                  !message.isRead ? 'font-semibold' : 'font-normal'
-                } ${isDark ? 'text-gray-200' : 'text-gray-900'}`}
-              >
-                {message.subject}
-              </span>
-            </div>
-          </div>
+          <Grid item xs={4}>
+            <Typography
+              noWrap
+              fontSize='0.875rem'
+              fontWeight={message.isRead ? 'normal' : 'bold'}
+              color={isDark ? 'grey.200' : 'grey.900'}
+            >
+              {message.subject}
+            </Typography>
+          </Grid>
 
-          {/* Company */}
-          <div className='col-span-2'>
-            <span className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
+          <Grid item xs={2}>
+            <Typography fontSize='0.875rem' color={isDark ? 'grey.300' : 'grey.600'}>
               {message.company}
-            </span>
-          </div>
+            </Typography>
+          </Grid>
 
-          {/* Date */}
-          <div className='col-span-2'>
-            <time
-              className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}
+          <Grid item xs={2}>
+            <Typography
+              component='time'
+              fontSize='0.875rem'
+              color={isDark ? 'grey.400' : 'grey.500'}
               dateTime={message.date}
             >
               {formatDate(message.date)}
-            </time>
-          </div>
+            </Typography>
+          </Grid>
 
-          {/* Actions */}
-          <div className='col-span-1 flex justify-end'>
-            <button
-              className={`p-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-200 hover:bg-gray-200 dark:hover:bg-gray-600 ${
-                isDark ? 'text-gray-400' : 'text-gray-500'
-              }`}
+          <Grid item xs={1}>
+            <IconButton
+              size='small'
               onClick={handleMoreClick}
+              sx={{
+                opacity: 0,
+                '&:hover': { bgcolor: isDark ? 'grey.700' : 'grey.300' },
+                '.MuiBox:hover &': { opacity: 1 },
+              }}
               aria-label={`More actions for message from ${message.from}`}
             >
-              <MoreVertIcon className='w-4 h-4' />
-            </button>
-          </div>
-        </div>
-      </div>
+              <MoreVertIcon fontSize='small' />
+            </IconButton>
+          </Grid>
+        </Grid>
+      </Box>
 
-      {/* Expanded Content */}
       {isExpanded && <MessageContent message={message} isDark={isDark} />}
-    </article>
+    </Box>
   );
 };
 

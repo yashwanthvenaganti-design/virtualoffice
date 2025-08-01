@@ -51,6 +51,8 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({ selected, options, isDa
             sx: {
               bgcolor: isDark ? 'grey.900' : 'white',
               color: isDark ? 'grey.100' : 'grey.900',
+              borderRadius: 0.5,
+              mt: 1,
             },
           },
         }}

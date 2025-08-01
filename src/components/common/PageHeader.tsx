@@ -1,0 +1,41 @@
+import React from 'react';
+import type { SvgIconComponent } from '@mui/icons-material';
+
+interface PageHeaderProps {
+  isDark: boolean;
+  icon: SvgIconComponent;
+  title: string;
+  description?: string;
+}
+
+const PageHeader: React.FC<PageHeaderProps> = ({ isDark, icon: Icon, title, description }) => {
+  return (
+    <header
+      className={`flex-shrink-0 p-6 border-b transition-colors ${
+        isDark ? 'border-gray-700 bg-gray-800/50' : 'border-gray-200 bg-white/80'
+      } backdrop-blur-sm`}
+      role='banner'
+    >
+      <div className='flex items-center gap-4 mb-1'>
+        <div
+          className={`p-3 rounded-lg ${
+            isDark ? 'bg-blue-600/20 text-blue-400' : 'bg-blue-50 text-blue-600'
+          }`}
+          aria-hidden='true'
+        >
+          <Icon className='w-6 h-6' />
+        </div>
+        <div>
+          <h1 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+            {title}
+          </h1>
+          {description && (
+            <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>{description}</p>
+          )}
+        </div>
+      </div>
+    </header>
+  );
+};
+
+export default PageHeader;

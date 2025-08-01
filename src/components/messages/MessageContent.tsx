@@ -1,4 +1,5 @@
 import React from 'react';
+import { Box, Paper, Typography, useTheme } from '@mui/material';
 import MessageActions from './MessageActions';
 
 interface Message {
@@ -19,12 +20,21 @@ interface MessageContentProps {
 }
 
 const MessageContent: React.FC<MessageContentProps> = ({ message, isDark }) => {
+  const theme = useTheme();
+
   return (
-    <section
-      className={`px-6 pb-6 border-l-4 border-red-500 ${isDark ? 'bg-gray-800/50' : 'bg-gray-50'}`}
-      aria-label={`Content of message from ${message?.from}`}
+    <Box
+      component='section'
+      aria-label={`Content of message from ${message.from}`}
+      sx={{
+        borderLeft: `4px solid ${theme.palette.error.main}`,
+        backgroundColor: isDark ? theme.palette.background.paper : theme.palette.grey[50],
+        px: 3,
+        pb: 3,
+        pt: 2,
+      }}
     >
-      <div className='ml-8'>
+      <Box ml={6}>
         <MessageActions
           isDark={isDark}
           messageId={message.id}
@@ -32,23 +42,34 @@ const MessageContent: React.FC<MessageContentProps> = ({ message, isDark }) => {
           messageCompany={message.company}
         />
 
-        <div
-          className={`p-6 rounded-lg border ${
-            isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
-          } shadow-sm`}
+        <Paper
+          elevation={1}
+          sx={{
+            mt: 2,
+            p: 3,
+            borderRadius: 2,
+            backgroundColor: isDark ? theme.palette.background.default : '#fff',
+            border: `1px solid ${isDark ? theme.palette.grey[700] : theme.palette.grey[300]}`,
+            boxShadow: isDark ? '0 1px 3px rgba(0,0,0,0.5)' : '0 1px 3px rgba(0,0,0,0.1)',
+          }}
         >
-          <pre
-            className={`text-sm whitespace-pre-wrap font-mono leading-relaxed ${
-              isDark ? 'text-gray-300' : 'text-gray-700'
-            }`}
+          <Typography
+            component='pre'
+            variant='body2'
+            sx={{
+              fontFamily: 'monospace',
+              whiteSpace: 'pre-wrap',
+              color: isDark ? theme.palette.grey[300] : theme.palette.text.primary,
+              m: 0,
+            }}
             role='document'
             aria-label='Message content'
           >
-            {message?.content}
-          </pre>
-        </div>
-      </div>
-    </section>
+            {message.content}
+          </Typography>
+        </Paper>
+      </Box>
+    </Box>
   );
 };
 
