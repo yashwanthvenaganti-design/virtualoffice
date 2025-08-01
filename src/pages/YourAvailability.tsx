@@ -83,18 +83,15 @@ const YourAvailability: React.FC = () => {
             selected={selectedFilter}
             options={filterOptions}
             onChange={setSelectedFilter}
-            isDark={isDark}
           />
 
           <SearchInput
             value={searchQuery}
             onChange={setSearchQuery}
             placeholder='Search by name or tel...'
-            isDark={isDark}
           />
 
           <ActionsDropdown
-            isDark={isDark}
             items={[
               {
                 icon: Add,
@@ -119,7 +116,6 @@ const YourAvailability: React.FC = () => {
           selectAll={selectAll}
           onSelectRow={handleSelectRow}
           onSelectAll={handleSelectAll}
-          isDark={isDark}
         />
       </section>
     </main>

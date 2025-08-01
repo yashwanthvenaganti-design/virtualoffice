@@ -10,13 +10,11 @@ interface ActionItem {
 }
 
 interface ActionsDropdownProps {
-  isDark: boolean;
   items: ActionItem[];
 }
 
-const ActionsDropdown: React.FC<ActionsDropdownProps> = ({ isDark, items }) => {
+const ActionsDropdown: React.FC<ActionsDropdownProps> = ({ items }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const theme = useTheme();
   const open = Boolean(anchorEl);
 
   const handleOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -44,23 +42,7 @@ const ActionsDropdown: React.FC<ActionsDropdownProps> = ({ isDark, items }) => {
         aria-expanded={open}
         variant='outlined'
         size='medium'
-        sx={{
-          minWidth: '220px',
-          textTransform: 'none',
-          justifyContent: 'space-between',
-          px: 2,
-          py: 0.5,
-          fontWeight: 500,
-          fontSize: '0.875rem',
-          borderRadius: '6px',
-          borderColor: isDark ? 'grey.700' : 'grey.300',
-          backgroundColor: isDark ? 'grey.800' : 'white',
-          color: isDark ? 'grey.100' : 'grey.900',
-          '&:hover': {
-            backgroundColor: isDark ? 'grey.700' : 'grey.100',
-            borderColor: isDark ? 'grey.500' : 'grey.400',
-          },
-        }}
+        className='!min-w-[220px] !normal-case !justify-between !px-3 !py-2 !font-medium !text-[14px] !rounded-md !border-gray-300 dark:!border-gray-700 !bg-white dark:!bg-gray-800 !text-gray-900 dark:!text-gray-100 hover:!bg-gray-100 dark:hover:!bg-gray-700 hover:!border-gray-400 dark:hover:!border-gray-500 !transition-colors !duration-200'
       >
         Actions
       </Button>
@@ -70,16 +52,9 @@ const ActionsDropdown: React.FC<ActionsDropdownProps> = ({ isDark, items }) => {
         open={open}
         onClose={handleClose}
         PaperProps={{
-          elevation: 6,
-          sx: {
-            mt: 1.2,
-            minWidth: '220px',
-            borderRadius: '6px',
-            backgroundColor: isDark ? 'grey.900' : 'white',
-            border: `1px solid ${isDark ? theme.palette.grey[700] : theme.palette.grey[200]}`,
-            color: isDark ? 'grey.100' : 'grey.900',
-            boxShadow: theme.shadows[4],
-          },
+          elevation: 0,
+          className:
+            'mt-3 !min-w-[220px] !rounded-md !bg-white dark:!bg-gray-900 !border !border-gray-200 dark:!border-gray-700 !shadow-lg',
         }}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
@@ -88,42 +63,29 @@ const ActionsDropdown: React.FC<ActionsDropdownProps> = ({ isDark, items }) => {
           <MenuItem
             key={label}
             onClick={() => handleItemClick(action)}
-            sx={{
-              fontSize: '0.875rem',
-              borderRadius: '6px',
-              px: 2,
-              py: 1.2,
-              '&:hover': {
-                backgroundColor: isDark ? 'grey.800' : 'grey.100',
-              },
-            }}
+            className='!text-[14px] !rounded-md !px-3 !py-3 !mx-1 !my-0.5 !text-gray-900 dark:!text-gray-100 hover:!bg-gray-100 dark:hover:!bg-gray-800 !transition-colors !duration-200'
           >
-            <ListItemIcon sx={{ minWidth: 30 }}>
-              <Icon fontSize='small' />
+            <ListItemIcon className='!min-w-[30px]'>
+              <Icon fontSize='small' className='!text-gray-600 dark:!text-gray-400' />
             </ListItemIcon>
-            <ListItemText>{label}</ListItemText>
+            <ListItemText className='!text-gray-900 dark:!text-gray-100'>{label}</ListItemText>
           </MenuItem>
         ))}
+
+        {dangerItems.length > 0 && regularItems.length > 0 && (
+          <div className='h-px bg-gray-200 dark:bg-gray-700 mx-2 my-1' />
+        )}
 
         {dangerItems.map(({ icon: Icon, label, action }) => (
           <MenuItem
             key={label}
             onClick={() => handleItemClick(action)}
-            sx={{
-              fontSize: '0.875rem',
-              borderRadius: '6px',
-              color: 'error.main',
-              px: 2,
-              py: 1.2,
-              '&:hover': {
-                backgroundColor: isDark ? 'rgba(239, 68, 68, 0.1)' : 'rgba(239, 68, 68, 0.07)',
-              },
-            }}
+            className='!text-[14px] !rounded-md !px-3 !py-3 !mx-1 !my-0.5 !text-red-600 dark:!text-red-400 hover:!bg-red-50 dark:hover:!bg-red-500/10 !transition-colors !duration-200'
           >
-            <ListItemIcon sx={{ minWidth: 30 }}>
-              <Icon fontSize='small' sx={{ color: 'error.main' }} />
+            <ListItemIcon className='!min-w-[30px]'>
+              <Icon fontSize='small' className='!text-red-600 dark:!text-red-400' />
             </ListItemIcon>
-            <ListItemText>{label}</ListItemText>
+            <ListItemText className='!text-red-600 dark:!text-red-400'>{label}</ListItemText>
           </MenuItem>
         ))}
       </Menu>

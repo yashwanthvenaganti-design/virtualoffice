@@ -92,6 +92,7 @@ const MessageRow: React.FC<MessageRowProps> = ({
                 checked={isSelected}
                 onClick={handleCheckboxClick}
                 inputProps={{ 'aria-label': `Select message from ${message.from}` }}
+                size='small'
               />
             </Box>
           </Grid>

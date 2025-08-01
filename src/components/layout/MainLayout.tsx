@@ -63,7 +63,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 
   return (
     <div className={`min-h-screen ${isDark ? 'bg-gray-900' : 'bg-gray-50'}`}>
-      <header className='fixed top-0 left-0 right-0 h-16'>
+      <header className='fixed top-0 left-0 right-0 h-16 z-30'>
         <Header
           user={headerUser}
           onSearch={handleSearch}

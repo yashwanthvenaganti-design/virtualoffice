@@ -24,7 +24,6 @@ interface RowData {
 }
 
 interface AvailabilityTableProps {
-  isDark: boolean;
   rows: RowData[];
   selectedRows: number[];
   onSelectRow: (id: number) => void;
@@ -33,7 +32,6 @@ interface AvailabilityTableProps {
 }
 
 const AvailabilityTable: React.FC<AvailabilityTableProps> = ({
-  isDark,
   rows,
   selectedRows,
   onSelectRow,
@@ -42,21 +40,24 @@ const AvailabilityTable: React.FC<AvailabilityTableProps> = ({
 }) => {
   const theme = useTheme();
 
-  const headerBg = isDark ? theme.palette.background.paper : theme.palette.grey[50];
-  const borderColor = isDark ? theme.palette.divider : theme.palette.divider;
-
   return (
     <TableContainer
       component={Paper}
       elevation={0}
-      sx={{ backgroundColor: isDark ? theme.palette.background.default : '#fff' }}
+      sx={{
+        backgroundColor: theme.palette.background.default,
+        borderRadius: '1rem',
+      }}
     >
       <Table size='medium' sx={{ minWidth: 650 }} aria-label='availability table'>
         <TableHead>
           <TableRow
             sx={{
-              backgroundColor: headerBg,
-              borderBottom: `1px solid ${borderColor}`,
+              backgroundColor:
+                theme.palette.mode === 'dark'
+                  ? theme.palette.background.paper
+                  : theme.palette.grey[50],
+              borderBottom: `1px solid ${theme.palette.divider}`,
               '& th': {
                 paddingY: 1.5,
                 paddingX: 2,
@@ -64,7 +65,7 @@ const AvailabilityTable: React.FC<AvailabilityTableProps> = ({
                 fontSize: '0.75rem',
                 textTransform: 'uppercase',
                 letterSpacing: 0.5,
-                color: isDark ? theme.palette.grey[400] : theme.palette.grey[600],
+                color: theme.palette.text.secondary,
               },
             }}
           >
@@ -96,16 +97,10 @@ const AvailabilityTable: React.FC<AvailabilityTableProps> = ({
                 selected={isSelected}
                 sx={{
                   cursor: 'pointer',
-                  borderBottom: `1px solid ${borderColor}`,
-                  backgroundColor: isSelected
-                    ? isDark
-                      ? theme.palette.action.selected
-                      : theme.palette.action.hover
-                    : 'inherit',
+                  borderBottom: `1px solid ${theme.palette.divider}`,
+                  backgroundColor: isSelected ? theme.palette.action.selected : 'inherit',
                   '&:hover': {
-                    backgroundColor: isDark
-                      ? theme.palette.action.hover
-                      : theme.palette.action.selected,
+                    backgroundColor: theme.palette.action.hover,
                   },
                   '& td': {
                     paddingY: 1.25,
@@ -122,52 +117,33 @@ const AvailabilityTable: React.FC<AvailabilityTableProps> = ({
                   />
                 </TableCell>
                 <TableCell>
-                  <Typography
-                    fontWeight={600}
-                    fontSize={14}
-                    color={isDark ? theme.palette.common.white : theme.palette.text.primary}
-                  >
+                  <Typography fontWeight={600} fontSize={14} color={theme.palette.text.primary}>
                     {row.name}
                   </Typography>
                 </TableCell>
                 <TableCell>
-                  <Typography
-                    fontSize={14}
-                    color={isDark ? theme.palette.grey[400] : theme.palette.text.secondary}
-                  >
+                  <Typography fontSize={14} color={theme.palette.text.secondary}>
                     {row.availability}
                   </Typography>
                 </TableCell>
                 <TableCell>
-                  <Typography
-                    fontSize={14}
-                    color={isDark ? theme.palette.grey[400] : theme.palette.text.secondary}
-                  >
+                  <Typography fontSize={14} color={theme.palette.text.secondary}>
                     {row.tel}
                   </Typography>
                 </TableCell>
                 <TableCell>
-                  <Typography
-                    fontSize={14}
-                    color={isDark ? theme.palette.grey[400] : theme.palette.text.secondary}
-                  >
+                  <Typography fontSize={14} color={theme.palette.text.secondary}>
                     {row.email}
                   </Typography>
                 </TableCell>
                 <TableCell>
-                  <Typography
-                    fontSize={14}
-                    color={isDark ? theme.palette.grey[400] : theme.palette.text.secondary}
-                  >
+                  <Typography fontSize={14} color={theme.palette.text.secondary}>
                     {row.sms}
                   </Typography>
                 </TableCell>
                 <TableCell align='right' sx={{ px: 2 }}>
                   <IconButton size='small' aria-label={`Actions for ${row.name}`}>
-                    <MoreVertIcon
-                      fontSize='small'
-                      sx={{ color: isDark ? theme.palette.grey[500] : theme.palette.grey[700] }}
-                    />
+                    <MoreVertIcon fontSize='small' sx={{ color: theme.palette.text.secondary }} />
                   </IconButton>
                 </TableCell>
               </TableRow>

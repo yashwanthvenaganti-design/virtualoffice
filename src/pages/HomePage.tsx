@@ -139,7 +139,6 @@ Head of Customer Service`,
           <FilterDropdown
             selected={selectedFilter}
             options={filterOptions}
-            isDark={isDark}
             onChange={handleFilterChange}
           />
 

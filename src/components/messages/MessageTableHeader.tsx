@@ -44,6 +44,7 @@ const MessageTableHeader: React.FC<MessageTableHeaderProps> = ({
                   checked={selectAll}
                   onChange={e => onSelectAll(e.target.checked)}
                   inputProps={{ 'aria-label': 'Select all messages' }}
+                  size='small'
                 />
               </Box>
             ) : label ? (

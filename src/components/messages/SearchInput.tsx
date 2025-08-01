@@ -1,81 +1,54 @@
 import React from 'react';
-import { InputBase, alpha } from '@mui/material';
+import { InputBase } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
-import { styled } from '@mui/material/styles';
 
 interface SearchInputProps {
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
-  isDark: boolean;
 }
-
-const SearchWrapper = styled('div')<{ isDark: boolean }>(({ theme, isDark }) => ({
-  position: 'relative',
-  width: '100%',
-  maxWidth: '420px',
-  borderRadius: 6,
-  backgroundColor: isDark ? theme.palette.grey[800] : theme.palette.common.white,
-  border: `1px solid ${isDark ? theme.palette.grey[700] : theme.palette.grey[300]}`,
-  transition: 'all 0.2s ease',
-  '&:hover': {
-    boxShadow: isDark
-      ? `0 0 0 2px ${alpha(theme.palette.primary.main, 0.2)}`
-      : `0 0 0 2px ${alpha(theme.palette.primary.main, 0.1)}`,
-  },
-}));
-
-const SearchIconWrapper = styled('div')(({ theme }) => ({
-  position: 'absolute',
-  height: '100%',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  paddingLeft: theme.spacing(1.5),
-  pointerEvents: 'none',
-}));
-
-const StyledInput = styled(InputBase)<{ isDark: boolean }>(({ theme, isDark }) => ({
-  color: isDark ? theme.palette.grey[100] : theme.palette.text.primary,
-  width: '100%',
-  paddingLeft: theme.spacing(5),
-  paddingRight: theme.spacing(2),
-  paddingTop: 8,
-  paddingBottom: 8,
-  fontSize: '0.875rem',
-  borderRadius: 6,
-  '&::placeholder': {
-    color: isDark ? theme.palette.grey[400] : theme.palette.grey[500],
-  },
-}));
 
 const SearchInput: React.FC<SearchInputProps> = ({
   value,
   onChange,
   placeholder = 'Search messages...',
-  isDark,
 }) => {
   return (
-    <SearchWrapper isDark={isDark} role='search'>
+    <div
+      className='relative w-full max-w-[420px] rounded-md bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 transition-all duration-200 hover:shadow-[0_0_0_2px_rgb(59_130_246_/_0.1)] dark:hover:shadow-[0_0_0_2px_rgb(96_165_250_/_0.2)] focus-within:shadow-[0_0_0_2px_rgb(59_130_246_/_0.2)] dark:focus-within:shadow-[0_0_0_2px_rgb(96_165_250_/_0.3)]'
+      role='search'
+    >
       <label htmlFor='search-input' className='sr-only'>
         Search messages
       </label>
-      <SearchIconWrapper>
+
+      <div className='absolute h-full flex items-center justify-center pl-6 pointer-events-none'>
         <SearchIcon
           fontSize='small'
-          sx={{ color: isDark ? 'grey.400' : 'grey.500' }}
+          className='text-gray-500 dark:text-gray-400'
           aria-hidden='true'
         />
-      </SearchIconWrapper>
-      <StyledInput
+      </div>
+
+      <InputBase
         id='search-input'
-        isDark={isDark}
         placeholder={placeholder}
         value={value}
         onChange={e => onChange(e.target.value)}
+        className='w-full pl-12 pr-3 py-2 rounded-md text-gray-900 dark:text-gray-100'
         inputProps={{ 'aria-label': 'search messages' }}
+        sx={{
+          fontSize: '14px',
+          '& input::placeholder': {
+            color: 'rgb(107 114 128)',
+            opacity: 1,
+          },
+          '.dark & input::placeholder': {
+            color: 'rgb(156 163 175)',
+          },
+        }}
       />
-    </SearchWrapper>
+    </div>
   );
 };
 
