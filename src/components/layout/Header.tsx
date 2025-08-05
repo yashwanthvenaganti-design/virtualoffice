@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
-import { AppBar, Toolbar, Switch, FormControlLabel } from '@mui/material';
-import { LightMode, DarkMode, Search as SearchMobileIcon } from '@mui/icons-material';
+import { AppBar, Toolbar } from '@mui/material';
+import { Search as SearchMobileIcon } from '@mui/icons-material';
 import Logo from '../common/Logo';
 import SearchBar from '../common/SearchBar';
 import UserMenu from '../common/UserMenu';
 import Notifications from '../common/Notifications';
-import { useTheme } from '../../theme/ThemeContext';
 import ThemeToggle from '../../pages/ThemeToggle';
 
 interface User {
@@ -38,7 +37,6 @@ const Header: React.FC<HeaderProps> = ({
   onNotificationClick,
   notifications = 0,
 }) => {
-  const { isDark, toggleTheme } = useTheme();
   const [searchQuery, setSearchQuery] = useState('');
   const [showMobileSearch, setShowMobileSearch] = useState(false);
 
@@ -59,14 +57,16 @@ const Header: React.FC<HeaderProps> = ({
           borderColor: 'rgb(var(--color-border))',
           borderRadius: '0 0 5px 5px',
         }}
-        className={`backdrop-blur-xl ${
-          isDark ? 'bg-gray-900/80 shadow-xl' : 'bg-white/80 shadow-sm'
-        }`}
+        className={`
+          backdrop-blur-xl border-b transition-all duration-200
+          bg-header-light-bg/80 border-header-light-border shadow-header
+          dark:bg-header-dark-bg/80 dark:border-header-dark-border dark:shadow-header-dark
+        `}
       >
-        <Toolbar className='min-h-16 xl:px-3 md:px-2 px-1'>
-          <div className='flex items-center justify-between w-full gap-2'>
+        <Toolbar className='min-h-16 xl:px-6 md:px-4 px-3'>
+          <div className='flex items-center justify-between w-full gap-4'>
             {/* Left side - Logo and Search */}
-            <div className='flex items-center gap-6 flex-1'>
+            <div className='flex items-center gap-8 flex-1'>
               <Logo />
 
               {/* Desktop Search */}
@@ -76,21 +76,23 @@ const Header: React.FC<HeaderProps> = ({
                   onChange={handleSearchChange}
                   onSearch={onSearch}
                   placeholder='Search workspace, files, or colleagues...'
+                  showFilters={true}
                 />
               </div>
             </div>
 
             {/* Right side - Actions */}
-            <div className='flex items-center gap-1'>
+            <div className='flex items-center gap-2'>
               {/* Mobile Search Button */}
               <div className='lg:hidden'>
                 <button
                   onClick={() => setShowMobileSearch(!showMobileSearch)}
-                  className={`p-2 rounded-xl transition-all duration-200 ${
-                    isDark
-                      ? 'hover:bg-gray-700/50 text-gray-300 hover:text-white'
-                      : 'hover:bg-gray-100/80 text-gray-600 hover:text-gray-900'
-                  }`}
+                  className={`
+                    p-2.5 rounded-xl transition-all duration-200 
+                    focus:outline-none focus:ring-2 focus:ring-primary-500/20
+                    text-header-light-textSecondary hover:text-header-light-text hover:bg-header-light-hover
+                    dark:text-header-dark-textSecondary dark:hover:text-header-dark-text dark:hover:bg-header-dark-hover
+                  `}
                 >
                   <SearchMobileIcon sx={{ fontSize: 20 }} />
                 </button>
@@ -116,15 +118,18 @@ const Header: React.FC<HeaderProps> = ({
         {/* Mobile Search Bar */}
         {showMobileSearch && (
           <div
-            className={`lg:hidden px-6 p-2 border-t ${
-              isDark ? 'border-gray-700 bg-gray-800/50' : 'border-gray-200 bg-gray-50/50'
-            }`}
+            className={`
+            lg:hidden px-4 pb-4 border-t transition-all duration-200
+            border-header-light-border bg-header-light-surface/50
+            dark:border-header-dark-border dark:bg-header-dark-surface/50
+          `}
           >
             <SearchBar
               value={searchQuery}
               onChange={handleSearchChange}
               onSearch={onSearch}
               placeholder='Search workspace...'
+              showFilters={false}
             />
           </div>
         )}

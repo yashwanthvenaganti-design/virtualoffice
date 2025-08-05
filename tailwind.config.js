@@ -5,6 +5,92 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        dashboard: {
+          // Dark theme colors
+          dark: {
+            bg: '#0F172A', // Main background
+            surface: '#1E293B', // Card/surface background
+            surfaceHover: '#334155', // Hover states
+            border: '#334155', // Borders
+            text: '#F8FAFC', // Primary text
+            textSecondary: '#CBD5E1', // Secondary text
+            textMuted: '#94A3B8', // Muted text
+          },
+          // Light theme colors
+          light: {
+            bg: '#FFFFFF', // Main background
+            surface: '#F8FAFC', // Card/surface background
+            surfaceHover: '#F1F5F9', // Hover states
+            border: '#E2E8F0', // Borders
+            text: '#0F172A', // Primary text
+            textSecondary: '#475569', // Secondary text
+            textMuted: '#64748B', // Muted text
+          },
+        },
+        // Accent colors from your design
+        accent: {
+          purple: '#8B5CF6', // Purple cards
+          green: '#10B981', // Green cards/elements
+          orange: '#F59E0B', // Orange cards
+          blue: '#3B82F6', // Blue elements
+          teal: '#14B8A6', // Teal/cyan elements
+        },
+        // Sidebar specific colors
+        sidebar: {
+          // Dark theme
+          dark: {
+            bg: '#0F172A',
+            surface: '#1E293B',
+            border: '#334155',
+            text: '#F8FAFC',
+            textSecondary: '#CBD5E1',
+            textMuted: '#94A3B8',
+            active: '#3B82F6',
+            activeBg: '#1E40AF20',
+            hover: '#334155',
+          },
+          // Light theme
+          light: {
+            bg: '#FFFFFF',
+            surface: '#F8FAFC',
+            border: '#E2E8F0',
+            text: '#0F172A',
+            textSecondary: '#475569',
+            textMuted: '#64748B',
+            active: '#3B82F6',
+            activeBg: '#DBEAFE',
+            hover: '#F1F5F9',
+          },
+        },
+        // Header specific colors
+        header: {
+          // Dark theme
+          dark: {
+            bg: '#0F172A',
+            surface: '#1E293B',
+            border: '#334155',
+            text: '#F8FAFC',
+            textSecondary: '#CBD5E1',
+            textMuted: '#94A3B8',
+            hover: '#334155',
+            searchBg: '#1E293B',
+            searchBorder: '#475569',
+            searchFocus: '#3B82F6',
+          },
+          // Light theme
+          light: {
+            bg: '#FFFFFF',
+            surface: '#F8FAFC',
+            border: '#E2E8F0',
+            text: '#0F172A',
+            textSecondary: '#475569',
+            textMuted: '#64748B',
+            hover: '#F1F5F9',
+            searchBg: '#FFFFFF',
+            searchBorder: '#D1D5DB',
+            searchFocus: '#3B82F6',
+          },
+        },
         primary: {
           50: '#eff6ff',
           100: '#dbeafe',
@@ -114,8 +200,15 @@ module.exports = {
       boxShadow: {
         glass: '0 8px 32px rgba(0, 0, 0, 0.1)',
         'glass-dark': '0 8px 32px rgba(0, 0, 0, 0.3)',
+        card: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
+        'card-dark': '0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2)',
+        header: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
+        'header-dark': '0 4px 12px -2px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.1)',
+        search: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+        'search-focus':
+          '0 10px 15px -3px rgba(59, 130, 246, 0.1), 0 4px 6px -2px rgba(59, 130, 246, 0.05)',
       },
     },
   },
-  plugins: [],
+  plugins: [require('tailwind-scrollbar')({ nocompatible: true })],
 };

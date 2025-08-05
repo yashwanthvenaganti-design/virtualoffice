@@ -1,4 +1,3 @@
-// components/SearchBar.tsx - Simplified without focus state
 import React from 'react';
 import { InputBase, IconButton, Fade } from '@mui/material';
 import { Search as SearchIcon, Clear as ClearIcon, FilterList } from '@mui/icons-material';
@@ -39,10 +38,24 @@ const SearchBar: React.FC<SearchBarProps> = ({
 
   return (
     <div className='flex-1' style={{ maxWidth }}>
-      <div className='relative rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 transition-all duration-300 ease-out hover:shadow-md focus-within:border-blue-500 dark:focus-within:border-blue-400 focus-within:ring-2 focus-within:ring-blue-500/20 dark:focus-within:ring-blue-400/20 focus-within:shadow-lg'>
-        <div className='flex items-center px-4 py-1'>
+      <div
+        className={`
+        relative rounded-xl border-2 transition-all duration-300 ease-out group
+        bg-header-light-searchBg border-header-light-searchBorder shadow-search
+        dark:bg-header-dark-searchBg dark:border-header-dark-searchBorder dark:shadow-search
+        hover:border-header-light-searchFocus/50 hover:shadow-search-focus
+        dark:hover:border-header-dark-searchFocus/50
+        focus-within:border-header-light-searchFocus focus-within:ring-4 focus-within:ring-header-light-searchFocus/10 focus-within:shadow-search-focus
+        dark:focus-within:border-header-dark-searchFocus dark:focus-within:ring-header-dark-searchFocus/10
+      `}
+      >
+        <div className='flex items-center px-4 py-1.5'>
           <SearchIcon
-            className='mr-3 text-gray-500 dark:text-gray-400 transition-colors duration-200 group-focus-within:text-blue-500 dark:group-focus-within:text-blue-400'
+            className={`
+              mr-3 transition-colors duration-200
+              text-header-light-textMuted group-focus-within:text-header-light-searchFocus
+              dark:text-header-dark-textMuted dark:group-focus-within:text-header-dark-searchFocus
+            `}
             sx={{ fontSize: 20 }}
           />
 
@@ -51,14 +64,18 @@ const SearchBar: React.FC<SearchBarProps> = ({
             value={value}
             onChange={handleSearchChange}
             onKeyDown={handleKeyPress}
-            className='flex-1 text-sm font-medium text-gray-900 dark:text-gray-100'
+            className={`
+              flex-1 text-sm font-medium
+              text-header-light-text dark:text-header-dark-text
+            `}
             sx={{
               '& input::placeholder': {
-                color: 'rgb(107 114 128)',
+                color: 'rgb(var(--color-header-light-textMuted, 100 116 139))',
                 opacity: 1,
+                fontWeight: 400,
               },
               '.dark & input::placeholder': {
-                color: 'rgb(156 163 175)',
+                color: 'rgb(var(--color-header-dark-textMuted, 148 163 184))',
               },
             }}
           />
@@ -67,7 +84,18 @@ const SearchBar: React.FC<SearchBarProps> = ({
             {showFilters && (
               <IconButton
                 size='small'
-                className='!text-gray-500 dark:!text-gray-400 hover:!bg-gray-100 dark:hover:!bg-gray-700 hover:!text-gray-700 dark:hover:!text-gray-300 !transition-colors !duration-200'
+                className={`
+                  !transition-all !duration-200 !rounded-lg
+                  !text-header-light-textMuted hover:!bg-header-light-hover hover:!text-header-light-text
+                  dark:!text-header-dark-textMuted dark:hover:!bg-header-dark-hover dark:hover:!text-header-dark-text
+                `}
+                sx={{
+                  width: 32,
+                  height: 32,
+                  '&:hover': {
+                    transform: 'scale(1.05)',
+                  },
+                }}
               >
                 <FilterList sx={{ fontSize: 16 }} />
               </IconButton>
@@ -78,7 +106,18 @@ const SearchBar: React.FC<SearchBarProps> = ({
                 <IconButton
                   size='small'
                   onClick={handleClear}
-                  className='!text-gray-500 dark:!text-gray-400 hover:!bg-gray-100 dark:hover:!bg-gray-700 hover:!text-gray-700 dark:hover:!text-gray-300 !transition-colors !duration-200'
+                  className={`
+                    !transition-all !duration-200 !rounded-lg
+                    !text-header-light-textMuted hover:!bg-header-light-hover hover:!text-header-light-text
+                    dark:!text-header-dark-textMuted dark:hover:!bg-header-dark-hover dark:hover:!text-header-dark-text
+                  `}
+                  sx={{
+                    width: 32,
+                    height: 32,
+                    '&:hover': {
+                      transform: 'scale(1.05)',
+                    },
+                  }}
                 >
                   <ClearIcon sx={{ fontSize: 16 }} />
                 </IconButton>
@@ -86,6 +125,21 @@ const SearchBar: React.FC<SearchBarProps> = ({
             )}
           </div>
         </div>
+
+        {/* Search suggestions indicator */}
+        {value && (
+          <div className='absolute top-full left-0 right-0 mt-1 opacity-0 group-focus-within:opacity-100 transition-opacity duration-200'>
+            <div
+              className={`
+              text-xs px-4 py-2 rounded-lg
+              text-header-light-textMuted bg-header-light-surface border border-header-light-border
+              dark:text-header-dark-textMuted dark:bg-header-dark-surface dark:border-header-dark-border
+            `}
+            >
+              Press Enter to search or continue typing...
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -22,7 +22,6 @@ interface MessageTableProps {
   onSelectMessage: (messageId: number) => void;
   onSelectAll: (checked: boolean) => void;
   onExpandMessage: (messageId: number | null) => void;
-  isDark: boolean;
 }
 
 const MessageTable: React.FC<MessageTableProps> = ({
@@ -33,18 +32,17 @@ const MessageTable: React.FC<MessageTableProps> = ({
   onSelectMessage,
   onSelectAll,
   onExpandMessage,
-  isDark,
 }) => {
   return (
     <div
-      className={`rounded-xl border overflow-hidden shadow-sm ${
-        isDark ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-white'
-      }`}
+      className='rounded-xl border overflow-hidden shadow-sm border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800'
       role='table'
       aria-label='Messages table'
     >
-      <MessageTableHeader selectAll={selectAll} onSelectAll={onSelectAll} isDark={isDark} />
+      {/* Header */}
+      <MessageTableHeader selectAll={selectAll} onSelectAll={onSelectAll} />
 
+      {/* Table Rows */}
       <div className='divide-y divide-gray-200 dark:divide-gray-700' role='rowgroup'>
         {messages.map(message => (
           <MessageRow
@@ -54,13 +52,13 @@ const MessageTable: React.FC<MessageTableProps> = ({
             isExpanded={expandedMessage === message.id}
             onSelect={onSelectMessage}
             onExpand={onExpandMessage}
-            isDark={isDark}
           />
         ))}
       </div>
 
+      {/* Empty State */}
       {messages.length === 0 && (
-        <div className={`p-8 text-center ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+        <div className='p-8 text-center text-gray-500 dark:text-gray-400'>
           <p>No messages found</p>
         </div>
       )}

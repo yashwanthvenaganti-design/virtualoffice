@@ -42,6 +42,7 @@ const ActionsDropdown: React.FC<ActionsDropdownProps> = ({ items }) => {
         aria-expanded={open}
         variant='outlined'
         size='medium'
+        disableRipple
         className='!min-w-[220px] !normal-case !justify-between !px-3 !py-2 !font-medium !text-[14px] !rounded-md !border-gray-300 dark:!border-gray-700 !bg-white dark:!bg-gray-800 !text-gray-900 dark:!text-gray-100 hover:!bg-gray-100 dark:hover:!bg-gray-700 hover:!border-gray-400 dark:hover:!border-gray-500 !transition-colors !duration-200'
       >
         Actions
@@ -51,15 +52,17 @@ const ActionsDropdown: React.FC<ActionsDropdownProps> = ({ items }) => {
         anchorEl={anchorEl}
         open={open}
         onClose={handleClose}
-        PaperProps={{
-          elevation: 0,
-          className:
-            'mt-3 !min-w-[220px] !rounded-md !bg-white dark:!bg-gray-900 !border !border-gray-200 dark:!border-gray-700 !shadow-lg',
+        slotProps={{
+          paper: {
+            elevation: 0,
+            className:
+              'mt-3 !min-w-[220px] !rounded-md !bg-white dark:!bg-gray-900 !border !border-gray-200 dark:!border-gray-700 !shadow-lg',
+          },
         }}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
       >
-        {regularItems.map(({ icon: Icon, label, action }) => (
+        {regularItems?.map(({ icon: Icon, label, action }) => (
           <MenuItem
             key={label}
             onClick={() => handleItemClick(action)}
@@ -72,11 +75,11 @@ const ActionsDropdown: React.FC<ActionsDropdownProps> = ({ items }) => {
           </MenuItem>
         ))}
 
-        {dangerItems.length > 0 && regularItems.length > 0 && (
+        {dangerItems?.length > 0 && regularItems?.length > 0 && (
           <div className='h-px bg-gray-200 dark:bg-gray-700 mx-2 my-1' />
         )}
 
-        {dangerItems.map(({ icon: Icon, label, action }) => (
+        {dangerItems?.map(({ icon: Icon, label, action }) => (
           <MenuItem
             key={label}
             onClick={() => handleItemClick(action)}

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Grid, Typography, Checkbox, IconButton, useTheme } from '@mui/material';
+import { Box, Grid, Typography, Checkbox, IconButton } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import MessageContent from './MessageContent';
 
@@ -21,7 +21,6 @@ interface MessageRowProps {
   isExpanded: boolean;
   onSelect: (messageId: number) => void;
   onExpand: (messageId: number | null) => void;
-  isDark: boolean;
 }
 
 const MessageRow: React.FC<MessageRowProps> = ({
@@ -30,10 +29,7 @@ const MessageRow: React.FC<MessageRowProps> = ({
   isExpanded,
   onSelect,
   onExpand,
-  isDark,
 }) => {
-  const theme = useTheme();
-
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return `${date.toLocaleDateString('en-GB')} ${date.toLocaleTimeString('en-GB', {
@@ -44,12 +40,10 @@ const MessageRow: React.FC<MessageRowProps> = ({
   };
 
   const handleRowClick = () => onExpand(isExpanded ? null : message.id);
-
   const handleCheckboxClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     onSelect(message.id);
   };
-
   const handleMoreClick = (e: React.MouseEvent) => {
     e.stopPropagation();
   };
@@ -61,26 +55,14 @@ const MessageRow: React.FC<MessageRowProps> = ({
       aria-expanded={isExpanded}
       aria-selected={isSelected}
       onClick={handleRowClick}
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        bgcolor: !message.isRead
-          ? isDark
-            ? 'rgba(30, 64, 175, 0.1)'
-            : 'rgba(59, 130, 246, 0.1)'
-          : 'transparent',
-        transition: 'background-color 0.2s',
-        '&:hover': {
-          bgcolor: isDark ? 'grey.800' : 'grey.100',
-        },
-      }}
+      className={`flex flex-col transition-colors duration-200 
+        ${!message.isRead ? 'bg-blue-50 dark:bg-blue-900/20' : 'bg-transparent'}
+        hover:bg-gray-100 dark:hover:bg-gray-800`}
     >
+      {/* Unread indicator */}
       <Box
-        sx={{
-          width: 4,
-          bgcolor: message.isRead ? 'transparent' : theme.palette.primary.main,
-          flexShrink: 0,
-        }}
+        className='w-1 bg-transparent'
+        sx={{ bgcolor: message.isRead ? 'transparent' : 'primary.main' }}
       />
 
       {/* Content */}
@@ -100,8 +82,7 @@ const MessageRow: React.FC<MessageRowProps> = ({
           <Grid item xs={2}>
             <Typography
               fontWeight='medium'
-              color={message.from === 'Alldaypa' ? 'error.main' : isDark ? 'grey.200' : 'grey.900'}
-              fontSize='0.875rem'
+              className={`${message.from === 'Alldaypa' ? 'text-red-600 dark:text-red-400' : 'text-gray-900 dark:text-gray-200'} text-sm`}
             >
               {message.from}
             </Typography>
@@ -110,16 +91,14 @@ const MessageRow: React.FC<MessageRowProps> = ({
           <Grid item xs={4}>
             <Typography
               noWrap
-              fontSize='0.875rem'
-              fontWeight={message.isRead ? 'normal' : 'bold'}
-              color={isDark ? 'grey.200' : 'grey.900'}
+              className={`text-sm ${message.isRead ? 'font-normal' : 'font-bold'} text-gray-900 dark:text-gray-200`}
             >
               {message.subject}
             </Typography>
           </Grid>
 
           <Grid item xs={2}>
-            <Typography fontSize='0.875rem' color={isDark ? 'grey.300' : 'grey.600'}>
+            <Typography className='text-sm text-gray-600 dark:text-gray-300'>
               {message.company}
             </Typography>
           </Grid>
@@ -127,8 +106,7 @@ const MessageRow: React.FC<MessageRowProps> = ({
           <Grid item xs={2}>
             <Typography
               component='time'
-              fontSize='0.875rem'
-              color={isDark ? 'grey.400' : 'grey.500'}
+              className='text-sm text-gray-500 dark:text-gray-400'
               dateTime={message.date}
             >
               {formatDate(message.date)}
@@ -139,11 +117,7 @@ const MessageRow: React.FC<MessageRowProps> = ({
             <IconButton
               size='small'
               onClick={handleMoreClick}
-              sx={{
-                opacity: 0,
-                '&:hover': { bgcolor: isDark ? 'grey.700' : 'grey.300' },
-                '.MuiBox:hover &': { opacity: 1 },
-              }}
+              className='opacity-0 hover:bg-gray-300 dark:hover:bg-gray-700 group-hover:opacity-100'
               aria-label={`More actions for message from ${message.from}`}
             >
               <MoreVertIcon fontSize='small' />
@@ -152,7 +126,7 @@ const MessageRow: React.FC<MessageRowProps> = ({
         </Grid>
       </Box>
 
-      {isExpanded && <MessageContent message={message} isDark={isDark} />}
+      {isExpanded && <MessageContent message={message} />}
     </Box>
   );
 };

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Paper, Typography, useTheme } from '@mui/material';
+import { Box, Paper, Typography } from '@mui/material';
 import MessageActions from './MessageActions';
 
 interface Message {
@@ -16,52 +16,36 @@ interface Message {
 
 interface MessageContentProps {
   message: Message;
-  isDark: boolean;
+  onCloseDropdown?: () => void;
 }
 
-const MessageContent: React.FC<MessageContentProps> = ({ message, isDark }) => {
-  const theme = useTheme();
+const MessageContent: React.FC<MessageContentProps> = ({ message, onCloseDropdown }) => {
+  const handleActionClick = () => {
+    onCloseDropdown?.();
+  };
 
   return (
     <Box
       component='section'
       aria-label={`Content of message from ${message.from}`}
-      sx={{
-        borderLeft: `4px solid ${theme.palette.error.main}`,
-        backgroundColor: isDark ? theme.palette.background.paper : theme.palette.grey[50],
-        px: 3,
-        pb: 3,
-        pt: 2,
-      }}
+      className='border-l-4 border-red-500 bg-gray-50 dark:bg-gray-800 px-3 pb-3 pt-2'
     >
       <Box ml={6}>
         <MessageActions
-          isDark={isDark}
           messageId={message.id}
           messageFrom={message.from}
           messageCompany={message.company}
+          onActionClick={handleActionClick}
         />
 
         <Paper
           elevation={1}
-          sx={{
-            mt: 2,
-            p: 3,
-            borderRadius: 2,
-            backgroundColor: isDark ? theme.palette.background.default : '#fff',
-            border: `1px solid ${isDark ? theme.palette.grey[700] : theme.palette.grey[300]}`,
-            boxShadow: isDark ? '0 1px 3px rgba(0,0,0,0.5)' : '0 1px 3px rgba(0,0,0,0.1)',
-          }}
+          className='mt-2 p-3 rounded-lg bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 shadow-sm'
         >
           <Typography
             component='pre'
             variant='body2'
-            sx={{
-              fontFamily: 'monospace',
-              whiteSpace: 'pre-wrap',
-              color: isDark ? theme.palette.grey[300] : theme.palette.text.primary,
-              m: 0,
-            }}
+            className='font-mono whitespace-pre-wrap text-gray-900 dark:text-gray-300 m-0 text-[14px]'
             role='document'
             aria-label='Message content'
           >

@@ -23,7 +23,6 @@ interface SidebarProps {
   className?: string;
   currentPath?: string;
   onNavigate?: (path: string) => void;
-  isDark?: boolean;
   isCollapsed?: boolean;
 }
 
@@ -31,7 +30,6 @@ const Sidebar: React.FC<SidebarProps> = ({
   className,
   currentPath = '/home',
   onNavigate,
-  isDark = false,
   isCollapsed = false,
 }) => {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
@@ -70,11 +68,11 @@ const Sidebar: React.FC<SidebarProps> = ({
       <button
         onClick={toggleMobile}
         className={clsx(
-          'lg:hidden fixed top-[4.25rem] left-1 z-50 p-1 rounded-md transition-all duration-200',
-          'focus:outline-none',
-          isDark
-            ? 'bg-gray-800/90 text-white hover:bg-gray-700/90 border border-gray-700'
-            : 'bg-white/90 text-gray-900 hover:bg-gray-50/90 border border-gray-200 shadow-lg',
+          'lg:hidden fixed top-[4.25rem] left-1 z-50 p-2 rounded-xl transition-all duration-200',
+          'focus:outline-none focus:ring-2 focus:ring-primary-500/20',
+          'bg-sidebar-light-surface text-sidebar-light-text border border-sidebar-light-border shadow-card',
+          'dark:bg-sidebar-dark-surface dark:text-sidebar-dark-text dark:border-sidebar-dark-border dark:shadow-card-dark',
+          'hover:bg-sidebar-light-hover dark:hover:bg-sidebar-dark-hover',
           'backdrop-blur-xl'
         )}
         aria-label='Toggle mobile menu'
@@ -85,7 +83,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       {/* Mobile Overlay */}
       {isMobileOpen && (
         <div
-          className='lg:hidden fixed top-16 left-0 right-0 bottom-0 bg-black/50 backdrop-blur-sm z-30'
+          className='lg:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-30'
           onClick={closeMobile}
         />
       )}
@@ -93,7 +91,8 @@ const Sidebar: React.FC<SidebarProps> = ({
       {/* Sidebar */}
       <aside
         className={clsx(
-          'h-full flex flex-col border-r transition-all duration-300 ease-in-out relative',
+          'h-full flex flex-col transition-all duration-300 ease-in-out relative',
+          'border-r border-sidebar-light-border dark:border-sidebar-dark-border',
           // Desktop widths (lg and up)
           {
             'lg:w-16': isCollapsed,
@@ -101,23 +100,22 @@ const Sidebar: React.FC<SidebarProps> = ({
           },
           // Mobile and tablet behavior
           isMobileOpen
-            ? `fixed inset-y-0 left-0 z-40 translate-x-0 ${isCollapsed ? 'w-16' : 'w-48'}`
+            ? `fixed inset-y-0 left-0 z-40 translate-x-0 ${isCollapsed ? 'w-16' : 'w-64'} shadow-2xl`
             : 'fixed inset-y-0 left-0 z-40 -translate-x-full w-0',
-          // Keep relative layout for desktop
-          'lg:relative lg:translate-x-0',
-          // Dark/light theme
-          isDark
-            ? 'bg-gray-900/95 border-gray-700/50 lg:bg-gray-900 lg:backdrop-blur-0 backdrop-blur-xl'
-            : 'bg-white/95 border-gray-200/50 lg:bg-white lg:backdrop-blur-0 backdrop-blur-xl',
-
+          'lg:relative lg:translate-x-0 lg:shadow-none',
+          'bg-sidebar-light-bg dark:bg-sidebar-dark-bg',
+          'lg:backdrop-blur-0 backdrop-blur-xl',
           className
         )}
       >
         {/* Navigation */}
         <nav
           className={clsx(
-            'flex-1 lg:p-2 space-y-1 overflow-y-auto scrollbar-thin pt-2 min-h-0',
-            isMobileOpen && 'p-2'
+            'flex-1 px-3 py-2 space-y-1.5 overflow-y-auto min-h-0',
+            // Custom scrollbar styling
+            'scrollbar-thin scrollbar-track-transparent',
+            'scrollbar-thumb-sidebar-light-border hover:scrollbar-thumb-sidebar-light-textMuted',
+            'dark:scrollbar-thumb-sidebar-dark-border dark:hover:scrollbar-thumb-sidebar-dark-textMuted'
           )}
         >
           {navigationItems?.map(item => (
@@ -128,7 +126,6 @@ const Sidebar: React.FC<SidebarProps> = ({
               path={item.path}
               isActive={currentPath === item.path}
               isCollapsed={isCollapsed}
-              isDark={isDark}
               onClick={() => {
                 onNavigate?.(item.path);
                 closeMobile();
@@ -136,6 +133,15 @@ const Sidebar: React.FC<SidebarProps> = ({
             />
           ))}
         </nav>
+
+        {/* Sidebar Footer (optional) */}
+        {!isCollapsed && (
+          <div className='hidden lg:block px-4 py-4 border-t border-sidebar-light-border dark:border-sidebar-dark-border'>
+            <div className='text-xs text-sidebar-light-textMuted dark:text-sidebar-dark-textMuted'>
+              Personal Assistant
+            </div>
+          </div>
+        )}
       </aside>
     </>
   );

@@ -13,6 +13,7 @@ import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import { ThemeProvider, useTheme } from './theme/ThemeContext';
 import { createAppTheme } from './theme/mui-theme';
 import YourAvailability from './pages/YourAvailability';
+import AvailabilityDetailPage from './components/availability/AvailabilityDetailPage';
 
 const AppContent: React.FC = () => {
   const { isDark } = useTheme();
@@ -46,6 +47,28 @@ const AppContent: React.FC = () => {
                   <ProtectedRoute>
                     <MainLayout>
                       <YourAvailability />
+                    </MainLayout>
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path='/availability/:id'
+                element={
+                  <ProtectedRoute>
+                    <MainLayout>
+                      <AvailabilityDetailPage />
+                    </MainLayout>
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path='/messages'
+                element={
+                  <ProtectedRoute>
+                    <MainLayout>
+                      <HomePage />
                     </MainLayout>
                   </ProtectedRoute>
                 }

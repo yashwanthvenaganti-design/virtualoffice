@@ -80,7 +80,6 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
           <Sidebar
             currentPath={location.pathname}
             onNavigate={handleNavigate}
-            isDark={isDark}
             isCollapsed={sidebarCollapsed}
           />
         </div>

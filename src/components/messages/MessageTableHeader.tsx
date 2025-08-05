@@ -1,19 +1,12 @@
 import React from 'react';
-import { Box, Checkbox, Grid, Typography, useTheme } from '@mui/material';
+import { Box, Checkbox, Grid, Typography } from '@mui/material';
 
 interface MessageTableHeaderProps {
   selectAll: boolean;
   onSelectAll: (checked: boolean) => void;
-  isDark: boolean;
 }
 
-const MessageTableHeader: React.FC<MessageTableHeaderProps> = ({
-  selectAll,
-  onSelectAll,
-  isDark,
-}) => {
-  const theme = useTheme();
-
+const MessageTableHeader: React.FC<MessageTableHeaderProps> = ({ selectAll, onSelectAll }) => {
   const headers = [
     { key: 'select', label: '', colSpan: 1 },
     { key: 'from', label: 'From', colSpan: 2 },
@@ -27,13 +20,7 @@ const MessageTableHeader: React.FC<MessageTableHeaderProps> = ({
     <Box
       component='header'
       role='rowheader'
-      sx={{
-        px: 1,
-        py: 0.5,
-        borderBottom: `1px solid ${isDark ? theme.palette.grey[700] : theme.palette.grey[200]}`,
-        backgroundColor: isDark ? 'rgba(31,41,55,0.8)' : 'rgba(249,250,251,0.8)',
-        backdropFilter: 'blur(6px)',
-      }}
+      className='px-2 py-1 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/80 backdrop-blur-sm'
     >
       <Grid container alignItems='center' spacing={2}>
         {headers?.map(({ key, label, colSpan }) => (
@@ -50,12 +37,7 @@ const MessageTableHeader: React.FC<MessageTableHeaderProps> = ({
             ) : label ? (
               <Typography
                 variant='caption'
-                sx={{
-                  fontWeight: 600,
-                  textTransform: 'uppercase',
-                  letterSpacing: 0.5,
-                  color: isDark ? theme.palette.grey[400] : theme.palette.grey[600],
-                }}
+                className='!font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-400'
                 role='columnheader'
                 aria-sort='none'
               >

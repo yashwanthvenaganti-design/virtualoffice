@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import { useTheme } from '../theme/ThemeContext';
+import React, { useCallback, useState } from 'react';
 import PageHeader from '../components/common/PageHeader';
 import FilterDropdown from '../components/common/FilterDropdown';
 import ActionsDropdown from '../components/common/ActionsDropdown';
@@ -8,9 +7,10 @@ import Add from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import SearchInput from '../components/messages/SearchInput';
+import { useNavigate } from 'react-router-dom';
 
 const YourAvailability: React.FC = () => {
-  const { isDark } = useTheme();
+  const navigate = useNavigate();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedFilter, setSelectedFilter] = useState('Status Name');
@@ -59,6 +59,15 @@ const YourAvailability: React.FC = () => {
     setSelectedRows(checked ? staffAvailability.map(row => row.id) : []);
   };
 
+  const handleRowClick = useCallback(
+    (event: React.MouseEvent<HTMLDivElement>, id: number) => {
+      // Prevent click from selecting checkbox when user clicks the checkbox
+      if ((event.target as HTMLElement).closest('input[type="checkbox"]')) return;
+      navigate(`/availability/${id}`);
+    },
+    [navigate]
+  );
+
   return (
     <main
       className='flex-1 flex flex-col min-h-0'
@@ -66,16 +75,13 @@ const YourAvailability: React.FC = () => {
       aria-label='Your Availability Dashboard'
     >
       <PageHeader
-        isDark={isDark}
         icon={CalendarMonthIcon}
         title='Your availability'
         description='Manage your availability across locations and roles'
       />
 
       <section
-        className={`flex-shrink-0 p-3 border-b transition-colors ${
-          isDark ? 'border-gray-700 bg-gray-800/50' : 'border-gray-200 bg-white/80'
-        } backdrop-blur-sm`}
+        className='flex-shrink-0 p-3 border-b border-gray-200 bg-white/80 dark:border-gray-700 dark:bg-gray-800/50 backdrop-blur-sm'
         aria-label='Availability controls'
       >
         <div className='flex flex-col lg:flex-row gap-4'>
@@ -116,6 +122,7 @@ const YourAvailability: React.FC = () => {
           selectAll={selectAll}
           onSelectRow={handleSelectRow}
           onSelectAll={handleSelectAll}
+          onRowClick={handleRowClick}
         />
       </section>
     </main>

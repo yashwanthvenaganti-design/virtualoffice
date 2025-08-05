@@ -146,11 +146,9 @@ Head of Customer Service`,
             value={searchQuery}
             onChange={handleSearchChange}
             placeholder={`Search messages by ${selectedFilter.toLowerCase()}`}
-            isDark={isDark}
           />
 
           <ActionsDropdown
-            isDark={isDark}
             items={[
               {
                 icon: VisibilityIcon,
@@ -193,7 +191,6 @@ Head of Customer Service`,
           onSelectMessage={handleSelectMessage}
           onSelectAll={handleSelectAll}
           onExpandMessage={handleExpandMessage}
-          isDark={isDark}
         />
       </section>
     </main>
