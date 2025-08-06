@@ -116,7 +116,7 @@ const ForgotPasswordPage: React.FC = () => {
         {/* Main Container Card */}
         <div
           className={clsx(
-            'w-full max-w-8xl h-auto min-h-[650px] flex flex-col lg:flex-row shadow-2xl rounded-xl',
+            'w-full max-w-7xl h-auto min-h-[650px] flex flex-col lg:flex-row shadow-2xl rounded-xl',
             isDark
               ? 'bg-gray-800/90 backdrop-blur-xl border border-gray-700/50'
               : 'bg-white/90 backdrop-blur-xl border border-white/20'
@@ -285,7 +285,7 @@ const ForgotPasswordPage: React.FC = () => {
       {/* Main Container Card */}
       <div
         className={clsx(
-          'w-full max-w-8xl h-auto min-h-[650px] flex flex-col lg:flex-row shadow-2xl rounded-xl',
+          'w-full max-w-7xl h-auto min-h-[650px] flex flex-col lg:flex-row shadow-2xl rounded-xl',
           isDark
             ? 'bg-gray-800/90 backdrop-blur-xl border border-gray-700/50'
             : 'bg-white/90 backdrop-blur-xl border border-white/20'

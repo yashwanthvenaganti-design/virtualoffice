@@ -10,6 +10,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DevicesIcon from '@mui/icons-material/Devices';
+import ErrorBoundary from '../utils/ErrorBoundary';
 
 const YourAppDevices: React.FC = () => {
   const navigate = useNavigate();
@@ -71,68 +72,70 @@ const YourAppDevices: React.FC = () => {
   );
 
   return (
-    <main
-      className='flex-1 flex flex-col min-h-0'
-      role='main'
-      aria-label='Your Availability Dashboard'
-    >
-      <PageHeader
-        icon={DevicesIcon}
-        title='Your app devices'
-        description='Manage your app devices across locations and roles'
-      />
-
-      <section
-        className='flex-shrink-0 p-3 border-b border-gray-200 bg-white/80 dark:border-gray-700 dark:bg-gray-800/50 backdrop-blur-sm'
-        aria-label='Availability controls'
+    <ErrorBoundary>
+      <main
+        className='flex-1 flex flex-col min-h-0'
+        role='main'
+        aria-label='Your Availability Dashboard'
       >
-        <div className='flex flex-col lg:flex-row gap-4'>
-          <FilterDropdown
-            selected={selectedFilter}
-            options={filterOptions}
-            onChange={setSelectedFilter}
-          />
-
-          <SearchInput
-            value={searchQuery}
-            onChange={setSearchQuery}
-            placeholder={`Search messages by ${selectedFilter.toLowerCase()}`}
-          />
-
-          <ActionsDropdown
-            items={[
-              {
-                icon: VisibilityIcon,
-                label: 'Enable',
-                action: () => console.log('Enabled'),
-              },
-              {
-                icon: VisibilityOffIcon,
-                label: 'Disable',
-                action: () => console.log('Disabled'),
-              },
-              {
-                icon: DeleteIcon,
-                label: 'Delete',
-                action: () => console.log('Delete'),
-                isDanger: true,
-              },
-            ]}
-          />
-        </div>
-      </section>
-
-      <section className='flex-1 p-2 overflow-auto' aria-label='Availability Table'>
-        <AvailabilityTable
-          rows={staffAvailability}
-          selectedRows={selectedRows}
-          selectAll={selectAll}
-          onSelectRow={handleSelectRow}
-          onSelectAll={handleSelectAll}
-          onRowClick={handleRowClick}
+        <PageHeader
+          icon={DevicesIcon}
+          title='Your app devices'
+          description='Manage your app devices across locations and roles'
         />
-      </section>
-    </main>
+
+        <section
+          className='flex-shrink-0 p-3 border-b border-gray-200 bg-white/80 dark:border-gray-700 dark:bg-gray-800/50 backdrop-blur-sm'
+          aria-label='Availability controls'
+        >
+          <div className='flex flex-col lg:flex-row gap-4'>
+            <FilterDropdown
+              selected={selectedFilter}
+              options={filterOptions}
+              onChange={setSelectedFilter}
+            />
+
+            <SearchInput
+              value={searchQuery}
+              onChange={setSearchQuery}
+              placeholder={`Search messages by ${selectedFilter.toLowerCase()}`}
+            />
+
+            <ActionsDropdown
+              items={[
+                {
+                  icon: VisibilityIcon,
+                  label: 'Enable',
+                  action: () => console.log('Enabled'),
+                },
+                {
+                  icon: VisibilityOffIcon,
+                  label: 'Disable',
+                  action: () => console.log('Disabled'),
+                },
+                {
+                  icon: DeleteIcon,
+                  label: 'Delete',
+                  action: () => console.log('Delete'),
+                  isDanger: true,
+                },
+              ]}
+            />
+          </div>
+        </section>
+
+        <section className='flex-1 p-2 overflow-auto' aria-label='Availability Table'>
+          <AvailabilityTable
+            rows={staffAvailability}
+            selectedRows={selectedRows}
+            selectAll={selectAll}
+            onSelectRow={handleSelectRow}
+            onSelectAll={handleSelectAll}
+            onRowClick={handleRowClick}
+          />
+        </section>
+      </main>
+    </ErrorBoundary>
   );
 };
 

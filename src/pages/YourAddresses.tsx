@@ -12,6 +12,7 @@ import PriorityHighIcon from '@mui/icons-material/PriorityHigh';
 import LowPriorityIcon from '@mui/icons-material/LowPriority';
 import DisabledByDefaultIcon from '@mui/icons-material/DisabledByDefault';
 import AddressTable from '../components/addresses/AddressesTable';
+import ErrorBoundary from '../utils/ErrorBoundary';
 
 type AddressRowData = {
   id: number;
@@ -126,80 +127,82 @@ const YourAddresses: React.FC = () => {
   };
 
   return (
-    <main
-      className='flex-1 flex flex-col min-h-0'
-      role='main'
-      aria-label='Your Availability Dashboard'
-    >
-      <PageHeader
-        icon={LocationOnIcon}
-        title='Your address list'
-        description='Manage your address list across locations and roles'
-        infoMessage='The order the addresses appear here, is the same order that your PA sees.'
-      />
-
-      <section
-        className='flex-shrink-0 p-3 border-b border-gray-200 bg-white/80 dark:border-gray-700 dark:bg-gray-800/50 backdrop-blur-sm'
-        aria-label='Availability controls'
+    <ErrorBoundary>
+      <main
+        className='flex-1 flex flex-col min-h-0'
+        role='main'
+        aria-label='Your Availability Dashboard'
       >
-        <div className='flex flex-col lg:flex-row gap-4'>
-          <FilterDropdown
-            selected={selectedFilter}
-            options={filterOptions}
-            onChange={setSelectedFilter}
-          />
-
-          <SearchInput
-            value={searchQuery}
-            onChange={setSearchQuery}
-            placeholder={`Search by name...`}
-          />
-
-          <ActionsDropdown
-            items={[
-              {
-                icon: Add,
-                label: 'Add',
-                action: () => console.log('Add'),
-              },
-              {
-                icon: DeleteIcon,
-                label: 'Delete',
-                action: () => console.log('Delete'),
-                isDanger: true,
-              },
-              {
-                icon: PriorityHighIcon,
-                label: 'High priority',
-                action: () => console.log('Enabled'),
-              },
-              {
-                icon: DisabledByDefaultIcon,
-                label: 'Default priority',
-                action: () => console.log('Disabled'),
-              },
-              {
-                icon: LowPriorityIcon,
-                label: 'Low priority',
-                action: () => console.log('Disabled'),
-              },
-            ]}
-          />
-        </div>
-      </section>
-
-      <section className='flex-1 p-2 overflow-auto' aria-label='Address Table'>
-        <AddressTable
-          rows={filteredAddresses}
-          selectedRows={selectedRows}
-          onSelectRow={handleSelectRow}
-          onSelectAll={handleSelectAll}
-          selectAll={selectAll}
-          onRowClick={handleRowClick}
-          onEditAddress={handleEditAddress}
+        <PageHeader
+          icon={LocationOnIcon}
+          title='Your address list'
+          description='Manage your address list across locations and roles'
+          infoMessage='The order the addresses appear here, is the same order that your PA sees.'
         />
-      </section>
-    </main>
+
+        <section
+          className='flex-shrink-0 p-3 border-b border-gray-200 bg-white/80 dark:border-gray-700 dark:bg-gray-800/50 backdrop-blur-sm'
+          aria-label='Availability controls'
+        >
+          <div className='flex flex-col lg:flex-row gap-4'>
+            <FilterDropdown
+              selected={selectedFilter}
+              options={filterOptions}
+              onChange={setSelectedFilter}
+            />
+
+            <SearchInput
+              value={searchQuery}
+              onChange={setSearchQuery}
+              placeholder={`Search by name...`}
+            />
+
+            <ActionsDropdown
+              items={[
+                {
+                  icon: Add,
+                  label: 'Add',
+                  action: () => console.log('Add'),
+                },
+                {
+                  icon: DeleteIcon,
+                  label: 'Delete',
+                  action: () => console.log('Delete'),
+                  isDanger: true,
+                },
+                {
+                  icon: PriorityHighIcon,
+                  label: 'High priority',
+                  action: () => console.log('Enabled'),
+                },
+                {
+                  icon: DisabledByDefaultIcon,
+                  label: 'Default priority',
+                  action: () => console.log('Disabled'),
+                },
+                {
+                  icon: LowPriorityIcon,
+                  label: 'Low priority',
+                  action: () => console.log('Disabled'),
+                },
+              ]}
+            />
+          </div>
+        </section>
+
+        <section className='flex-1 p-2 overflow-auto' aria-label='Address Table'>
+          <AddressTable
+            rows={filteredAddresses}
+            selectedRows={selectedRows}
+            onSelectRow={handleSelectRow}
+            onSelectAll={handleSelectAll}
+            selectAll={selectAll}
+            onRowClick={handleRowClick}
+            onEditAddress={handleEditAddress}
+          />
+        </section>
+      </main>
+    </ErrorBoundary>
   );
 };
 

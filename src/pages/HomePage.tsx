@@ -11,6 +11,8 @@ import ArchiveIcon from '@mui/icons-material/Archive';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ForwardIcon from '@mui/icons-material/Forward';
 import MailIcon from '@mui/icons-material/Mail';
+import ErrorBoundary from '../utils/ErrorBoundary';
+
 interface Message {
   id: number;
   from: string;
@@ -120,79 +122,81 @@ Head of Customer Service`,
   };
 
   return (
-    <main className='flex-1 flex flex-col min-h-0' role='main' aria-label='Message Dashboard'>
-      <PageHeader
-        icon={MailIcon}
-        title='Your messages'
-        description='Manage your messages across everything from company name to subject.'
-      />
-
-      {/* Controls Section */}
-      <section
-        className={`flex-shrink-0 p-3 border-b transition-colors ${
-          isDark ? 'border-gray-700 bg-gray-800/50' : 'border-gray-200 bg-white/80'
-        } backdrop-blur-sm`}
-        aria-label='Message controls'
-      >
-        <div className='flex flex-col lg:flex-row gap-4'>
-          <FilterDropdown
-            selected={selectedFilter}
-            options={filterOptions}
-            onChange={handleFilterChange}
-          />
-
-          <SearchInput
-            value={searchQuery}
-            onChange={handleSearchChange}
-            placeholder={`Search messages by ${selectedFilter.toLowerCase()}`}
-          />
-
-          <ActionsDropdown
-            items={[
-              {
-                icon: VisibilityIcon,
-                label: 'Mark as read',
-                action: () => console.log('Mark as read'),
-              },
-              {
-                icon: VisibilityOffIcon,
-                label: 'Mark as unread',
-                action: () => console.log('Mark as unread'),
-              },
-              {
-                icon: ForwardIcon,
-                label: 'Forward',
-                action: () => console.log('Forward'),
-              },
-              {
-                icon: ArchiveIcon,
-                label: 'Archive',
-                action: () => console.log('Archive'),
-              },
-              {
-                icon: DeleteIcon,
-                label: 'Delete',
-                action: () => console.log('Delete'),
-                isDanger: true,
-              },
-            ]}
-          />
-        </div>
-      </section>
-
-      {/* Message Table Section */}
-      <section className='flex-1 p-2 overflow-auto' aria-label='Messages'>
-        <MessageTable
-          messages={messages}
-          selectedMessages={selectedMessages}
-          expandedMessage={expandedMessage}
-          selectAll={selectAll}
-          onSelectMessage={handleSelectMessage}
-          onSelectAll={handleSelectAll}
-          onExpandMessage={handleExpandMessage}
+    <ErrorBoundary>
+      <main className='flex-1 flex flex-col min-h-0' role='main' aria-label='Message Dashboard'>
+        <PageHeader
+          icon={MailIcon}
+          title='Your messages'
+          description='Manage your messages across everything from company name to subject.'
         />
-      </section>
-    </main>
+
+        {/* Controls Section */}
+        <section
+          className={`flex-shrink-0 p-3 border-b transition-colors ${
+            isDark ? 'border-gray-700 bg-gray-800/50' : 'border-gray-200 bg-white/80'
+          } backdrop-blur-sm`}
+          aria-label='Message controls'
+        >
+          <div className='flex flex-col lg:flex-row gap-4'>
+            <FilterDropdown
+              selected={selectedFilter}
+              options={filterOptions}
+              onChange={handleFilterChange}
+            />
+
+            <SearchInput
+              value={searchQuery}
+              onChange={handleSearchChange}
+              placeholder={`Search messages by ${selectedFilter.toLowerCase()}`}
+            />
+
+            <ActionsDropdown
+              items={[
+                {
+                  icon: VisibilityIcon,
+                  label: 'Mark as read',
+                  action: () => console.log('Mark as read'),
+                },
+                {
+                  icon: VisibilityOffIcon,
+                  label: 'Mark as unread',
+                  action: () => console.log('Mark as unread'),
+                },
+                {
+                  icon: ForwardIcon,
+                  label: 'Forward',
+                  action: () => console.log('Forward'),
+                },
+                {
+                  icon: ArchiveIcon,
+                  label: 'Archive',
+                  action: () => console.log('Archive'),
+                },
+                {
+                  icon: DeleteIcon,
+                  label: 'Delete',
+                  action: () => console.log('Delete'),
+                  isDanger: true,
+                },
+              ]}
+            />
+          </div>
+        </section>
+
+        {/* Message Table Section */}
+        <section className='flex-1 p-2 overflow-auto' aria-label='Messages'>
+          <MessageTable
+            messages={messages}
+            selectedMessages={selectedMessages}
+            expandedMessage={expandedMessage}
+            selectAll={selectAll}
+            onSelectMessage={handleSelectMessage}
+            onSelectAll={handleSelectAll}
+            onExpandMessage={handleExpandMessage}
+          />
+        </section>
+      </main>
+    </ErrorBoundary>
   );
 };
 
