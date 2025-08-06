@@ -81,11 +81,11 @@ const Notifications: React.FC<NotificationsProps> = ({ count, onClick, maxCount 
       </Badge>
 
       {/* Notification pulse animation for active notifications */}
-      {count > 0 && (
+      {/* {count > 0 && (
         <div className='absolute inset-0 rounded-xl animate-ping opacity-75'>
           <div className='w-full h-full rounded-xl bg-red-400/20' />
         </div>
-      )}
+      )} */}
     </IconButton>
   );
 };
