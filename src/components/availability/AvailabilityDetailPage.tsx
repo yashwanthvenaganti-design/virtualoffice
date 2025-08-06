@@ -2,27 +2,25 @@ import React, { useEffect, useState } from 'react';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import {
-  Box,
-  Button,
-  Typography,
-  Divider,
-  CircularProgress,
-  Alert,
-  RadioGroup,
-  FormControlLabel,
-  Radio,
-  useTheme,
-  useMediaQuery,
-  IconButton,
-} from '@mui/material';
-import { ArrowBack, Edit, Save, Phone, Email, Sms, CheckCircle, Cancel } from '@mui/icons-material';
 import { useNavigate, useParams } from 'react-router-dom';
-import CompactCard from './CompactCard';
-import CompactTextField from './CompactTextField';
-import NotificationSwitch from './NotificationSwitch';
-import PreviewCard from './PreviewCard';
-import CustomTooltip from '../mui/CustomTooltip';
+import {
+  ArrowBack,
+  Phone,
+  Email,
+  Sms,
+  CheckCircle,
+  Cancel,
+  Person,
+  Notifications,
+  Save,
+} from '@mui/icons-material';
+import { CircularProgress } from '@mui/material';
+
+import FormField from './FormField';
+import Input from './Input';
+import Switch from './Switch';
+import SectionHeader from './SectionHeader';
+import AvailabilityPreview from './AvailabilityPreview';
 
 const formSchema = z.object({
   statusName: z.string().min(1, 'Status name is required'),
@@ -58,9 +56,6 @@ const availabilityData = [
 const AvailabilityDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const theme = useTheme();
-  const isDark = theme.palette.mode === 'dark';
-  const isMobile = useMediaQuery(theme.breakpoints.down('lg'));
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -86,9 +81,10 @@ const AvailabilityDetailPage: React.FC = () => {
     },
   });
 
-  // Simulate loading data
+  const watchedValues = watch();
+
   useEffect(() => {
-    setTimeout(() => {
+    const timer = setTimeout(() => {
       const found = availabilityData.find(item => item.id === Number(id));
       if (found) {
         reset({
@@ -105,331 +101,271 @@ const AvailabilityDetailPage: React.FC = () => {
       }
       setLoading(false);
     }, 500);
+
+    return () => clearTimeout(timer);
   }, [id, reset]);
 
-  const watchedValues = watch();
-
-  // Submit handler
-  const onSubmit: SubmitHandler<FormValues> = async _data => {
+  const onSubmit: SubmitHandler<FormValues> = async () => {
     setSaving(true);
     try {
-      // Simulate API save
       await new Promise(resolve => setTimeout(resolve, 1000));
       setSaveSuccess(true);
-      setTimeout(() => setSaveSuccess(false), 2500);
-    } catch (err) {
-      // Handle error
+      setTimeout(() => setSaveSuccess(false), 2000);
     } finally {
       setSaving(false);
     }
   };
 
+  if (loading) {
+    return (
+      <div className='flex items-center justify-center min-h-[300px]'>
+        <CircularProgress />
+      </div>
+    );
+  }
+
   const handleBack = () => {
     navigate('/availability');
   };
 
-  if (loading) {
-    return (
-      <Box
-        sx={{
-          minHeight: '100vh',
-          background: isDark
-            ? 'linear-gradient(135deg, #0F172A 0%, #1E293B 100%)'
-            : 'linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 100%)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        <Box sx={{ textAlign: 'center' }}>
-          <CircularProgress sx={{ color: '#60A5FA', mb: 1 }} size={32} />
-          <Typography variant='body1' sx={{ fontSize: '0.875rem' }}>
-            Loading availability details...
-          </Typography>
-        </Box>
-      </Box>
-    );
-  }
-
   return (
-    <Box
-      sx={{
-        minHeight: '100vh',
-        background: isDark
-          ? 'linear-gradient(135deg, #0F172A 0%, #1E293B 100%)'
-          : 'linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 100%)',
-        padding: { xs: 1.5, md: 3 },
-        color: isDark ? 'white' : '#0F172A',
-      }}
-    >
-      <Box sx={{ mb: 4, display: 'flex', alignItems: 'center', gap: 1.5 }}>
-        <IconButton
-          onClick={handleBack}
-          size='small'
-          sx={{
-            color: isDark ? '#94A3B8' : '#64748B',
-            backgroundColor: isDark ? 'rgba(148, 163, 184, 0.1)' : 'rgba(100, 116, 139, 0.1)',
-            '&:hover': {
-              backgroundColor: isDark ? 'rgba(148, 163, 184, 0.2)' : 'rgba(100, 116, 139, 0.2)',
-              color: isDark ? 'white' : '#0F172A',
-            },
-          }}
-        >
-          <ArrowBack sx={{ fontSize: 20 }} />
-        </IconButton>
+    <div className='min-h-screen bg-gray-50 dark:bg-gray-900'>
+      <div className='max-w-7xl mx-auto px-4 sm:px-5 lg:px-6 py-4'>
+        {/* Header */}
+        <header className='mb-8'>
+          <div className='flex items-center gap-4 mb-6'>
+            <button
+              onClick={handleBack}
+              className='flex items-center justify-center w-10 h-10 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:border-gray-300 dark:hover:border-gray-600 transition-all duration-200 shadow-sm hover:shadow-md'
+              aria-label='Go back to availability list'
+            >
+              <ArrowBack className='w-5 h-5' />
+            </button>
+            <div>
+              <h1 className='text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent'>
+                Manage Availability
+              </h1>
+              <p className='text-sm text-gray-500 dark:text-gray-400 mt-1'>
+                Configure your availability status and notification preferences
+              </p>
+            </div>
+          </div>
 
-        <Box>
-          <Typography
-            variant='h4'
-            sx={{
-              fontWeight: 700,
-              background: 'linear-gradient(135deg, #60A5FA 0%, #34D399 100%)',
-              backgroundClip: 'text',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              fontSize: '1.75rem',
-              lineHeight: 1.2,
-              mb: 0.5,
-            }}
-          >
-            Manage Availability
-          </Typography>
-          <Typography
-            variant='body2'
-            sx={{
-              color: isDark ? '#94A3B8' : '#64748B',
-              fontSize: '0.875rem',
-            }}
-          >
-            Configure your availability status and notification preferences
-          </Typography>
-        </Box>
-      </Box>
+          {saveSuccess && (
+            <div
+              className='flex items-center gap-2 p-4 mb-6 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-300 rounded-xl animate-in fade-in slide-in-from-top-2 duration-300'
+              role='alert'
+              aria-live='polite'
+            >
+              <CheckCircle className='w-5 h-5 text-green-600 dark:text-green-400' />
+              <span className='font-medium'>Changes saved successfully!</span>
+            </div>
+          )}
+        </header>
 
-      {saveSuccess && (
-        <Alert
-          severity='success'
-          sx={{
-            mb: 2,
-            backgroundColor: 'rgba(34, 197, 94, 0.1)',
-            border: '1px solid rgba(34, 197, 94, 0.3)',
-            color: '#22C55E',
-            borderRadius: 1,
-            fontSize: '0.8125rem',
-          }}
-        >
-          Changes saved successfully!
-        </Alert>
-      )}
-
-      <form onSubmit={handleSubmit(onSubmit)} autoComplete='off'>
-        <Box
-          sx={{
-            display: 'grid',
-            gridTemplateColumns: { xs: '1fr', lg: '2fr 1fr' },
-            gap: 2.5,
-          }}
-        >
-          {/* Left Column */}
-          <Box className='flex flex-col gap-4'>
-            {/* Status */}
-            <CompactCard gradient='linear-gradient(90deg, #8B5CF6 0%, #06B6D4 100%)'>
-              <Typography
-                variant='subtitle1'
-                sx={{
-                  mb: 2,
-                  fontWeight: 600,
-                  color: isDark ? 'white' : '#0F172A',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 1,
-                  fontSize: '0.9375rem',
-                }}
-              >
-                <Edit sx={{ fontSize: 16 }} /> Status Configuration
-              </Typography>
-              <CompactTextField
-                {...register('statusName')}
-                label='Status Name'
-                error={!!errors.statusName}
-                helperText={errors.statusName?.message}
+        <form onSubmit={handleSubmit(onSubmit)} className='grid grid-cols-1 lg:grid-cols-3 gap-8'>
+          {/* Main Form */}
+          <div className='lg:col-span-2 space-y-10'>
+            {/* Status Configuration */}
+            <section aria-labelledby='status-section'>
+              <SectionHeader
+                icon={<Person className='w-5 h-5' />}
+                title='Status Configuration'
+                subtitle='Set your current status information'
               />
-            </CompactCard>
 
-            {/* Availability */}
-            <CompactCard gradient='linear-gradient(90deg, #34D399 0%, #10B981 100%)'>
-              <Typography
-                variant='subtitle1'
-                sx={{
-                  mb: 2,
-                  fontWeight: 600,
-                  color: isDark ? 'white' : '#0F172A',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 1,
-                  fontSize: '0.9375rem',
-                }}
-              >
-                {watchedValues.availability === 'available' ? (
-                  <CheckCircle sx={{ fontSize: 16, color: '#22C55E' }} />
-                ) : (
-                  <Cancel sx={{ fontSize: 16, color: '#EF4444' }} />
-                )}
-                Availability Status
-              </Typography>
+              <div className='space-y-6'>
+                <FormField
+                  label='Status Name'
+                  htmlFor='statusName'
+                  required
+                  error={errors.statusName?.message}
+                >
+                  <Input
+                    {...register('statusName')}
+                    id='statusName'
+                    placeholder='Enter your status name'
+                    error={!!errors.statusName}
+                  />
+                </FormField>
 
-              <RadioGroup
-                row
-                {...register('availability')}
-                sx={{
-                  gap: 2,
-                  '& .MuiFormControlLabel-root': {
-                    backgroundColor: isDark ? 'rgba(15, 23, 42, 0.3)' : 'rgba(241, 245, 249, 0.8)',
-                    borderRadius: 1,
-                    px: 1.5,
-                    py: 0.5,
-                    margin: 0,
-                    border: isDark
-                      ? '1px solid rgba(148, 163, 184, 0.2)'
-                      : '1px solid rgba(226, 232, 240, 0.8)',
-                  },
-                  '& .MuiRadio-root': {
-                    color: isDark ? '#60A5FA' : '#3B82F6',
-                    padding: '4px',
-                    '&.Mui-checked': {
-                      color: '#34D399',
-                    },
-                  },
-                  '& .MuiFormControlLabel-label': {
-                    color: isDark ? 'white' : '#0F172A',
-                    fontWeight: 500,
-                    fontSize: '0.8125rem',
-                  },
-                }}
-              >
-                <FormControlLabel
-                  value='available'
-                  control={<Radio size='small' />}
-                  label='Available'
-                />
-                <FormControlLabel
-                  value='unavailable'
-                  control={<Radio size='small' />}
-                  label='Unavailable'
-                />
-              </RadioGroup>
-            </CompactCard>
+                <div className='space-y-4'>
+                  <label className='block text-sm font-medium text-gray-900 dark:text-gray-100'>
+                    Availability Status <span className='text-red-500'>*</span>
+                  </label>
+                  <div className='grid grid-cols-2 gap-4'>
+                    <label
+                      className={`
+                      relative flex items-center gap-3 p-4 border rounded-xl cursor-pointer transition-all duration-200
+                      ${
+                        watchedValues.availability === 'available'
+                          ? 'border-green-300 bg-green-50 dark:bg-green-900/20 dark:border-green-700'
+                          : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-gray-300 dark:hover:border-gray-600'
+                      }
+                    `}
+                    >
+                      <input
+                        {...register('availability')}
+                        type='radio'
+                        value='available'
+                        className='sr-only'
+                      />
+                      <CheckCircle
+                        className={`w-5 h-5 ${
+                          watchedValues.availability === 'available'
+                            ? 'text-green-600'
+                            : 'text-gray-400'
+                        }`}
+                      />
+                      <span className='text-sm font-medium text-gray-900 dark:text-gray-100'>
+                        Available
+                      </span>
+                      {watchedValues.availability === 'available' && (
+                        <div className='absolute inset-0 border-2 border-green-500 rounded-xl pointer-events-none' />
+                      )}
+                    </label>
 
-            {/* Contact */}
-            <CompactCard gradient='linear-gradient(90deg, #F59E0B 0%, #EAB308 100%)'>
-              <Typography
-                variant='subtitle1'
-                sx={{
-                  mb: 2,
-                  fontWeight: 600,
-                  color: isDark ? 'white' : '#0F172A',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 1,
-                  fontSize: '0.9375rem',
-                }}
-              >
-                <Phone sx={{ fontSize: 16 }} /> Contact Details
-              </Typography>
-              <CompactTextField
-                {...register('telNo')}
+                    <label
+                      className={`
+                      relative flex items-center gap-3 p-4 border rounded-xl cursor-pointer transition-all duration-200
+                      ${
+                        watchedValues.availability === 'unavailable'
+                          ? 'border-red-300 bg-red-50 dark:bg-red-900/20 dark:border-red-700'
+                          : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-gray-300 dark:hover:border-gray-600'
+                      }
+                    `}
+                    >
+                      <input
+                        {...register('availability')}
+                        type='radio'
+                        value='unavailable'
+                        className='sr-only'
+                      />
+                      <Cancel
+                        className={`w-5 h-5 ${
+                          watchedValues.availability === 'unavailable'
+                            ? 'text-red-600'
+                            : 'text-gray-400'
+                        }`}
+                      />
+                      <span className='text-sm font-medium text-gray-900 dark:text-gray-100'>
+                        Unavailable
+                      </span>
+                      {watchedValues.availability === 'unavailable' && (
+                        <div className='absolute inset-0 border-2 border-red-500 rounded-xl pointer-events-none' />
+                      )}
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            {/* Contact Details */}
+            <section aria-labelledby='contact-section'>
+              <SectionHeader
+                icon={<Phone className='w-5 h-5' />}
+                title='Contact Details'
+                subtitle='Primary contact information'
+              />
+
+              <FormField
                 label='Telephone Number'
-                error={!!errors.telNo}
-                helperText={errors.telNo?.message}
-              />
-            </CompactCard>
+                htmlFor='telNo'
+                required
+                error={errors.telNo?.message}
+              >
+                <Input
+                  {...register('telNo')}
+                  id='telNo'
+                  type='tel'
+                  placeholder='+1 (555) 123-4567'
+                  error={!!errors.telNo}
+                />
+              </FormField>
+            </section>
 
             {/* Notifications */}
-            <CompactCard gradient='linear-gradient(90deg, #EC4899 0%, #BE185D 100%)'>
-              <Typography
-                variant='subtitle1'
-                sx={{
-                  mb: 2,
-                  fontWeight: 600,
-                  color: isDark ? 'white' : '#0F172A',
-                  fontSize: '0.9375rem',
-                }}
-              >
-                Message Notifications
-              </Typography>
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                <NotificationSwitch
-                  icon={<Email sx={{ fontSize: 16, color: '#60A5FA' }} />}
-                  label='Send Email Notifications'
+            <section aria-labelledby='notifications-section'>
+              <SectionHeader
+                icon={<Notifications className='w-5 h-5' />}
+                title='Notification Preferences'
+                subtitle='Configure how you want to receive notifications'
+              />
+
+              <div className='space-y-6'>
+                <Switch
                   checked={watchedValues.emailNotifications}
-                  onChange={(_, checked) => setValue('emailNotifications', checked)}
+                  onChange={checked => setValue('emailNotifications', checked)}
+                  label='Email Notifications'
+                  description='Receive notifications via email'
+                  icon={<Email className='w-4 h-4 text-blue-500' />}
                 >
-                  <CompactTextField
-                    {...register('emailAddress')}
+                  <FormField
                     label='Email Address'
-                    error={!!errors.emailAddress}
-                    helperText={errors.emailAddress?.message}
-                  />
-                </NotificationSwitch>
+                    htmlFor='emailAddress'
+                    error={errors.emailAddress?.message}
+                  >
+                    <Input
+                      {...register('emailAddress')}
+                      id='emailAddress'
+                      type='email'
+                      placeholder='john.doe@example.com'
+                      error={!!errors.emailAddress}
+                    />
+                  </FormField>
+                </Switch>
 
-                <Divider
-                  sx={{
-                    borderColor: isDark ? 'rgba(148, 163, 184, 0.2)' : 'rgba(226, 232, 240, 0.8)',
-                  }}
-                />
-
-                <NotificationSwitch
-                  icon={<Sms sx={{ fontSize: 16, color: '#10B981' }} />}
-                  label='Send SMS Notifications'
+                <Switch
                   checked={watchedValues.smsNotifications}
-                  onChange={(_, checked) => setValue('smsNotifications', checked)}
+                  onChange={checked => setValue('smsNotifications', checked)}
+                  label='SMS Notifications'
+                  description='Receive notifications via text message'
+                  icon={<Sms className='w-4 h-4 text-green-500' />}
                 >
-                  <CompactTextField {...register('smsNumber')} label='SMS Number' />
-                </NotificationSwitch>
-              </Box>
-            </CompactCard>
+                  <FormField label='SMS Number' htmlFor='smsNumber'>
+                    <Input
+                      {...register('smsNumber')}
+                      id='smsNumber'
+                      type='tel'
+                      placeholder='+1 (555) 123-4567'
+                    />
+                  </FormField>
+                </Switch>
+              </div>
+            </section>
 
             {/* Action Buttons */}
-            <Box className='flex gap-3 flex-wrap'>
+            <div className='flex flex-col sm:flex-row gap-4 pt-6 border-t border-gray-200 dark:border-gray-700'>
               <button
                 type='submit'
                 disabled={saving || !isDirty}
-                className={`
-                    flex items-center px-5 py-2 text-white font-semibold text-xs
-                    bg-gradient-to-r from-blue-400 to-green-400
-                    rounded-[5px] transition-all duration-150
-                    disabled:opacity-60 disabled:cursor-not-allowed
-                    shadow
-                    `}
+                className='flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-medium text-sm rounded-xl shadow-lg shadow-blue-600/25 hover:shadow-xl hover:shadow-blue-600/30 hover:from-blue-700 hover:to-blue-800 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98]'
               >
                 {saving ? (
-                  <CircularProgress size={14} color='inherit' className='mr-2' />
+                  <CircularProgress size={16} className='text-white' />
                 ) : (
-                  <Save sx={{ fontSize: 16, marginRight: 6 }} />
+                  <Save className='w-4 h-4' />
                 )}
                 {saving ? 'Saving...' : 'Save Changes'}
               </button>
 
               <button
                 type='button'
-                onClick={() => navigate('/availability')}
-                className={`
-                    flex items-center px-5 py-2 font-semibold text-xs
-                    border border-slate-300 dark:border-slate-600 text-slate-500 dark:text-slate-400
-                    rounded-[5px] transition-colors duration-150
-                    hover:border-red-400 hover:bg-red-50 hover:text-red-500
-                `}
+                onClick={handleBack}
+                className='px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-medium text-sm rounded-xl bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-400 dark:hover:border-gray-500 transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98]'
               >
                 Cancel
               </button>
-            </Box>
-          </Box>
+            </div>
+          </div>
 
-          {/* Right Column (Preview) */}
-          <PreviewCard formData={watchedValues} />
-        </Box>
-      </form>
-    </Box>
+          {/* Preview Sidebar */}
+          <div className='lg:col-span-1'>
+            <AvailabilityPreview formData={watchedValues} />
+          </div>
+        </form>
+      </div>
+    </div>
   );
 };
 

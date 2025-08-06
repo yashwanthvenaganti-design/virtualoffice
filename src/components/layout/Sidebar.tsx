@@ -118,20 +118,26 @@ const Sidebar: React.FC<SidebarProps> = ({
             'dark:scrollbar-thumb-sidebar-dark-border dark:hover:scrollbar-thumb-sidebar-dark-textMuted'
           )}
         >
-          {navigationItems?.map(item => (
-            <SidebarItem
-              key={item.path}
-              icon={item.icon}
-              label={item.label}
-              path={item.path}
-              isActive={currentPath === item.path}
-              isCollapsed={isCollapsed}
-              onClick={() => {
-                onNavigate?.(item.path);
-                closeMobile();
-              }}
-            />
-          ))}
+          {navigationItems?.map(item => {
+            const isActive =
+              currentPath === item.path ||
+              (item.path === '/availability' && currentPath.startsWith('/availability/'));
+
+            return (
+              <SidebarItem
+                key={item.path}
+                icon={item.icon}
+                label={item.label}
+                path={item.path}
+                isActive={isActive}
+                isCollapsed={isCollapsed}
+                onClick={() => {
+                  onNavigate?.(item.path);
+                  closeMobile();
+                }}
+              />
+            );
+          })}
         </nav>
 
         {/* Sidebar Footer (optional) */}
