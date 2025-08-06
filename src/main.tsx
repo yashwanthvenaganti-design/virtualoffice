@@ -6,9 +6,10 @@ import ErrorBoundary from './utils/ErrorBoundary';
 
 const container = document.getElementById('root');
 const root = createRoot(container!);
+
 root.render(
   <StrictMode>
-    <ErrorBoundary fallback={<div>Something went wrong.</div>}>
+    <ErrorBoundary>
       <App />
     </ErrorBoundary>
   </StrictMode>

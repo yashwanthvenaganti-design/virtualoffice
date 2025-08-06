@@ -14,6 +14,8 @@ import { ThemeProvider, useTheme } from './theme/ThemeContext';
 import { createAppTheme } from './theme/mui-theme';
 import YourAvailability from './pages/YourAvailability';
 import AvailabilityDetailPage from './components/availability/AvailabilityDetailPage';
+import YourAppDevices from './pages/YourAppDevices';
+import YourAddresses from './pages/YourAddresses';
 
 const AppContent: React.FC = () => {
   const { isDark } = useTheme();
@@ -69,6 +71,28 @@ const AppContent: React.FC = () => {
                   <ProtectedRoute>
                     <MainLayout>
                       <HomePage />
+                    </MainLayout>
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path='/devices'
+                element={
+                  <ProtectedRoute>
+                    <MainLayout>
+                      <YourAppDevices />
+                    </MainLayout>
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path='/addresses'
+                element={
+                  <ProtectedRoute>
+                    <MainLayout>
+                      <YourAddresses />
                     </MainLayout>
                   </ProtectedRoute>
                 }

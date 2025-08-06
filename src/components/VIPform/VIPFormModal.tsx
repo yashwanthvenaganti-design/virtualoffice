@@ -213,6 +213,8 @@ const VIPFormModal: React.FC<VIPFormModalProps> = ({ isOpen, onClose, onSubmit, 
                     sx={{
                       '& .MuiOutlinedInput-root': {
                         borderRadius: '6px',
+                        py: 0.25,
+                        px: 1,
                       },
                     }}
                   />
@@ -227,6 +229,8 @@ const VIPFormModal: React.FC<VIPFormModalProps> = ({ isOpen, onClose, onSubmit, 
                     sx={{
                       '& .MuiOutlinedInput-root': {
                         borderRadius: '6px',
+                        py: 0.25,
+                        px: 1,
                       },
                     }}
                   />
@@ -264,6 +268,8 @@ const VIPFormModal: React.FC<VIPFormModalProps> = ({ isOpen, onClose, onSubmit, 
                     sx={{
                       '& .MuiOutlinedInput-root': {
                         borderRadius: '6px',
+                        py: 0.25,
+                        px: 1,
                       },
                     }}
                   />

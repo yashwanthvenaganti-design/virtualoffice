@@ -55,7 +55,7 @@ const MessageRow: React.FC<MessageRowProps> = ({
       aria-expanded={isExpanded}
       aria-selected={isSelected}
       onClick={handleRowClick}
-      className={`flex flex-col transition-colors duration-200 
+      className={`group flex flex-col transition-colors duration-200 
         ${!message.isRead ? 'bg-blue-50 dark:bg-blue-900/20' : 'bg-transparent'}
         hover:bg-gray-100 dark:hover:bg-gray-800`}
     >
@@ -75,6 +75,7 @@ const MessageRow: React.FC<MessageRowProps> = ({
                 onClick={handleCheckboxClick}
                 inputProps={{ 'aria-label': `Select message from ${message.from}` }}
                 size='small'
+                className='opacity-0 group-hover:opacity-100 transition-opacity duration-200'
               />
             </Box>
           </Grid>

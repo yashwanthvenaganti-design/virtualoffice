@@ -122,7 +122,6 @@ Head of Customer Service`,
   return (
     <main className='flex-1 flex flex-col min-h-0' role='main' aria-label='Message Dashboard'>
       <PageHeader
-        isDark={isDark}
         icon={MailIcon}
         title='Your messages'
         description='Manage your messages across everything from company name to subject.'
