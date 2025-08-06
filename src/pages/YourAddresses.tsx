@@ -2,12 +2,9 @@ import React, { useCallback, useState } from 'react';
 import PageHeader from '../components/common/PageHeader';
 import FilterDropdown from '../components/common/FilterDropdown';
 import ActionsDropdown from '../components/common/ActionsDropdown';
-import AvailabilityTable from '../components/availability/AvailabilityTable';
 import SearchInput from '../components/messages/SearchInput';
 import { useNavigate } from 'react-router-dom';
 
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import DeleteIcon from '@mui/icons-material/Delete';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import { Add } from '@mui/icons-material';
@@ -15,6 +12,16 @@ import PriorityHighIcon from '@mui/icons-material/PriorityHigh';
 import LowPriorityIcon from '@mui/icons-material/LowPriority';
 import DisabledByDefaultIcon from '@mui/icons-material/DisabledByDefault';
 import AddressTable from '../components/addresses/AddressesTable';
+
+type AddressRowData = {
+  id: number;
+  name: string;
+  isDefault: boolean;
+  landmark: string;
+  companyTelNo: string;
+  addrLine1: string;
+  postcode: string;
+};
 
 const YourAddresses: React.FC = () => {
   const navigate = useNavigate();
@@ -128,6 +135,7 @@ const YourAddresses: React.FC = () => {
         icon={LocationOnIcon}
         title='Your address list'
         description='Manage your address list across locations and roles'
+        infoMessage='The order the addresses appear here, is the same order that your PA sees.'
       />
 
       <section

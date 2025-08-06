@@ -1,13 +1,16 @@
 import React from 'react';
 import type { SvgIconComponent } from '@mui/icons-material';
+import CustomTooltip from '../mui/CustomTooltip';
+import InfoRoundedIcon from '@mui/icons-material/InfoRounded';
 
 interface PageHeaderProps {
   icon: SvgIconComponent;
   title: string;
   description?: string;
+  infoMessage?: string;
 }
 
-const PageHeader: React.FC<PageHeaderProps> = ({ icon: Icon, title, description }) => {
+const PageHeader: React.FC<PageHeaderProps> = ({ icon: Icon, title, description, infoMessage }) => {
   return (
     <header
       className='relative flex-shrink-0 px-8 py-6 border-b border-gray-200/60 bg-gradient-to-r from-white via-white/95 to-gray-50/80 dark:border-gray-700/60 dark:from-gray-800 dark:via-gray-800/95 dark:to-gray-900/80 backdrop-blur-md'
@@ -24,9 +27,19 @@ const PageHeader: React.FC<PageHeaderProps> = ({ icon: Icon, title, description 
         </div>
 
         <div className='flex-1 min-w-0 pt-1'>
-          <h1 className='text-3xl font-bold tracking-tight text-gray-900 dark:text-white mb-2 leading-tight'>
-            {title}
-          </h1>
+          <div className='flex items-center gap-2 mb-2'>
+            <h1 className='text-3xl font-bold tracking-tight text-gray-900 dark:text-white leading-tight'>
+              {title}
+            </h1>
+            {infoMessage && (
+              <CustomTooltip title={infoMessage} placement='top'>
+                <InfoRoundedIcon
+                  className='w-5 h-5 text-blue-500 hover:text-blue-600 transition-colors cursor-help'
+                  fontSize='small'
+                />
+              </CustomTooltip>
+            )}
+          </div>
           {description && (
             <p className='text-base leading-relaxed text-gray-600 dark:text-gray-300 max-w-2xl font-medium'>
               {description}
