@@ -86,14 +86,14 @@ export const AddressTable: React.FC<AddressTableProps> = ({
       {/* Rows */}
       <div className='divide-y divide-gray-200 dark:divide-gray-700' role='rowgroup'>
         {rows?.map(row => {
-          const isSelected = selectedRows.includes(row.id);
+          const isSelected = selectedRows.includes(row?.id);
           return (
             <Box
               key={row.id}
               role='row'
               aria-selected={isSelected}
               className='group transition-colors duration-200 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer'
-              onClick={event => onRowClick?.(event, row.id)}
+              onClick={event => onRowClick?.(event, row?.id)}
             >
               <Box px={1} py={1} flex={1}>
                 <Grid container alignItems='center' spacing={2}>

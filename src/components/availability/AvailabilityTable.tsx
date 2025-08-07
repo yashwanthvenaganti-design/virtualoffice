@@ -120,7 +120,7 @@ const AvailabilityTable: React.FC<AvailabilityTableProps> = ({
                         size='small'
                         onClick={e => {
                           e.stopPropagation();
-                          onRowClick?.(e, row.id);
+                          onRowClick?.(e as unknown as React.MouseEvent<HTMLDivElement>, row.id);
                         }}
                         className='opacity-0 group-hover:opacity-100 transition-opacity duration-200 !p-1 flex-shrink-0'
                       >

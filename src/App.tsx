@@ -16,6 +16,7 @@ import YourAvailability from './pages/YourAvailability';
 import AvailabilityDetailPage from './components/availability/AvailabilityDetailPage';
 import YourAppDevices from './pages/YourAppDevices';
 import YourAddresses from './pages/YourAddresses';
+import AddressDetailPage from './components/addresses/AddressDetailPage';
 
 const AppContent: React.FC = () => {
   const { isDark } = useTheme();
@@ -93,6 +94,17 @@ const AppContent: React.FC = () => {
                   <ProtectedRoute>
                     <MainLayout>
                       <YourAddresses />
+                    </MainLayout>
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path='/addresses/:id'
+                element={
+                  <ProtectedRoute>
+                    <MainLayout>
+                      <AddressDetailPage />
                     </MainLayout>
                   </ProtectedRoute>
                 }
