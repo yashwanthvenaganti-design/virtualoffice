@@ -82,7 +82,7 @@ const Header: React.FC<HeaderProps> = ({
             </div>
 
             {/* Right side - Actions */}
-            <div className='flex items-center gap-2'>
+            <div className='flex items-center gap-1 md:gap-2 lg:gap-6 flex-shrink-0'>
               {/* Mobile Search Button */}
               <div className='lg:hidden'>
                 <button

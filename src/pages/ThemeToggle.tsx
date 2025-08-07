@@ -32,7 +32,7 @@ const ThemeToggle: React.FC = () => {
       <IconButton
         onClick={handleToggle}
         className={`
-          !relative !w-12 !h-12 !rounded-2xl !transition-all !duration-500 !ease-out
+          !relative !w-11 !h-11 !rounded-2xl !transition-all !duration-500 !ease-out
           !border-2 !overflow-hidden group
           focus:!outline-none 
           ${

@@ -1,23 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { useForm, type SubmitHandler } from 'react-hook-form';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate, useParams } from 'react-router-dom';
+import { z } from 'zod';
 import {
   ArrowBack,
   ArrowForward,
   ArrowBackIos,
   LocationOn,
   ContactPhone,
-  Email,
   Business,
   CheckCircle,
   Save,
   Person,
-  Home,
-  Phone,
-  Fax,
-  AlternateEmail,
 } from '@mui/icons-material';
 import { CircularProgress, Stepper, Step, StepLabel } from '@mui/material';
 import SectionHeader from '../availability/SectionHeader';
@@ -28,24 +21,24 @@ import AddressPreview from './AddressPreview';
 
 const formSchema = z.object({
   // Basic Information
-  name: z.string().min(1, 'Name is required'),
-  description: z.string().min(1, 'Description is required'),
+  name: z.string().trim().min(1, 'Name is required'),
+  description: z.string().trim().min(1, 'Description is required'),
 
   // Address Details
-  addressLine1: z.string().min(1, 'Address line 1 is required'),
+  addressLine1: z.string().trim().min(1, 'Address line 1 is required'),
   addressLine2: z.string().optional(),
   addressLine3: z.string().optional(),
-  town: z.string().min(1, 'Town is required'),
+  town: z.string().trim().min(1, 'Town is required'),
   county: z.string().optional(),
-  postcode: z.string().min(1, 'Postcode is required'),
+  postcode: z.string().trim().min(1, 'Postcode is required'),
   country: z.string().min(1, 'Country is required'),
 
   // Contact Details
-  telAreaCode: z.string().min(1, 'Area code is required'),
-  telNo: z.string().min(1, 'Telephone number is required'),
+  telAreaCode: z.string().trim().min(1, 'Area code is required'),
+  telNo: z.string().trim().min(1, 'Telephone number is required'),
   alternateTelNo: z.string().optional(),
   faxNo: z.string().optional(),
-  emailAddress: z.string().email('Invalid email address').optional().or(z.literal('')),
+  emailAddress: z.union([z.string().email('Invalid email address'), z.literal('')]).optional(),
 
   // Additional
   landmark: z.string().optional(),
@@ -68,8 +61,8 @@ const countryOptions = [
 ];
 
 // Mock data for existing address
-const addressData = {
-  1: {
+const addressData: Record<string, FormValues> = {
+  '1': {
     name: 'Primary address',
     description: 'Main company address',
     addressLine1: '123 Main Street',
@@ -97,76 +90,93 @@ const AddressDetailPage: React.FC = () => {
   const [saving, setSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
+  const [error, setError] = useState<string | null>(null);
 
-  const {
-    register,
-    handleSubmit,
-    reset,
-    setValue,
-    watch,
-    trigger,
-    formState: { errors, isDirty },
-  } = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
-    mode: 'onChange',
-    defaultValues: {
-      name: '',
-      description: '',
-      addressLine1: '',
-      addressLine2: '',
-      addressLine3: '',
-      town: '',
-      county: '',
-      postcode: '',
-      country: 'GB',
-      telAreaCode: '',
-      telNo: '',
-      alternateTelNo: '',
-      faxNo: '',
-      emailAddress: '',
-      landmark: '',
-    },
+  const [formData, setFormData] = useState<FormValues>({
+    name: '',
+    description: '',
+    addressLine1: '',
+    addressLine2: '',
+    addressLine3: '',
+    town: '',
+    county: '',
+    postcode: '',
+    country: 'GB',
+    telAreaCode: '',
+    telNo: '',
+    alternateTelNo: '',
+    faxNo: '',
+    emailAddress: '',
+    landmark: '',
   });
 
-  const watchedValues = watch();
+  const [fieldErrors, setFieldErrors] = useState<Partial<Record<keyof FormValues, string>>>({});
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      if (isEdit && id) {
-        const found = addressData[id as unknown as keyof typeof addressData];
-        if (found) {
-          reset(found);
-        }
+      if (isEdit && id && addressData[id]) {
+        const found = addressData[id];
+        setFormData(found);
       }
       setLoading(false);
     }, 500);
 
     return () => clearTimeout(timer);
-  }, [id, isEdit, reset]);
+  }, [id, isEdit]);
 
-  const onSubmit: SubmitHandler<FormValues> = async () => {
+  const handleInputChange =
+    (field: keyof FormValues) =>
+    (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+      setFormData(prev => ({
+        ...prev,
+        [field]: event.target.value,
+      }));
+
+      // Clear errors when user starts typing - like your LoginForm
+      if (error) setError(null);
+      if (fieldErrors[field]) {
+        setFieldErrors(prev => ({
+          ...prev,
+          [field]: undefined,
+        }));
+      }
+    };
+
+  const handleKeyPress = (event: React.KeyboardEvent) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      event.stopPropagation();
+      return false;
+    }
+  };
+
+  const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (currentStep !== steps.length - 1) {
+      return;
+    }
+
+    if (!validateForm()) {
+      setError('Please fix the errors above and try again.');
+      return;
+    }
+
     setSaving(true);
+    setError(null);
+
     try {
+      console.log('Saving address:', formData);
       await new Promise(resolve => setTimeout(resolve, 1000));
       setSaveSuccess(true);
-      setTimeout(() => setSaveSuccess(false), 2000);
+      setTimeout(() => {
+        setSaveSuccess(false);
+        // navigate('/addresses');
+      }, 2000);
+    } catch (error) {
+      console.error('Error saving address:', error);
+      setError('Failed to save address. Please try again.');
     } finally {
       setSaving(false);
-    }
-  };
-
-  const handleNext = async () => {
-    const fieldsToValidate = getFieldsForStep(currentStep);
-    const isValid = await trigger(fieldsToValidate);
-
-    if (isValid && currentStep < steps.length - 1) {
-      setCurrentStep(currentStep + 1);
-    }
-  };
-
-  const handlePrevious = () => {
-    if (currentStep > 0) {
-      setCurrentStep(currentStep - 1);
     }
   };
 
@@ -185,9 +195,113 @@ const AddressDetailPage: React.FC = () => {
     }
   };
 
+  const validateStepFields = (stepIndex: number): boolean => {
+    const fieldsToValidate = getFieldsForStep(stepIndex);
+
+    if (fieldsToValidate.length === 0) return true;
+
+    try {
+      // Create a schema with only the fields for this step
+      const stepSchema = z.object(
+        fieldsToValidate.reduce((acc, field) => {
+          const originalField = formSchema.shape[field];
+          if (originalField) {
+            acc[field] = originalField;
+          }
+          return acc;
+        }, {} as any)
+      );
+
+      const dataToValidate = fieldsToValidate.reduce((acc, field) => {
+        acc[field] = formData[field];
+        return acc;
+      }, {} as any);
+
+      stepSchema.parse(dataToValidate);
+
+      // Clear errors for this step
+      const clearedErrors = { ...fieldErrors };
+      fieldsToValidate.forEach(field => {
+        delete clearedErrors[field];
+      });
+      setFieldErrors(clearedErrors);
+
+      return true;
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        const errors: typeof fieldErrors = { ...fieldErrors };
+        err.errors.forEach(error => {
+          const field = error.path[0] as keyof FormValues;
+          if (field && fieldsToValidate.includes(field)) {
+            errors[field] = error.message;
+          }
+        });
+        setFieldErrors(errors);
+      }
+      return false;
+    }
+  };
+
+  const validateForm = (): boolean => {
+    try {
+      formSchema.parse(formData);
+      setFieldErrors({});
+      return true;
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        const errors: typeof fieldErrors = {};
+        err.errors.forEach(error => {
+          const field = error.path[0] as keyof FormValues;
+          if (field) {
+            errors[field] = error.message;
+          }
+        });
+        setFieldErrors(errors);
+      }
+      return false;
+    }
+  };
+
+  const isStepComplete = (stepIndex: number) => {
+    const fieldsForStep = getFieldsForStep(stepIndex);
+
+    if (fieldsForStep.length === 0) return true;
+
+    return fieldsForStep.every(field => {
+      const value = formData[field];
+      const hasValue = typeof value === 'string' ? value.trim().length > 0 : Boolean(value);
+      const hasNoError = !fieldErrors[field];
+      return hasValue && hasNoError;
+    });
+  };
+
+  const handleNext = () => {
+    if (validateStepFields(currentStep) && currentStep < steps.length - 1) {
+      setCurrentStep(currentStep + 1);
+    }
+  };
+
+  const handlePrevious = () => {
+    if (currentStep > 0) {
+      setCurrentStep(currentStep - 1);
+    }
+  };
+
   const getStepErrors = (stepIndex: number) => {
     const fieldsForStep = getFieldsForStep(stepIndex);
-    return fieldsForStep.some(field => errors[field]);
+    return fieldsForStep.some(field => fieldErrors[field]);
+  };
+
+  const canProceedToNext = () => {
+    const fieldsForStep = getFieldsForStep(currentStep);
+
+    if (fieldsForStep.length === 0) return true;
+
+    return fieldsForStep.every(field => {
+      const value = formData[field];
+      const hasValue = typeof value === 'string' ? value.trim().length > 0 : Boolean(value);
+      return hasValue;
+    });
   };
 
   if (loading) {
@@ -214,12 +328,14 @@ const AddressDetailPage: React.FC = () => {
             />
 
             <div className='space-y-6'>
-              <FormField label='Name' htmlFor='name' required error={errors.name?.message}>
+              <FormField label='Name' htmlFor='name' required error={fieldErrors.name}>
                 <Input
-                  {...register('name')}
                   id='name'
+                  value={formData.name}
+                  onChange={handleInputChange('name')}
+                  onKeyDown={handleKeyPress}
                   placeholder='Enter address name'
-                  error={!!errors.name}
+                  error={!!fieldErrors.name}
                   autoFocus
                 />
               </FormField>
@@ -228,13 +344,15 @@ const AddressDetailPage: React.FC = () => {
                 label='Description'
                 htmlFor='description'
                 required
-                error={errors.description?.message}
+                error={fieldErrors.description}
               >
                 <Input
-                  {...register('description')}
                   id='description'
+                  value={formData.description}
+                  onChange={handleInputChange('description')}
+                  onKeyDown={handleKeyPress}
                   placeholder='Enter address description'
-                  error={!!errors.description}
+                  error={!!fieldErrors.description}
                 />
               </FormField>
             </div>
@@ -255,13 +373,15 @@ const AddressDetailPage: React.FC = () => {
                 label='Address Line 1'
                 htmlFor='addressLine1'
                 required
-                error={errors.addressLine1?.message}
+                error={fieldErrors.addressLine1}
               >
                 <Input
-                  {...register('addressLine1')}
                   id='addressLine1'
+                  value={formData.addressLine1}
+                  onChange={handleInputChange('addressLine1')}
+                  onKeyDown={handleKeyPress}
                   placeholder='Street address, building number'
-                  error={!!errors.addressLine1}
+                  error={!!fieldErrors.addressLine1}
                   autoFocus
                 />
               </FormField>
@@ -269,45 +389,51 @@ const AddressDetailPage: React.FC = () => {
               <FormField
                 label='Address Line 2'
                 htmlFor='addressLine2'
-                error={errors.addressLine2?.message}
+                error={fieldErrors.addressLine2}
               >
                 <Input
-                  {...register('addressLine2')}
                   id='addressLine2'
+                  value={formData.addressLine2 || ''}
+                  onChange={handleInputChange('addressLine2')}
+                  onKeyDown={handleKeyPress}
                   placeholder='Apartment, suite, unit, building, floor, etc.'
-                  error={!!errors.addressLine2}
+                  error={!!fieldErrors.addressLine2}
                 />
               </FormField>
 
               <FormField
                 label='Address Line 3'
                 htmlFor='addressLine3'
-                error={errors.addressLine3?.message}
+                error={fieldErrors.addressLine3}
               >
                 <Input
-                  {...register('addressLine3')}
                   id='addressLine3'
+                  value={formData.addressLine3 || ''}
+                  onChange={handleInputChange('addressLine3')}
+                  onKeyDown={handleKeyPress}
                   placeholder='Additional address information'
-                  error={!!errors.addressLine3}
+                  error={!!fieldErrors.addressLine3}
                 />
               </FormField>
 
               <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-                <FormField label='Town' htmlFor='town' required error={errors.town?.message}>
+                <FormField label='Town' htmlFor='town' required error={fieldErrors.town}>
                   <Input
-                    {...register('town')}
                     id='town'
+                    value={formData.town}
+                    onChange={handleInputChange('town')}
                     placeholder='Enter town/city'
-                    error={!!errors.town}
+                    error={!!fieldErrors.town}
                   />
                 </FormField>
 
-                <FormField label='County' htmlFor='county' error={errors.county?.message}>
+                <FormField label='County' htmlFor='county' error={fieldErrors.county}>
                   <Input
-                    {...register('county')}
                     id='county'
+                    value={formData.county || ''}
+                    onChange={handleInputChange('county')}
                     placeholder='Enter county/state'
-                    error={!!errors.county}
+                    error={!!fieldErrors.county}
                   />
                 </FormField>
               </div>
@@ -317,27 +443,26 @@ const AddressDetailPage: React.FC = () => {
                   label='Postcode'
                   htmlFor='postcode'
                   required
-                  error={errors.postcode?.message}
+                  error={fieldErrors.postcode}
                 >
                   <Input
-                    {...register('postcode')}
                     id='postcode'
+                    value={formData.postcode}
+                    onChange={handleInputChange('postcode')}
+                    onKeyDown={handleKeyPress}
                     placeholder='Enter postcode'
-                    error={!!errors.postcode}
+                    error={!!fieldErrors.postcode}
                   />
                 </FormField>
 
-                <FormField
-                  label='Country'
-                  htmlFor='country'
-                  required
-                  error={errors.country?.message}
-                >
+                <FormField label='Country' htmlFor='country' required error={fieldErrors.country}>
                   <Select
-                    {...register('country')}
                     id='country'
+                    value={formData.country}
+                    onChange={handleInputChange('country')}
+                    onKeyDown={handleKeyPress}
                     options={countryOptions}
-                    error={!!errors.country}
+                    error={!!fieldErrors.country}
                   />
                 </FormField>
               </div>
@@ -360,13 +485,14 @@ const AddressDetailPage: React.FC = () => {
                   label='Area Code'
                   htmlFor='telAreaCode'
                   required
-                  error={errors.telAreaCode?.message}
+                  error={fieldErrors.telAreaCode}
                 >
                   <Input
-                    {...register('telAreaCode')}
                     id='telAreaCode'
+                    value={formData.telAreaCode}
+                    onChange={handleInputChange('telAreaCode')}
                     placeholder='0161'
-                    error={!!errors.telAreaCode}
+                    error={!!fieldErrors.telAreaCode}
                     autoFocus
                   />
                 </FormField>
@@ -375,14 +501,14 @@ const AddressDetailPage: React.FC = () => {
                   label='Telephone Number'
                   htmlFor='telNo'
                   required
-                  error={errors.telNo?.message}
-                  //   className='md:col-span-2'
+                  error={fieldErrors.telNo}
                 >
                   <Input
-                    {...register('telNo')}
                     id='telNo'
+                    value={formData.telNo}
+                    onChange={handleInputChange('telNo')}
                     placeholder='Enter telephone number'
-                    error={!!errors.telNo}
+                    error={!!fieldErrors.telNo}
                   />
                 </FormField>
               </div>
@@ -390,36 +516,39 @@ const AddressDetailPage: React.FC = () => {
               <FormField
                 label='Alternate Telephone'
                 htmlFor='alternateTelNo'
-                error={errors.alternateTelNo?.message}
+                error={fieldErrors.alternateTelNo}
               >
                 <Input
-                  {...register('alternateTelNo')}
                   id='alternateTelNo'
+                  value={formData.alternateTelNo || ''}
+                  onChange={handleInputChange('alternateTelNo')}
                   placeholder='Enter alternate telephone number'
-                  error={!!errors.alternateTelNo}
+                  error={!!fieldErrors.alternateTelNo}
                 />
               </FormField>
 
-              <FormField label='Fax Number' htmlFor='faxNo' error={errors.faxNo?.message}>
+              <FormField label='Fax Number' htmlFor='faxNo' error={fieldErrors.faxNo}>
                 <Input
-                  {...register('faxNo')}
                   id='faxNo'
+                  value={formData.faxNo || ''}
+                  onChange={handleInputChange('faxNo')}
                   placeholder='Enter fax number'
-                  error={!!errors.faxNo}
+                  error={!!fieldErrors.faxNo}
                 />
               </FormField>
 
               <FormField
                 label='Email Address'
                 htmlFor='emailAddress'
-                error={errors.emailAddress?.message}
+                error={fieldErrors.emailAddress}
               >
                 <Input
-                  {...register('emailAddress')}
                   id='emailAddress'
                   type='email'
+                  value={formData.emailAddress || ''}
+                  onChange={handleInputChange('emailAddress')}
                   placeholder='Enter email address'
-                  error={!!errors.emailAddress}
+                  error={!!fieldErrors.emailAddress}
                 />
               </FormField>
             </div>
@@ -436,12 +565,14 @@ const AddressDetailPage: React.FC = () => {
             />
 
             <div className='space-y-6'>
-              <FormField label='Landmark' htmlFor='landmark' error={errors.landmark?.message}>
+              <FormField label='Landmark' htmlFor='landmark' error={fieldErrors.landmark}>
                 <Input
-                  {...register('landmark')}
                   id='landmark'
+                  value={formData.landmark || ''}
+                  onChange={handleInputChange('landmark')}
+                  onKeyDown={handleKeyPress}
                   placeholder='Enter nearby landmark or reference point'
-                  error={!!errors.landmark}
+                  error={!!fieldErrors.landmark}
                   autoFocus
                 />
               </FormField>
@@ -516,7 +647,7 @@ const AddressDetailPage: React.FC = () => {
                         ${
                           currentStep === index
                             ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/25'
-                            : currentStep > index
+                            : isStepComplete(index)
                               ? 'bg-green-600 text-white'
                               : getStepErrors(index)
                                 ? 'bg-red-100 text-red-600 dark:bg-red-900/20 dark:text-red-400'
@@ -524,7 +655,11 @@ const AddressDetailPage: React.FC = () => {
                         }
                       `}
                       >
-                        {currentStep > index ? <CheckCircle className='w-4 h-4' /> : step.icon}
+                        {isStepComplete(index) && currentStep !== index ? (
+                          <CheckCircle className='w-4 h-4' />
+                        ) : (
+                          step.icon
+                        )}
                       </div>
                     }
                   >
@@ -546,6 +681,17 @@ const AddressDetailPage: React.FC = () => {
             </Stepper>
           </div>
 
+          {/* Error Alert */}
+          {error && (
+            <div
+              className='flex items-center gap-2 p-4 mb-6 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 rounded-xl'
+              role='alert'
+              aria-live='polite'
+            >
+              <span className='font-medium'>{error}</span>
+            </div>
+          )}
+
           {saveSuccess && (
             <div
               className='flex items-center gap-2 p-4 mb-6 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-300 rounded-xl animate-in fade-in slide-in-from-top-2 duration-300'
@@ -558,7 +704,7 @@ const AddressDetailPage: React.FC = () => {
           )}
         </header>
 
-        <form onSubmit={handleSubmit(onSubmit)} className='grid grid-cols-1 lg:grid-cols-3 gap-8'>
+        <form onSubmit={onSubmit} className='grid grid-cols-1 lg:grid-cols-3 gap-8'>
           {/* Main Form */}
           <div className='lg:col-span-2'>
             <div className='bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-8 min-h-[600px]'>
@@ -571,9 +717,8 @@ const AddressDetailPage: React.FC = () => {
                     type='button'
                     onClick={handlePrevious}
                     disabled={currentStep === 0}
-                    className='flex items-center justify-center gap-2 px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-medium text-sm rounded-xl bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-400 dark:hover:border-gray-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] disabled:transform-none'
+                    className='flex items-center justify-center gap-2 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-medium text-sm rounded-md bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-400 dark:hover:border-gray-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] disabled:transform-none'
                   >
-                    <ArrowBackIos className='w-4 h-4' />
                     Previous
                   </button>
 
@@ -581,16 +726,16 @@ const AddressDetailPage: React.FC = () => {
                     <button
                       type='button'
                       onClick={handleNext}
-                      className='flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-medium text-sm rounded-xl shadow-lg shadow-blue-600/25 hover:shadow-xl hover:shadow-blue-600/30 hover:from-blue-700 hover:to-blue-800 transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98]'
+                      disabled={!canProceedToNext()}
+                      className='flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-medium text-sm rounded-md shadow-lg shadow-blue-600/25 hover:shadow-xl hover:shadow-blue-600/30 hover:from-blue-700 hover:to-blue-800 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] disabled:transform-none'
                     >
                       Next
-                      <ArrowForward className='w-4 h-4' />
                     </button>
                   ) : (
                     <button
                       type='submit'
-                      disabled={saving || !isDirty}
-                      className='flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-green-600 to-green-700 text-white font-medium text-sm rounded-xl shadow-lg shadow-green-600/25 hover:shadow-xl hover:shadow-green-600/30 hover:from-green-700 hover:to-green-800 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98]'
+                      disabled={saving}
+                      className='flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-green-600 to-green-700 text-white font-medium text-sm rounded-md shadow-lg shadow-green-600/25 hover:shadow-xl hover:shadow-green-600/30 hover:from-green-700 hover:to-green-800 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98]'
                     >
                       {saving ? (
                         <CircularProgress size={16} className='text-white' />
@@ -605,7 +750,7 @@ const AddressDetailPage: React.FC = () => {
                 <button
                   type='button'
                   onClick={handleBack}
-                  className='px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-medium text-sm rounded-xl bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-400 dark:hover:border-gray-500 transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98]'
+                  className='px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-medium text-sm rounded-md bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-400 dark:hover:border-gray-500 transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98]'
                 >
                   Cancel
                 </button>
@@ -615,7 +760,7 @@ const AddressDetailPage: React.FC = () => {
 
           {/* Preview Sidebar */}
           <div className='lg:col-span-1'>
-            <AddressPreview formData={watchedValues} currentStep={currentStep} />
+            <AddressPreview formData={formData} currentStep={currentStep} />
           </div>
         </form>
       </div>

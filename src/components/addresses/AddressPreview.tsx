@@ -94,7 +94,7 @@ const AddressPreview: React.FC<AddressPreviewProps> = ({ formData, currentStep =
             </div>
             <div>
               <h3 className='text-lg font-semibold text-gray-900 dark:text-gray-100'>
-                Address Preview
+                What your PA sees
               </h3>
               <p className='text-sm text-gray-600 dark:text-gray-400'>
                 How this address will appear
@@ -232,7 +232,6 @@ const AddressPreview: React.FC<AddressPreviewProps> = ({ formData, currentStep =
             </div>
           </div>
 
-          {/* Additional Information */}
           {formData.landmark && (
             <div className='space-y-3'>
               <div className='flex items-center gap-2'>
@@ -248,85 +247,6 @@ const AddressPreview: React.FC<AddressPreviewProps> = ({ formData, currentStep =
               </div>
             </div>
           )}
-
-          {/* Step Progress Indicators */}
-          <div className='pt-4 border-t border-gray-200 dark:border-gray-700'>
-            <div className='space-y-2'>
-              <h4 className='text-sm font-medium text-gray-700 dark:text-gray-300 mb-3'>
-                Step Progress
-              </h4>
-
-              {/* Step 1: Basic Info */}
-              <div className='flex items-center gap-2'>
-                {formData.name && formData.description ? (
-                  <CheckCircle className='w-4 h-4 text-green-600' />
-                ) : (
-                  <RadioButtonUnchecked className='w-4 h-4 text-gray-300' />
-                )}
-                <span
-                  className={`text-xs ${
-                    formData.name && formData.description
-                      ? 'text-green-700 dark:text-green-400'
-                      : 'text-gray-500 dark:text-gray-400'
-                  }`}
-                >
-                  Basic Information
-                </span>
-              </div>
-
-              {/* Step 2: Address */}
-              <div className='flex items-center gap-2'>
-                {formData.addressLine1 && formData.town && formData.postcode && formData.country ? (
-                  <CheckCircle className='w-4 h-4 text-green-600' />
-                ) : (
-                  <RadioButtonUnchecked className='w-4 h-4 text-gray-300' />
-                )}
-                <span
-                  className={`text-xs ${
-                    formData.addressLine1 && formData.town && formData.postcode && formData.country
-                      ? 'text-green-700 dark:text-green-400'
-                      : 'text-gray-500 dark:text-gray-400'
-                  }`}
-                >
-                  Address Details
-                </span>
-              </div>
-
-              {/* Step 3: Contact */}
-              <div className='flex items-center gap-2'>
-                {formData.telAreaCode && formData.telNo ? (
-                  <CheckCircle className='w-4 h-4 text-green-600' />
-                ) : (
-                  <RadioButtonUnchecked className='w-4 h-4 text-gray-300' />
-                )}
-                <span
-                  className={`text-xs ${
-                    formData.telAreaCode && formData.telNo
-                      ? 'text-green-700 dark:text-green-400'
-                      : 'text-gray-500 dark:text-gray-400'
-                  }`}
-                >
-                  Contact Details
-                </span>
-              </div>
-
-              {/* Step 4: Additional */}
-              <div className='flex items-center gap-2'>
-                <CheckCircle className='w-4 h-4 text-blue-600' />
-                <span className='text-xs text-blue-700 dark:text-blue-400'>
-                  Additional Info (Optional)
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Footer */}
-        <div className='px-6 py-4 bg-gray-50 dark:bg-gray-800/50 border-t border-gray-200 dark:border-gray-700'>
-          <div className='flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400'>
-            <LocationOn className='w-3 h-3' />
-            <span>This preview updates as you fill in the form</span>
-          </div>
         </div>
       </div>
     </div>

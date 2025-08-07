@@ -6,24 +6,18 @@ interface SelectOption {
   label: string;
 }
 
-interface SelectProps extends Omit<React.SelectHTMLAttributes<HTMLSelectElement>, 'onChange'> {
+interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
   options: SelectOption[];
   error?: boolean;
-  onChange?: (value: string) => void;
 }
 
 const Select = forwardRef<HTMLSelectElement, SelectProps>(
-  ({ options, error, className, onChange, ...props }, ref) => {
-    const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-      onChange?.(e.target.value);
-    };
-
+  ({ options, error, className, ...props }, ref) => {
     return (
       <div className='relative'>
         <select
           {...props}
           ref={ref}
-          onChange={handleChange}
           className={`
             w-full px-4 py-3 pr-12 text-sm
             bg-white dark:bg-gray-800

@@ -97,7 +97,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ user, onLogout, onUserSettings, onP
       <button
         onClick={handleUserMenuOpen}
         className={`
-          flex items-center gap-3 px-3 py-0.5 rounded-xl transition-all duration-200 group
+          flex items-center gap-3 px-3 py-1 rounded-xl transition-all duration-200 group
           border-2 focus:outline-none focus:ring-2 focus:ring-primary-500/20
           border-header-light-border bg-header-light-surface hover:bg-header-light-hover hover:border-header-light-searchFocus hover:scale-105
           dark:border-header-dark-border dark:bg-header-dark-surface dark:hover:bg-header-dark-hover dark:hover:border-header-dark-searchFocus
@@ -133,7 +133,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ user, onLogout, onUserSettings, onP
           >
             {user.name}
           </div>
-          <div className='mt-1'>
+          <div className='mt-0'>
             <span className={getRoleColor(user.role)}>{formatRole(user.role)}</span>
           </div>
         </div>
@@ -156,29 +156,31 @@ const UserMenu: React.FC<UserMenuProps> = ({ user, onLogout, onUserSettings, onP
         onClick={handleUserMenuClose}
         transformOrigin={{ horizontal: 'right', vertical: 'top' }}
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-        PaperProps={{
-          elevation: 0,
-          className: `
+        slotProps={{
+          paper: {
+            elevation: 0,
+            className: `
             mt-2 min-w-[300px] backdrop-blur-xl border-2 transition-all duration-200
             bg-header-light-surface/98 border-header-light-border shadow-2xl
             dark:bg-header-dark-surface/98 dark:border-header-dark-border dark:shadow-2xl
           `,
-          sx: {
-            borderRadius: '16px',
-            boxShadow: isDark
-              ? '0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(51, 65, 85, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.05)'
-              : '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 8px 16px -8px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.9)',
-            '& .MuiMenuItem-root': {
+            sx: {
               borderRadius: '10px',
-              margin: '4px 16px',
-              padding: '12px 16px',
-              fontSize: '0.875rem',
-              fontWeight: 500,
-              minHeight: 'auto',
-              transition: 'all 0.2s ease',
-              '&:hover': {
-                backgroundColor: isDark ? 'rgba(59, 130, 246, 0.15)' : 'rgba(59, 130, 246, 0.1)',
-                transform: 'translateX(4px)',
+              boxShadow: isDark
+                ? '0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(51, 65, 85, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.05)'
+                : '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 8px 16px -8px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.9)',
+              '& .MuiMenuItem-root': {
+                borderRadius: '10px',
+                margin: '4px 16px',
+                padding: '10px 12px',
+                fontSize: '0.875rem',
+                fontWeight: 500,
+                minHeight: 'auto',
+                transition: 'all 0.2s ease',
+                '&:hover': {
+                  backgroundColor: isDark ? 'rgba(59, 130, 246, 0.15)' : 'rgba(59, 130, 246, 0.1)',
+                  transform: 'translateX(4px)',
+                },
               },
             },
           },
@@ -187,7 +189,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ user, onLogout, onUserSettings, onP
         {/* User Info Header */}
         <div
           className={`
-          px-6 py-5 border-b-2 transition-all duration-200
+          px-4 py-2 border-b-2 transition-all duration-200
           border-header-light-border bg-header-light-bg/50
           dark:border-header-dark-border dark:bg-header-dark-bg/50
         `}
@@ -317,13 +319,13 @@ const UserMenu: React.FC<UserMenuProps> = ({ user, onLogout, onUserSettings, onP
 
         <Divider
           sx={{
-            margin: '8px 20px',
+            margin: '4px 20px',
             borderColor: isDark ? 'rgba(51, 65, 85, 0.8)' : 'rgba(226, 232, 240, 0.8)',
             borderWidth: '1px',
           }}
         />
 
-        <div className='pb-2'>
+        <div>
           <MenuItem onClick={handleLogout}>
             <ListItemIcon>
               <LogoutIcon

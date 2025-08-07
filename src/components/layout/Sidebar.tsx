@@ -119,9 +119,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           )}
         >
           {navigationItems?.map(item => {
-            const isActive =
-              currentPath === item.path ||
-              (item.path === '/availability' && currentPath.startsWith('/availability/'));
+            const isActive = currentPath === item.path || currentPath.startsWith(`${item.path}/`);
 
             return (
               <SidebarItem
