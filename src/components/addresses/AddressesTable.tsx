@@ -130,10 +130,10 @@ export const AddressTable: React.FC<AddressTableProps> = ({
 
                           <IconButton
                             size='small'
-                            onClick={e => {
-                              e.stopPropagation();
-                              onEditAddress?.(row.id);
-                            }}
+                            // onClick={e => {
+                            //   e.stopPropagation();
+                            //   onEditAddress?.(row.id);
+                            // }}
                             className='opacity-0 group-hover:opacity-100 transition-opacity duration-200 !p-1 flex-shrink-0'
                           >
                             <EditIcon

@@ -777,7 +777,7 @@ const AvailabilityDetailPage: React.FC = () => {
         <form onSubmit={onSubmit} className='grid grid-cols-1 lg:grid-cols-3 gap-8'>
           {/* Main Form */}
           <div className='lg:col-span-2'>
-            <div className='bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-8 min-h-[600px]'>
+            <div className='bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-8 min-h-[400px]'>
               {renderStepContent()}
 
               {/* Navigation Buttons */}

@@ -1,23 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { z } from 'zod';
-import {
-  ArrowBack,
-  ArrowForward,
-  ArrowBackIos,
-  LocationOn,
-  ContactPhone,
-  Business,
-  CheckCircle,
-  Save,
-  Person,
-} from '@mui/icons-material';
-import { CircularProgress, Stepper, Step, StepLabel } from '@mui/material';
-import SectionHeader from '../availability/SectionHeader';
-import FormField from '../availability/FormField';
-import Input from '../availability/Input';
-import Select from './Select';
+import { ArrowBack, Person, LocationOn, ContactPhone, Business } from '@mui/icons-material';
+import { CircularProgress } from '@mui/material';
 import AddressPreview from './AddressPreview';
+import FormStepper, { type StepDefinition } from './FormStepper';
+import FormAlerts from './FormAlerts';
+import FormNavigation from './FormNavigation';
+import {
+  BasicInformationStep,
+  AddressDetailsStep,
+  ContactDetailsStep,
+  AdditionalInformationStep,
+  type FormValues,
+  type StepComponentProps,
+} from './FormStepComponents';
 
 const formSchema = z.object({
   // Basic Information
@@ -44,9 +41,7 @@ const formSchema = z.object({
   landmark: z.string().optional(),
 });
 
-type FormValues = z.infer<typeof formSchema>;
-
-const steps = [
+const steps: StepDefinition[] = [
   { id: 'basic', label: 'Basic Information', icon: <Person className='w-4 h-4' /> },
   { id: 'address', label: 'Address Details', icon: <LocationOn className='w-4 h-4' /> },
   { id: 'contact', label: 'Contact Details', icon: <ContactPhone className='w-4 h-4' /> },
@@ -60,7 +55,6 @@ const countryOptions = [
   { value: 'AU', label: 'Australia' },
 ];
 
-// Mock data for existing address
 const addressData: Record<string, FormValues> = {
   '1': {
     name: 'Primary address',
@@ -304,6 +298,33 @@ const AddressDetailPage: React.FC = () => {
     });
   };
 
+  const handleBack = () => {
+    navigate('/addresses');
+  };
+
+  const renderStepContent = () => {
+    const stepProps: StepComponentProps = {
+      formData,
+      fieldErrors,
+      handleInputChange,
+      handleKeyPress,
+      countryOptions,
+    };
+
+    switch (currentStep) {
+      case 0:
+        return <BasicInformationStep {...stepProps} />;
+      case 1:
+        return <AddressDetailsStep {...stepProps} />;
+      case 2:
+        return <ContactDetailsStep {...stepProps} />;
+      case 3:
+        return <AdditionalInformationStep {...stepProps} />;
+      default:
+        return null;
+    }
+  };
+
   if (loading) {
     return (
       <div className='flex items-center justify-center min-h-[300px]'>
@@ -311,298 +332,6 @@ const AddressDetailPage: React.FC = () => {
       </div>
     );
   }
-
-  const handleBack = () => {
-    navigate('/addresses');
-  };
-
-  const renderStepContent = () => {
-    switch (currentStep) {
-      case 0:
-        return (
-          <section aria-labelledby='basic-section' className='space-y-6'>
-            <SectionHeader
-              icon={<Person className='w-5 h-5' />}
-              title='Basic Information'
-              subtitle='Enter the name and description for this address'
-            />
-
-            <div className='space-y-6'>
-              <FormField label='Name' htmlFor='name' required error={fieldErrors.name}>
-                <Input
-                  id='name'
-                  value={formData.name}
-                  onChange={handleInputChange('name')}
-                  onKeyDown={handleKeyPress}
-                  placeholder='Enter address name'
-                  error={!!fieldErrors.name}
-                  autoFocus
-                />
-              </FormField>
-
-              <FormField
-                label='Description'
-                htmlFor='description'
-                required
-                error={fieldErrors.description}
-              >
-                <Input
-                  id='description'
-                  value={formData.description}
-                  onChange={handleInputChange('description')}
-                  onKeyDown={handleKeyPress}
-                  placeholder='Enter address description'
-                  error={!!fieldErrors.description}
-                />
-              </FormField>
-            </div>
-          </section>
-        );
-
-      case 1:
-        return (
-          <section aria-labelledby='address-section' className='space-y-6'>
-            <SectionHeader
-              icon={<LocationOn className='w-5 h-5' />}
-              title='Address Details'
-              subtitle='Enter the complete address information'
-            />
-
-            <div className='space-y-6'>
-              <FormField
-                label='Address Line 1'
-                htmlFor='addressLine1'
-                required
-                error={fieldErrors.addressLine1}
-              >
-                <Input
-                  id='addressLine1'
-                  value={formData.addressLine1}
-                  onChange={handleInputChange('addressLine1')}
-                  onKeyDown={handleKeyPress}
-                  placeholder='Street address, building number'
-                  error={!!fieldErrors.addressLine1}
-                  autoFocus
-                />
-              </FormField>
-
-              <FormField
-                label='Address Line 2'
-                htmlFor='addressLine2'
-                error={fieldErrors.addressLine2}
-              >
-                <Input
-                  id='addressLine2'
-                  value={formData.addressLine2 || ''}
-                  onChange={handleInputChange('addressLine2')}
-                  onKeyDown={handleKeyPress}
-                  placeholder='Apartment, suite, unit, building, floor, etc.'
-                  error={!!fieldErrors.addressLine2}
-                />
-              </FormField>
-
-              <FormField
-                label='Address Line 3'
-                htmlFor='addressLine3'
-                error={fieldErrors.addressLine3}
-              >
-                <Input
-                  id='addressLine3'
-                  value={formData.addressLine3 || ''}
-                  onChange={handleInputChange('addressLine3')}
-                  onKeyDown={handleKeyPress}
-                  placeholder='Additional address information'
-                  error={!!fieldErrors.addressLine3}
-                />
-              </FormField>
-
-              <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-                <FormField label='Town' htmlFor='town' required error={fieldErrors.town}>
-                  <Input
-                    id='town'
-                    value={formData.town}
-                    onChange={handleInputChange('town')}
-                    placeholder='Enter town/city'
-                    error={!!fieldErrors.town}
-                  />
-                </FormField>
-
-                <FormField label='County' htmlFor='county' error={fieldErrors.county}>
-                  <Input
-                    id='county'
-                    value={formData.county || ''}
-                    onChange={handleInputChange('county')}
-                    placeholder='Enter county/state'
-                    error={!!fieldErrors.county}
-                  />
-                </FormField>
-              </div>
-
-              <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-                <FormField
-                  label='Postcode'
-                  htmlFor='postcode'
-                  required
-                  error={fieldErrors.postcode}
-                >
-                  <Input
-                    id='postcode'
-                    value={formData.postcode}
-                    onChange={handleInputChange('postcode')}
-                    onKeyDown={handleKeyPress}
-                    placeholder='Enter postcode'
-                    error={!!fieldErrors.postcode}
-                  />
-                </FormField>
-
-                <FormField label='Country' htmlFor='country' required error={fieldErrors.country}>
-                  <Select
-                    id='country'
-                    value={formData.country}
-                    onChange={handleInputChange('country')}
-                    onKeyDown={handleKeyPress}
-                    options={countryOptions}
-                    error={!!fieldErrors.country}
-                  />
-                </FormField>
-              </div>
-            </div>
-          </section>
-        );
-
-      case 2:
-        return (
-          <section aria-labelledby='contact-section' className='space-y-6'>
-            <SectionHeader
-              icon={<ContactPhone className='w-5 h-5' />}
-              title='Contact Details'
-              subtitle='Enter contact information for this address'
-            />
-
-            <div className='space-y-6'>
-              <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
-                <FormField
-                  label='Area Code'
-                  htmlFor='telAreaCode'
-                  required
-                  error={fieldErrors.telAreaCode}
-                >
-                  <Input
-                    id='telAreaCode'
-                    value={formData.telAreaCode}
-                    onChange={handleInputChange('telAreaCode')}
-                    placeholder='0161'
-                    error={!!fieldErrors.telAreaCode}
-                    autoFocus
-                  />
-                </FormField>
-
-                <FormField
-                  label='Telephone Number'
-                  htmlFor='telNo'
-                  required
-                  error={fieldErrors.telNo}
-                >
-                  <Input
-                    id='telNo'
-                    value={formData.telNo}
-                    onChange={handleInputChange('telNo')}
-                    placeholder='Enter telephone number'
-                    error={!!fieldErrors.telNo}
-                  />
-                </FormField>
-              </div>
-
-              <FormField
-                label='Alternate Telephone'
-                htmlFor='alternateTelNo'
-                error={fieldErrors.alternateTelNo}
-              >
-                <Input
-                  id='alternateTelNo'
-                  value={formData.alternateTelNo || ''}
-                  onChange={handleInputChange('alternateTelNo')}
-                  placeholder='Enter alternate telephone number'
-                  error={!!fieldErrors.alternateTelNo}
-                />
-              </FormField>
-
-              <FormField label='Fax Number' htmlFor='faxNo' error={fieldErrors.faxNo}>
-                <Input
-                  id='faxNo'
-                  value={formData.faxNo || ''}
-                  onChange={handleInputChange('faxNo')}
-                  placeholder='Enter fax number'
-                  error={!!fieldErrors.faxNo}
-                />
-              </FormField>
-
-              <FormField
-                label='Email Address'
-                htmlFor='emailAddress'
-                error={fieldErrors.emailAddress}
-              >
-                <Input
-                  id='emailAddress'
-                  type='email'
-                  value={formData.emailAddress || ''}
-                  onChange={handleInputChange('emailAddress')}
-                  placeholder='Enter email address'
-                  error={!!fieldErrors.emailAddress}
-                />
-              </FormField>
-            </div>
-          </section>
-        );
-
-      case 3:
-        return (
-          <section aria-labelledby='additional-section' className='space-y-6'>
-            <SectionHeader
-              icon={<Business className='w-5 h-5' />}
-              title='Additional Information'
-              subtitle='Optional additional details for this address'
-            />
-
-            <div className='space-y-6'>
-              <FormField label='Landmark' htmlFor='landmark' error={fieldErrors.landmark}>
-                <Input
-                  id='landmark'
-                  value={formData.landmark || ''}
-                  onChange={handleInputChange('landmark')}
-                  onKeyDown={handleKeyPress}
-                  placeholder='Enter nearby landmark or reference point'
-                  error={!!fieldErrors.landmark}
-                  autoFocus
-                />
-              </FormField>
-
-              <div className='p-6 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl'>
-                <div className='flex items-start gap-3'>
-                  <div className='flex-shrink-0'>
-                    <div className='w-8 h-8 bg-blue-100 dark:bg-blue-800 rounded-lg flex items-center justify-center'>
-                      <Business className='w-4 h-4 text-blue-600 dark:text-blue-400' />
-                    </div>
-                  </div>
-                  <div>
-                    <h4 className='text-sm font-medium text-blue-900 dark:text-blue-100 mb-1'>
-                      Address Complete
-                    </h4>
-                    <p className='text-sm text-blue-700 dark:text-blue-300'>
-                      You've filled in all the required information. Review your details in the
-                      preview panel and click "Save Address" when ready.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-        );
-
-      default:
-        return null;
-    }
-  };
 
   return (
     <div className='min-h-screen bg-gray-50 dark:bg-gray-900'>
@@ -630,131 +359,33 @@ const AddressDetailPage: React.FC = () => {
           </div>
 
           {/* Progress Stepper */}
-          <div className='mb-6'>
-            <Stepper
-              activeStep={currentStep}
-              alternativeLabel
-              className='bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700'
-            >
-              {steps.map((step, index) => (
-                <Step key={step.id}>
-                  <StepLabel
-                    error={getStepErrors(index)}
-                    icon={
-                      <div
-                        className={`
-                        w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200
-                        ${
-                          currentStep === index
-                            ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/25'
-                            : isStepComplete(index)
-                              ? 'bg-green-600 text-white'
-                              : getStepErrors(index)
-                                ? 'bg-red-100 text-red-600 dark:bg-red-900/20 dark:text-red-400'
-                                : 'bg-gray-100 text-gray-400 dark:bg-gray-700 dark:text-gray-500'
-                        }
-                      `}
-                      >
-                        {isStepComplete(index) && currentStep !== index ? (
-                          <CheckCircle className='w-4 h-4' />
-                        ) : (
-                          step.icon
-                        )}
-                      </div>
-                    }
-                  >
-                    <span
-                      className={`
-                      text-sm font-medium
-                      ${
-                        currentStep >= index
-                          ? 'text-gray-900 dark:text-gray-100'
-                          : 'text-gray-500 dark:text-gray-400'
-                      }
-                    `}
-                    >
-                      {step.label}
-                    </span>
-                  </StepLabel>
-                </Step>
-              ))}
-            </Stepper>
-          </div>
+          <FormStepper
+            steps={steps}
+            activeStep={currentStep}
+            isStepComplete={isStepComplete}
+            getStepErrors={getStepErrors}
+          />
 
-          {/* Error Alert */}
-          {error && (
-            <div
-              className='flex items-center gap-2 p-4 mb-6 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 rounded-xl'
-              role='alert'
-              aria-live='polite'
-            >
-              <span className='font-medium'>{error}</span>
-            </div>
-          )}
-
-          {saveSuccess && (
-            <div
-              className='flex items-center gap-2 p-4 mb-6 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-300 rounded-xl animate-in fade-in slide-in-from-top-2 duration-300'
-              role='alert'
-              aria-live='polite'
-            >
-              <CheckCircle className='w-5 h-5 text-green-600 dark:text-green-400' />
-              <span className='font-medium'>Address saved successfully!</span>
-            </div>
-          )}
+          {/* Alerts */}
+          <FormAlerts error={error} saveSuccess={saveSuccess} />
         </header>
 
         <form onSubmit={onSubmit} className='grid grid-cols-1 lg:grid-cols-3 gap-8'>
           {/* Main Form */}
           <div className='lg:col-span-2'>
-            <div className='bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-8 min-h-[600px]'>
+            <div className='bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-8 min-h-[400px]'>
               {renderStepContent()}
 
               {/* Navigation Buttons */}
-              <div className='flex flex-col sm:flex-row gap-4 pt-8 mt-8 border-t border-gray-200 dark:border-gray-700'>
-                <div className='flex gap-4 flex-1'>
-                  <button
-                    type='button'
-                    onClick={handlePrevious}
-                    disabled={currentStep === 0}
-                    className='flex items-center justify-center gap-2 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-medium text-sm rounded-md bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-400 dark:hover:border-gray-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] disabled:transform-none'
-                  >
-                    Previous
-                  </button>
-
-                  {currentStep < steps.length - 1 ? (
-                    <button
-                      type='button'
-                      onClick={handleNext}
-                      disabled={!canProceedToNext()}
-                      className='flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-medium text-sm rounded-md shadow-lg shadow-blue-600/25 hover:shadow-xl hover:shadow-blue-600/30 hover:from-blue-700 hover:to-blue-800 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] disabled:transform-none'
-                    >
-                      Next
-                    </button>
-                  ) : (
-                    <button
-                      type='submit'
-                      disabled={saving}
-                      className='flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-green-600 to-green-700 text-white font-medium text-sm rounded-md shadow-lg shadow-green-600/25 hover:shadow-xl hover:shadow-green-600/30 hover:from-green-700 hover:to-green-800 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98]'
-                    >
-                      {saving ? (
-                        <CircularProgress size={16} className='text-white' />
-                      ) : (
-                        <Save className='w-4 h-4' />
-                      )}
-                      {saving ? 'Saving...' : 'Save Address'}
-                    </button>
-                  )}
-                </div>
-
-                <button
-                  type='button'
-                  onClick={handleBack}
-                  className='px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-medium text-sm rounded-md bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-400 dark:hover:border-gray-500 transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98]'
-                >
-                  Cancel
-                </button>
-              </div>
+              <FormNavigation
+                currentStep={currentStep}
+                totalSteps={steps.length}
+                saving={saving}
+                canProceedToNext={canProceedToNext()}
+                onPrevious={handlePrevious}
+                onNext={handleNext}
+                onCancel={handleBack}
+              />
             </div>
           </div>
 
