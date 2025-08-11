@@ -10,12 +10,12 @@ interface ContactDetailsStepProps {
   };
   fieldErrors: Partial<Record<string, string>>;
   onInputChange: (
-    field: string
+    field: keyof ContactDetailsStepProps['formData']
   ) => (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
   onKeyPress: (event: React.KeyboardEvent) => void;
 }
 
-export const ContactDetailsStep: React.FC<ContactDetailsStepProps> = ({
+const ContactDetailsStep: React.FC<ContactDetailsStepProps> = ({
   formData,
   fieldErrors,
   onInputChange,
@@ -65,3 +65,5 @@ export const ContactDetailsStep: React.FC<ContactDetailsStepProps> = ({
     </section>
   );
 };
+
+export default ContactDetailsStep;

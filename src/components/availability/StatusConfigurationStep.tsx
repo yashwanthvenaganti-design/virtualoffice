@@ -4,6 +4,10 @@ import FormField from './FormField';
 import Input from './Input';
 import SectionHeader from './SectionHeader';
 
+type FormValues = {
+  statusName: string;
+  availability: 'available' | 'unavailable';
+};
 interface StatusConfigurationStepProps {
   formData: {
     statusName: string;
@@ -11,12 +15,12 @@ interface StatusConfigurationStepProps {
   };
   fieldErrors: Partial<Record<string, string>>;
   onInputChange: (
-    field: string
+    field: keyof FormValues
   ) => (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
   onKeyPress: (event: React.KeyboardEvent) => void;
 }
 
-export const StatusConfigurationStep: React.FC<StatusConfigurationStepProps> = ({
+const StatusConfigurationStep: React.FC<StatusConfigurationStepProps> = ({
   formData,
   fieldErrors,
   onInputChange,
@@ -115,3 +119,5 @@ export const StatusConfigurationStep: React.FC<StatusConfigurationStepProps> = (
     </section>
   );
 };
+
+export default StatusConfigurationStep;

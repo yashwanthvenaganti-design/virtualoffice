@@ -14,13 +14,13 @@ interface NotificationPreferencesStepProps {
   };
   fieldErrors: Partial<Record<string, string>>;
   onInputChange: (
-    field: string
+    field: keyof NotificationPreferencesStepProps['formData']
   ) => (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
   onSwitchChange: (field: 'emailNotifications' | 'smsNotifications') => (checked: boolean) => void;
   onKeyPress: (event: React.KeyboardEvent) => void;
 }
 
-export const NotificationPreferencesStep: React.FC<NotificationPreferencesStepProps> = ({
+const NotificationPreferencesStep: React.FC<NotificationPreferencesStepProps> = ({
   formData,
   fieldErrors,
   onInputChange,
@@ -105,3 +105,5 @@ export const NotificationPreferencesStep: React.FC<NotificationPreferencesStepPr
     </section>
   );
 };
+
+export default NotificationPreferencesStep;

@@ -16,7 +16,7 @@ interface ReviewAndSaveStepProps {
   formData: FormValues;
 }
 
-export const ReviewAndSaveStep: React.FC<ReviewAndSaveStepProps> = ({ formData }) => {
+const ReviewAndSaveStep: React.FC<ReviewAndSaveStepProps> = ({ formData }) => {
   return (
     <section aria-labelledby='review-section' className='space-y-6'>
       <SectionHeader
@@ -114,3 +114,5 @@ export const ReviewAndSaveStep: React.FC<ReviewAndSaveStepProps> = ({ formData }
     </section>
   );
 };
+
+export default ReviewAndSaveStep;

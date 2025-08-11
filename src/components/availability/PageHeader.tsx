@@ -7,7 +7,7 @@ interface PageHeaderProps {
   subtitle: string;
 }
 
-export const PageHeader: React.FC<PageHeaderProps> = ({ onBack, title, subtitle }) => {
+const PageHeader: React.FC<PageHeaderProps> = ({ onBack, title, subtitle }) => {
   return (
     <header className='mb-8'>
       <div className='flex items-center gap-4 mb-6'>
@@ -28,3 +28,5 @@ export const PageHeader: React.FC<PageHeaderProps> = ({ onBack, title, subtitle 
     </header>
   );
 };
+
+export default PageHeader;
