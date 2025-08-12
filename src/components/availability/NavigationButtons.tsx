@@ -10,6 +10,7 @@ interface NavigationButtonsProps {
   onPrevious: () => void;
   onNext: () => void;
   onBack: () => void;
+  onSave: () => void;
 }
 
 const NavigationButtons: React.FC<NavigationButtonsProps> = ({
@@ -20,6 +21,7 @@ const NavigationButtons: React.FC<NavigationButtonsProps> = ({
   onPrevious,
   onNext,
   onBack,
+  onSave,
 }) => {
   return (
     <div className='flex flex-col sm:flex-row gap-4 pt-8 mt-8 border-t border-gray-200 dark:border-gray-700'>
@@ -44,7 +46,8 @@ const NavigationButtons: React.FC<NavigationButtonsProps> = ({
           </button>
         ) : (
           <button
-            type='submit'
+            type='button'
+            onClick={onSave}
             disabled={saving}
             className='flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-green-600 to-green-700 text-white font-medium text-sm rounded-xl shadow-lg shadow-green-600/25 hover:shadow-xl hover:shadow-green-600/30 hover:from-green-700 hover:to-green-800 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98]'
           >

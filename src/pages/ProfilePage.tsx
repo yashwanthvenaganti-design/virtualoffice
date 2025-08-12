@@ -364,15 +364,17 @@ const ProfilePage: React.FC = () => {
 
                     {/* Role */}
                     <div className='flex items-center gap-4'>
-                      {getRoleIcon(user.role)}
+                      {getRoleIcon(user?.role || '')}
                       <div className='flex-1'>
                         <label
                           className={`block text-sm font-medium mb-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}
                         >
                           Role
                         </label>
-                        <span className={getRoleColor(user.role)}>
-                          {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+                        <span className={getRoleColor(user.role || '')}>
+                          {user?.role
+                            ? user.role.charAt(0).toUpperCase() + user.role.slice(1)
+                            : 'Unknown'}
                         </span>
                       </div>
                     </div>

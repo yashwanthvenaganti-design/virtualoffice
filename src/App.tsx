@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { ThemeProvider as MuiThemeProvider, CssBaseline } from '@mui/material';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
 import { useTheme } from './theme/ThemeContext';
 import { createAppTheme } from './theme/mui-theme';
 
@@ -158,6 +159,65 @@ const App: React.FC = () => {
             {/* Catch all route - redirect to login */}
             <Route path='*' element={<Navigate to='/login' replace />} />
           </Routes>
+
+          {/* Toast Notifications Container */}
+          <Toaster
+            position='bottom-right'
+            reverseOrder={false}
+            gutter={8}
+            containerClassName=''
+            containerStyle={{}}
+            toastOptions={{
+              // Default options for all toasts
+              duration: 4000,
+              className: '',
+              style: {
+                background: isDark ? '#374151' : '#ffffff',
+                color: isDark ? '#ffffff' : '#1f2937',
+                border: isDark ? '1px solid #4B5563' : '1px solid #E5E7EB',
+                borderRadius: '8px',
+                padding: '12px 16px',
+                fontSize: '14px',
+                fontWeight: '500',
+                boxShadow: isDark
+                  ? '0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2)'
+                  : '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+                maxWidth: '400px',
+              },
+              // Success toast styling
+              success: {
+                duration: 3000,
+                style: {
+                  background: '#10B981',
+                  color: '#ffffff',
+                  border: '1px solid #059669',
+                },
+                iconTheme: {
+                  primary: '#ffffff',
+                  secondary: '#10B981',
+                },
+              },
+              error: {
+                duration: 5000,
+                style: {
+                  background: '#EF4444',
+                  color: '#ffffff',
+                  border: '1px solid #DC2626',
+                },
+                iconTheme: {
+                  primary: '#ffffff',
+                  secondary: '#EF4444',
+                },
+              },
+              loading: {
+                style: {
+                  background: isDark ? '#4B5563' : '#F3F4F6',
+                  color: isDark ? '#ffffff' : '#1f2937',
+                  border: isDark ? '1px solid #6B7280' : '1px solid #D1D5DB',
+                },
+              },
+            }}
+          />
         </div>
       </Router>
     </MuiThemeProvider>

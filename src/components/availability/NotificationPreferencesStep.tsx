@@ -15,7 +15,7 @@ interface FormValues {
   smsNumber?: string;
 }
 
-interface NotificationsStepProps {
+interface NotificationPreferencesStepProps {
   formData: FormValues;
   fieldErrors: Partial<Record<keyof FormValues, string>>;
   onInputChange: (
@@ -25,7 +25,7 @@ interface NotificationsStepProps {
   onKeyPress: (event: React.KeyboardEvent) => void;
 }
 
-export const NotificationsStep: React.FC<NotificationsStepProps> = ({
+export const NotificationPreferencesStep: React.FC<NotificationPreferencesStepProps> = ({
   formData,
   fieldErrors,
   onInputChange,

@@ -1,22 +1,24 @@
-import React, { useCallback, useState, useMemo } from 'react';
+import React, { useCallback, useState, useMemo, useEffect } from 'react';
 import PageHeader from '../components/common/PageHeader';
 import FilterDropdown from '../components/common/FilterDropdown';
 import ActionsDropdown from '../components/common/ActionsDropdown';
-import AvailabilityTable from '../components/availability/AvailabilityTable';
 import Add from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import SearchInput from '../components/messages/SearchInput';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { CircularProgress } from '@mui/material';
 
 import { useAvailabilities, useDeleteAvailabilities } from '../hooks/useAvailability';
 import type { AvailabilityItem } from '../types/availability';
+import AvailabilityTableWrapper from './AvailabilityTableWrapper';
+import toast from 'react-hot-toast';
 
 const PEOPLE_ID = import.meta.env.VITE_APP_PEOPLE_ID;
 
 const YourAvailability: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedFilter, setSelectedFilter] = useState('Status Name');
@@ -37,6 +39,26 @@ const YourAvailability: React.FC = () => {
     }
   );
 
+  useEffect(() => {
+    const state = location.state as any;
+
+    if (state?.refreshData) {
+      // Method 1: Refetch data from server (ensures fresh data)
+      refetch();
+
+      // Method 2: Alternative - invalidate queries to trigger automatic refetch
+      // queryClient.invalidateQueries({ queryKey: ['availabilities'] });
+
+      // Show success message if provided
+      if (state.message) {
+        toast.success(state.message);
+      }
+
+      // Clear the state to prevent repeated refreshes
+      navigate(location.pathname, { replace: true, state: undefined });
+    }
+  }, [location.state, refetch, navigate, location.pathname]);
+
   // Delete mutation
   const deleteMutation = useDeleteAvailabilities({
     onSuccess: data => {
@@ -53,10 +75,8 @@ const YourAvailability: React.FC = () => {
 
   const filterOptions = ['Status Name', 'Tel No'];
 
-  // Transform API data to match table component expectations
   const availabilities = availabilitiesResponse?.data || [];
 
-  // Filter and search logic
   const filteredAvailabilities = useMemo(() => {
     if (!availabilities.length) return [];
 
@@ -71,7 +91,6 @@ const YourAvailability: React.FC = () => {
         case 'Tel No':
           return item.telNo.toLowerCase().includes(query);
         default:
-          // Search in name and tel if no specific filter
           return (
             item.name.toLowerCase().includes(query) || item.telNo.toLowerCase().includes(query)
           );
@@ -79,10 +98,9 @@ const YourAvailability: React.FC = () => {
     });
   }, [availabilities, searchQuery, selectedFilter]);
 
-  // Transform data for the table component
   const tableData = useMemo(() => {
     return filteredAvailabilities.map((item: AvailabilityItem) => ({
-      id: item.availabilitiesId, // Use availabilitiesId as the table row id
+      id: item.availabilitiesId,
       name: item.name,
       availability: item.available ? item.availability : 'Unavailable',
       tel: item.telNo,
@@ -106,14 +124,24 @@ const YourAvailability: React.FC = () => {
 
   const handleRowClick = useCallback(
     (event: React.MouseEvent<HTMLDivElement>, id: string) => {
-      // Prevent click from selecting checkbox when user clicks the checkbox
       if ((event.target as HTMLElement).closest('input[type="checkbox"]')) return;
-      navigate(`/availability/${id}`);
+
+      const availabilityItem = availabilities.find(item => item.availabilitiesId === id);
+
+      if (availabilityItem) {
+        console.log('🔗 Navigating to edit page with data:', availabilityItem.name);
+        navigate(`/availability/${id}`, {
+          state: { availability: availabilityItem },
+        });
+      } else {
+        console.error('❌ Availability item not found for ID:', id);
+      }
     },
-    [navigate]
+    [navigate, availabilities]
   );
 
   const handleAdd = () => {
+    console.log('➕ Navigating to create new availability');
     navigate('/availability/new');
   };
 
@@ -136,7 +164,6 @@ const YourAvailability: React.FC = () => {
     refetch();
   };
 
-  // Loading state
   if (isLoading) {
     return (
       <main className='flex-1 flex flex-col min-h-0' role='main'>
@@ -145,7 +172,7 @@ const YourAvailability: React.FC = () => {
           title='Your availability'
           description='Manage your availability across locations and roles'
         />
-        <div className='flex-1 flex items-center justify-center'>
+        <div className='flex-1 flex items-center justify-center mt-16'>
           <div className='text-center space-y-4'>
             <CircularProgress size={48} />
             <div>
@@ -171,7 +198,7 @@ const YourAvailability: React.FC = () => {
           title='Your availability'
           description='Manage your availability across locations and roles'
         />
-        <div className='flex-1 flex items-center justify-center'>
+        <div className='flex-1 flex items-center justify-center mt-16'>
           <div className='text-center space-y-4'>
             <div>
               <h3 className='text-lg font-semibold text-red-600 dark:text-red-400'>
@@ -202,7 +229,7 @@ const YourAvailability: React.FC = () => {
   }
 
   // Empty state
-  if (availabilities.length === 0) {
+  if (availabilities?.length === 0) {
     return (
       <main className='flex-1 flex flex-col min-h-0' role='main'>
         <PageHeader
@@ -210,7 +237,7 @@ const YourAvailability: React.FC = () => {
           title='Your availability'
           description='Manage your availability across locations and roles'
         />
-        <div className='flex-1 flex items-center justify-center'>
+        <div className='flex-1 flex items-center justify-center mt-16'>
           <div className='text-center space-y-4'>
             <CalendarMonthIcon className='w-16 h-16 text-gray-400 mx-auto' />
             <div>
@@ -275,7 +302,6 @@ const YourAvailability: React.FC = () => {
                 label: `Delete Selected (${selectedRows.length})`,
                 action: handleDelete,
                 isDanger: true,
-                disabled: selectedRows.length === 0 || deleteMutation.isPending,
               },
             ]}
           />
@@ -298,7 +324,7 @@ const YourAvailability: React.FC = () => {
       </section>
 
       <section className='flex-1 p-2 overflow-auto' aria-label='Availability Table'>
-        <AvailabilityTable
+        <AvailabilityTableWrapper
           rows={tableData}
           selectedRows={selectedRows}
           selectAll={selectAll}
