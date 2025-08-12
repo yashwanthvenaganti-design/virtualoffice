@@ -1,16 +1,24 @@
 import React from 'react';
 import { Phone } from '@mui/icons-material';
+import SectionHeader from './SectionHeader';
 import FormField from './FormField';
 import Input from './Input';
-import SectionHeader from './SectionHeader';
+
+interface FormValues {
+  statusName: string;
+  availability: 'available' | 'unavailable';
+  telNo: string;
+  emailNotifications: boolean;
+  emailAddress?: string;
+  smsNotifications: boolean;
+  smsNumber?: string;
+}
 
 interface ContactDetailsStepProps {
-  formData: {
-    telNo: string;
-  };
-  fieldErrors: Partial<Record<string, string>>;
+  formData: FormValues;
+  fieldErrors: Partial<Record<keyof FormValues, string>>;
   onInputChange: (
-    field: keyof ContactDetailsStepProps['formData']
+    field: keyof FormValues
   ) => (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
   onKeyPress: (event: React.KeyboardEvent) => void;
 }

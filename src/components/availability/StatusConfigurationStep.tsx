@@ -1,19 +1,22 @@
 import React from 'react';
 import { Person, CheckCircle, Cancel } from '@mui/icons-material';
+import SectionHeader from './SectionHeader';
 import FormField from './FormField';
 import Input from './Input';
-import SectionHeader from './SectionHeader';
 
-type FormValues = {
+interface FormValues {
   statusName: string;
   availability: 'available' | 'unavailable';
-};
+  telNo: string;
+  emailNotifications: boolean;
+  emailAddress?: string;
+  smsNotifications: boolean;
+  smsNumber?: string;
+}
+
 interface StatusConfigurationStepProps {
-  formData: {
-    statusName: string;
-    availability: 'available' | 'unavailable';
-  };
-  fieldErrors: Partial<Record<string, string>>;
+  formData: FormValues;
+  fieldErrors: Partial<Record<keyof FormValues, string>>;
   onInputChange: (
     field: keyof FormValues
   ) => (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;

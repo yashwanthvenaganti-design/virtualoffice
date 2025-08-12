@@ -69,7 +69,7 @@ const ProfilePage: React.FC = () => {
   const handleCancel = () => {
     setFormData({
       username: user.username,
-      email: user.email,
+      email: user.email || '',
       virtualOfficeName: user.virtualOfficeName,
     });
     setIsEditing(false);

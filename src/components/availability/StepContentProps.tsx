@@ -1,8 +1,8 @@
 import React from 'react';
 import StatusConfigurationStep from './StatusConfigurationStep';
 import ContactDetailsStep from './ContactDetailsStep';
-import ReviewAndSaveStep from './ReviewAndSaveStep';
 import NotificationPreferencesStep from './NotificationPreferencesStep';
+import ReviewAndSaveStep from './ReviewAndSaveStep';
 
 interface FormValues {
   statusName: string;
@@ -33,6 +33,16 @@ const StepContent: React.FC<StepContentProps> = ({
   onSwitchChange,
   onKeyPress,
 }) => {
+  const apiFormData = {
+    statusName: formData.statusName,
+    availability: formData.availability,
+    telNo: formData.telNo,
+    emailNotifications: formData.emailNotifications,
+    emailAddress: formData.emailAddress,
+    smsNotifications: formData.smsNotifications,
+    smsNumber: formData.smsNumber,
+  };
+
   switch (currentStep) {
     case 0:
       return (
@@ -66,7 +76,7 @@ const StepContent: React.FC<StepContentProps> = ({
       );
 
     case 3:
-      return <ReviewAndSaveStep formData={formData} />;
+      return <ReviewAndSaveStep formData={apiFormData} />;
 
     default:
       return null;

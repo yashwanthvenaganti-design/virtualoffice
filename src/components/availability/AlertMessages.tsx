@@ -6,7 +6,7 @@ interface AlertMessagesProps {
   saveSuccess?: boolean;
 }
 
-export const AlertMessages: React.FC<AlertMessagesProps> = ({ error, saveSuccess }) => {
+const AlertMessages: React.FC<AlertMessagesProps> = ({ error, saveSuccess }) => {
   return (
     <>
       {error && (
@@ -32,3 +32,5 @@ export const AlertMessages: React.FC<AlertMessagesProps> = ({ error, saveSuccess
     </>
   );
 };
+
+export default AlertMessages;

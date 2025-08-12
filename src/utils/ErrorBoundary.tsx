@@ -78,7 +78,7 @@ const DefaultErrorFallback: React.FC<{
       </p>
 
       {/* Show error details in development */}
-      {process.env.NODE_ENV === 'development' && error && (
+      {import.meta.env.NODE_ENV === 'development' && error && (
         <details
           style={{
             marginBottom: '24px',

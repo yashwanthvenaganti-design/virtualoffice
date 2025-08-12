@@ -5,11 +5,19 @@ import { CircularProgress } from '@mui/material';
 
 import PageHeader from './PageHeader';
 import AvailabilityPreview from './AvailabilityPreview';
-import { AlertMessages } from './AlertMessages';
+import AlertMessages from './AlertMessages';
 import StepContent from './StepContentProps';
 import NavigationButtons from './NavigationButtons';
 import ProgressStepper from './ProgressStepper';
 
+import {
+  useAvailability,
+  useUpdateAvailability,
+  useCreateAvailability,
+} from '../../hooks/useAvailability';
+import type { AvailabilityFormData } from '../../types/availability';
+
+// Updated form schema to match API structure
 const formSchema = z.object({
   statusName: z.string().trim().min(1, 'Status name is required'),
   availability: z.enum(['available', 'unavailable']),
@@ -22,31 +30,61 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
-const availabilityData = [
-  {
-    id: 1,
-    name: 'Available - Morning',
-    availability: '08:00 AM - 12:00 PM',
-    tel: '+1 234 567 890',
-    email: 'morning@example.com',
-    sms: 'Enabled',
-  },
-  {
-    id: 2,
-    name: 'Available - Evening',
-    availability: '05:00 PM - 09:00 PM',
-    tel: '+1 987 654 321',
-    email: 'evening@example.com',
-    sms: 'Disabled',
-  },
-];
+const PEOPLE_ID = import.meta.env.VITE_APP_PEOPLE_ID;
 
 const AvailabilityDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const isEditing = !!id;
 
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
+  // React Query hooks for data fetching and mutations
+  const {
+    data: availability,
+    isLoading: isLoadingAvailability,
+    error: fetchError,
+    refetch: refetchAvailability,
+  } = useAvailability(id || '', PEOPLE_ID, {
+    enabled: isEditing, // Only fetch if we're editing an existing item
+    onError: error => {
+      console.error('Failed to fetch availability:', error);
+      setError(`Failed to load availability: ${error.message}`);
+    },
+  });
+
+  // Mutation for updating existing availability
+  const updateMutation = useUpdateAvailability({
+    onSuccess: data => {
+      console.log('✅ Successfully updated availability:', data);
+      setSaveSuccess(true);
+      setTimeout(() => {
+        setSaveSuccess(false);
+      }, 2000);
+    },
+    onError: error => {
+      console.error('❌ Failed to update availability:', error);
+      setError(`Failed to update availability: ${error.message}`);
+    },
+  });
+
+  // Mutation for creating new availability
+  const createMutation = useCreateAvailability({
+    onMutate: variables => {
+      console.log('🚀 Creating new availability:', variables);
+    },
+    onSuccess: data => {
+      console.log('✅ Successfully created availability:', data);
+      setSaveSuccess(true);
+      setTimeout(() => {
+        setSaveSuccess(false);
+        navigate('/availability'); // Navigate back to list after successful creation
+      }, 2000);
+    },
+    onError: error => {
+      console.error('❌ Failed to create availability:', error);
+      setError(`Failed to create availability: ${error.message}`);
+    },
+  });
+
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const [error, setError] = useState<string | null>(null);
@@ -64,31 +102,43 @@ const AvailabilityDetailPage: React.FC = () => {
   const [fieldErrors, setFieldErrors] = useState<Partial<Record<keyof FormValues, string>>>({});
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      const found = availabilityData.find(item => item.id === Number(id));
-      if (found) {
-        setFormData({
-          statusName: found.name,
-          availability: found.name.toLowerCase().includes('available')
-            ? 'available'
-            : 'unavailable',
-          telNo: found.tel,
-          emailNotifications: !!found.email,
-          emailAddress: found.email || '',
-          smsNotifications: found.sms === 'Enabled',
-          smsNumber: found.sms === 'Enabled' ? found.tel : '',
-        });
-      }
-      setLoading(false);
-    }, 500);
+    if (availability && isEditing) {
+      console.log('📝 Populating form with existing data:', availability);
+      setFormData({
+        statusName: availability.name || '',
+        availability: availability.available ? 'available' : 'unavailable',
+        telNo: availability.telNo || '',
+        emailNotifications: availability.email,
+        emailAddress: availability.emailAddr || '',
+        smsNotifications: availability.sms,
+        smsNumber: availability.smsNo || '',
+      });
+    }
+  }, [availability, isEditing]);
 
-    return () => clearTimeout(timer);
-  }, [id]);
+  // Clear error when fetch error changes
+  useEffect(() => {
+    if (fetchError) {
+      setError(`Failed to load availability: ${fetchError.message}`);
+    }
+  }, [fetchError]);
 
   const handleInputChange =
     (field: keyof FormValues) =>
     (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-      const value = event.target.type === 'radio' ? event.target.value : event.target.value;
+      const target = event.target as HTMLInputElement;
+      let value: any;
+
+      if (target.type === 'checkbox') {
+        value = target.checked;
+      } else if (target.type === 'radio') {
+        value = target.value;
+      } else {
+        value = target.value;
+      }
+
+      console.log(`📝 Form field changed: ${field} = ${value}`);
+
       setFormData(prev => ({
         ...prev,
         [field]: value,
@@ -106,6 +156,7 @@ const AvailabilityDetailPage: React.FC = () => {
 
   const handleSwitchChange =
     (field: 'emailNotifications' | 'smsNotifications') => (checked: boolean) => {
+      console.log(`📝 Switch changed: ${field} = ${checked}`);
       setFormData(prev => ({
         ...prev,
         [field]: checked,
@@ -122,7 +173,9 @@ const AvailabilityDetailPage: React.FC = () => {
 
   const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
     if (currentStep !== 3) {
+      console.log('⚠️ Form submitted on non-final step, ignoring');
       return;
     }
 
@@ -131,21 +184,40 @@ const AvailabilityDetailPage: React.FC = () => {
       return;
     }
 
-    setSaving(true);
+    console.log('🚀 Submitting form:', { isEditing, formData });
     setError(null);
 
     try {
-      console.log('Saving availability:', formData);
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      setSaveSuccess(true);
-      setTimeout(() => {
-        setSaveSuccess(false);
-      }, 2000);
+      // Convert form data to API format
+      const submitData: AvailabilityFormData = {
+        name: formData.statusName,
+        available: formData.availability === 'available',
+        availability: formData.availability === 'available' ? 'Available' : 'Unavailable',
+        telNo: formData.telNo,
+        telNoAlt: '', // Optional field
+        email: formData.emailNotifications,
+        emailAddr: formData.emailNotifications ? formData.emailAddress || '' : '',
+        sms: formData.smsNotifications,
+        smsNo: formData.smsNotifications ? formData.smsNumber || '' : '',
+        instruction: '', // Optional field
+        star: false, // Default value
+      };
+
+      if (isEditing && id) {
+        // Update existing availability
+        console.log('🔄 Updating existing availability:', submitData);
+        await updateMutation.mutateAsync({
+          id,
+          data: submitData,
+        });
+      } else {
+        // Create new availability
+        console.log('➕ Creating new availability:', submitData);
+        await createMutation.mutateAsync(submitData);
+      }
     } catch (error) {
-      console.error('Error saving availability:', error);
-      setError('Failed to save availability. Please try again.');
-    } finally {
-      setSaving(false);
+      // Error handling is done in the mutation callbacks
+      console.error('💥 Form submission error:', error);
     }
   };
 
@@ -213,8 +285,24 @@ const AvailabilityDetailPage: React.FC = () => {
 
   const validateForm = (): boolean => {
     try {
-      formSchema.parse(formData);
+      // Additional custom validation
+      const validationData = { ...formData };
+
+      // If email notifications are enabled, email address is required
+      if (
+        formData.emailNotifications &&
+        (!formData.emailAddress || formData.emailAddress.trim() === '')
+      ) {
+        setFieldErrors(prev => ({
+          ...prev,
+          emailAddress: 'Email address is required when email notifications are enabled',
+        }));
+        return false;
+      }
+
+      formSchema.parse(validationData);
       setFieldErrors({});
+      console.log('✅ Form validation passed');
       return true;
     } catch (err) {
       if (err instanceof z.ZodError) {
@@ -226,6 +314,7 @@ const AvailabilityDetailPage: React.FC = () => {
           }
         });
         setFieldErrors(errors);
+        console.log('❌ Form validation failed:', errors);
       }
       return false;
     }
@@ -264,38 +353,14 @@ const AvailabilityDetailPage: React.FC = () => {
   };
 
   const canProceedToNext = (): boolean => {
-    // For step 0 (status configuration)
-    if (currentStep === 0) {
-      return !!(formData.statusName && formData.statusName.trim().length > 0);
-    }
-
-    // For step 1 (contact details)
-    if (currentStep === 1) {
-      return !!(formData.telNo && formData.telNo.trim().length >= 8);
-    }
-
-    // For step 2 (notifications)
-    if (currentStep === 2) {
-      if (formData.emailNotifications) {
-        if (!formData.emailAddress || formData.emailAddress.trim().length === 0) {
-          return false;
-        }
-        // Simple email validation
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(formData.emailAddress)) {
-          return false;
-        }
-      }
-      return true;
-    }
-
-    return true;
+    return isStepComplete(currentStep);
   };
 
   const handleNext = () => {
     if (currentStep < 3) {
       setCurrentStep(currentStep + 1);
       setError(null);
+      console.log(`➡️ Moving to step ${currentStep + 1}`);
     }
   };
 
@@ -303,6 +368,7 @@ const AvailabilityDetailPage: React.FC = () => {
     if (currentStep > 0) {
       setCurrentStep(currentStep - 1);
       setError(null);
+      console.log(`⬅️ Moving to step ${currentStep - 1}`);
     }
   };
 
@@ -315,21 +381,98 @@ const AvailabilityDetailPage: React.FC = () => {
     navigate('/availability');
   };
 
-  if (loading) {
+  // Retry loading availability (for error states)
+  const handleRetry = () => {
+    if (isEditing) {
+      console.log('🔄 Retrying to fetch availability');
+      refetchAvailability();
+    }
+    setError(null);
+  };
+
+  // Loading state - show spinner while fetching data
+  if (isEditing && isLoadingAvailability) {
     return (
-      <div className='flex items-center justify-center min-h-[300px]'>
-        <CircularProgress />
+      <div className='flex flex-col items-center justify-center min-h-[400px] space-y-4'>
+        <CircularProgress size={48} />
+        <div className='text-center'>
+          <h3 className='text-lg font-medium text-gray-900 dark:text-gray-100'>
+            Loading availability...
+          </h3>
+          <p className='text-sm text-gray-600 dark:text-gray-400 mt-1'>
+            Please wait while we fetch the availability details.
+          </p>
+        </div>
       </div>
     );
   }
+
+  // Error state - show error message with retry option
+  if (isEditing && fetchError && !availability) {
+    return (
+      <div className='flex flex-col items-center justify-center min-h-[400px] space-y-4'>
+        <div className='text-center'>
+          <h2 className='text-xl font-semibold text-red-600 dark:text-red-400 mb-2'>
+            Failed to Load Availability
+          </h2>
+          <p className='text-gray-600 dark:text-gray-400 mb-4 max-w-md'>
+            {fetchError.message || 'There was an error loading the availability details.'}
+          </p>
+          <div className='flex gap-3 justify-center'>
+            <button
+              onClick={handleRetry}
+              className='px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors'
+            >
+              Try Again
+            </button>
+            <button
+              onClick={handleBack}
+              className='px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors'
+            >
+              Back to List
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Not found state - item doesn't exist
+  if (isEditing && !isLoadingAvailability && !availability && !fetchError) {
+    return (
+      <div className='flex flex-col items-center justify-center min-h-[400px] space-y-4'>
+        <div className='text-center'>
+          <h2 className='text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2'>
+            Availability Not Found
+          </h2>
+          <p className='text-gray-600 dark:text-gray-400 mb-4'>
+            The availability you're looking for doesn't exist or may have been deleted.
+          </p>
+          <button
+            onClick={handleBack}
+            className='px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors'
+          >
+            Back to List
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Check if any mutation is in progress
+  const saving = updateMutation.isPending || createMutation.isPending;
 
   return (
     <div className='min-h-screen bg-gray-50 dark:bg-gray-900'>
       <div className='max-w-8xl mx-auto px-4 sm:px-5 lg:px-6 py-4'>
         <PageHeader
           onBack={handleBack}
-          title='Manage Availability'
-          subtitle='Configure your availability status and notification preferences'
+          title={isEditing ? 'Edit Availability' : 'Create Availability'}
+          subtitle={
+            isEditing
+              ? 'Update your availability status and notification preferences'
+              : 'Configure your availability status and notification preferences'
+          }
         />
 
         <ProgressStepper

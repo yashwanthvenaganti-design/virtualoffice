@@ -5,22 +5,27 @@ import Input from './Input';
 import Switch from './Switch';
 import SectionHeader from './SectionHeader';
 
-interface NotificationPreferencesStepProps {
-  formData: {
-    emailNotifications: boolean;
-    emailAddress?: string;
-    smsNotifications: boolean;
-    smsNumber?: string;
-  };
-  fieldErrors: Partial<Record<string, string>>;
+interface FormValues {
+  statusName: string;
+  availability: 'available' | 'unavailable';
+  telNo: string;
+  emailNotifications: boolean;
+  emailAddress?: string;
+  smsNotifications: boolean;
+  smsNumber?: string;
+}
+
+interface NotificationsStepProps {
+  formData: FormValues;
+  fieldErrors: Partial<Record<keyof FormValues, string>>;
   onInputChange: (
-    field: keyof NotificationPreferencesStepProps['formData']
+    field: keyof FormValues
   ) => (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
   onSwitchChange: (field: 'emailNotifications' | 'smsNotifications') => (checked: boolean) => void;
   onKeyPress: (event: React.KeyboardEvent) => void;
 }
 
-const NotificationPreferencesStep: React.FC<NotificationPreferencesStepProps> = ({
+export const NotificationsStep: React.FC<NotificationsStepProps> = ({
   formData,
   fieldErrors,
   onInputChange,
@@ -37,13 +42,13 @@ const NotificationPreferencesStep: React.FC<NotificationPreferencesStepProps> = 
 
       <div className='space-y-6'>
         <Switch
-          checked={formData.emailNotifications}
+          checked={formData?.emailNotifications}
           onChange={onSwitchChange('emailNotifications')}
           label='Email Notifications'
           description='Receive notifications via email'
           icon={<Email className='w-4 h-4 text-blue-500' />}
         >
-          {formData.emailNotifications && (
+          {formData?.emailNotifications && (
             <FormField
               label='Email Address'
               htmlFor='emailAddress'
@@ -52,7 +57,7 @@ const NotificationPreferencesStep: React.FC<NotificationPreferencesStepProps> = 
               <Input
                 id='emailAddress'
                 type='email'
-                value={formData.emailAddress || ''}
+                value={formData?.emailAddress || ''}
                 onChange={onInputChange('emailAddress')}
                 onKeyDown={onKeyPress}
                 placeholder='john.doe@example.com'
@@ -63,13 +68,13 @@ const NotificationPreferencesStep: React.FC<NotificationPreferencesStepProps> = 
         </Switch>
 
         <Switch
-          checked={formData.smsNotifications}
+          checked={formData?.smsNotifications}
           onChange={onSwitchChange('smsNotifications')}
           label='SMS Notifications'
           description='Receive notifications via text message'
           icon={<Sms className='w-4 h-4 text-green-500' />}
         >
-          {formData.smsNotifications && (
+          {formData?.smsNotifications && (
             <FormField label='SMS Number' htmlFor='smsNumber'>
               <Input
                 id='smsNumber'
