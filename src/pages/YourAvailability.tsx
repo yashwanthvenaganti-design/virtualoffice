@@ -81,8 +81,6 @@ const YourAvailability: React.FC = () => {
   const availabilities = availabilitiesResponse?.data || EmptyArr;
 
   const filteredAvailabilities = useMemo(() => {
-    console.log(selectedFilter, availabilities, 'selectedFilter');
-
     if (!availabilities?.length) return [];
 
     return availabilities?.filter((item: AvailabilityItem) => {
@@ -187,7 +185,7 @@ const YourAvailability: React.FC = () => {
           title='Your availability'
           description='Manage your availability across locations and roles'
         />
-        <div className='flex-1 flex items-center justify-center min-h-0'>
+        <div className='flex-1 flex items-center justify-center min-h-0 mt-20'>
           <div className='text-center space-y-4'>
             <CircularProgress size={48} />
             <div>
@@ -213,7 +211,7 @@ const YourAvailability: React.FC = () => {
           title='Your availability'
           description='Manage your availability across locations and roles'
         />
-        <div className='flex-1 flex items-center justify-center min-h-0'>
+        <div className='flex-1 flex items-center justify-center min-h-0 mt-20'>
           <div className='text-center space-y-4'>
             <div>
               <h3 className='text-lg font-semibold text-red-600 dark:text-red-400'>
@@ -252,7 +250,7 @@ const YourAvailability: React.FC = () => {
           title='Your availability'
           description='Manage your availability across locations and roles'
         />
-        <div className='flex-1 flex items-center justify-center min-h-0'>
+        <div className='flex-1 flex items-center justify-center min-h-0 mt-20'>
           <div className='text-center space-y-4'>
             <CalendarMonthIcon className='w-16 h-16 text-gray-400 mx-auto' />
             <div>
