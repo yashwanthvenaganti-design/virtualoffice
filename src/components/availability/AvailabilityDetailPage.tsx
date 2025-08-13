@@ -286,14 +286,12 @@ const AvailabilityDetailPage: React.FC = () => {
   const handleNext = () => {
     if (currentStep < 3) {
       setCurrentStep(currentStep + 1);
-      console.log(`➡️ Moving to step ${currentStep + 1}`);
     }
   };
 
   const handlePrevious = () => {
     if (currentStep > 0) {
       setCurrentStep(currentStep - 1);
-      console.log(`⬅️ Moving to step ${currentStep - 1}`);
     }
   };
 

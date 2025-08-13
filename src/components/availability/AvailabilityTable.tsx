@@ -1,5 +1,5 @@
 import React from 'react';
-import { Checkbox, IconButton, Typography, useTheme, Box, Grid } from '@mui/material';
+import { Checkbox, IconButton, Typography, useTheme, Box, Grid, Badge } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import EditIcon from '@mui/icons-material/Edit';
 
@@ -41,6 +41,8 @@ const AvailabilityTable: React.FC<AvailabilityTableProps> = ({
     { key: 'actions', label: '', colSpan: 1 },
   ];
 
+  const selectedCount = selectedRows?.length;
+
   return (
     <div
       className='rounded-xl border overflow-hidden shadow-sm border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800'
@@ -50,19 +52,67 @@ const AvailabilityTable: React.FC<AvailabilityTableProps> = ({
       <Box
         component='header'
         role='rowheader'
-        className='px-2 py-1 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/80 backdrop-blur-sm'
+        className='px-2 py-2 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/80 backdrop-blur-sm'
       >
         <Grid container alignItems='center' spacing={2}>
           {headers?.map(({ key, label, colSpan }) => (
             <Grid item xs={colSpan} key={key}>
               {key === 'select' ? (
                 <Box display='flex' alignItems='center' justifyContent='center'>
-                  <Checkbox
-                    checked={selectAll}
-                    onChange={e => onSelectAll(e.target.checked)}
-                    size='small'
-                    indeterminate={selectedRows.length > 0 && selectedRows.length < rows.length}
-                  />
+                  <Badge
+                    badgeContent={selectedCount}
+                    color='primary'
+                    max={999}
+                    invisible={selectedCount === 0}
+                    sx={{
+                      '& .MuiBadge-badge': {
+                        backgroundColor: theme.palette.primary.main,
+                        color: theme.palette.primary.contrastText,
+                        fontWeight: 600,
+                        fontSize: '0.65rem',
+                        minWidth: '16px',
+                        height: '16px',
+                        borderRadius: '8px',
+                        border: '1.5px solid',
+                        borderColor: theme.palette.background.paper,
+                        boxShadow: `0 2px 6px ${theme.palette.primary.main}30`,
+                        transform: 'scale(1) translate(40%, -40%)',
+                        transformOrigin: '100% 0%',
+                      },
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        width: 32,
+                        height: 32,
+                        cursor: 'pointer',
+                      }}
+                      onClick={e => {
+                        e.stopPropagation();
+                        onSelectAll(!selectAll);
+                      }}
+                    >
+                      <Checkbox
+                        checked={selectAll}
+                        onChange={e => onSelectAll(e.target.checked)}
+                        size='small'
+                        indeterminate={selectedRows.length > 0 && selectedRows.length < rows.length}
+                        sx={{
+                          color: theme.palette.text.secondary,
+                          '&.Mui-checked': {
+                            color: theme.palette.primary.main,
+                          },
+                          '&.MuiCheckbox-indeterminate': {
+                            color: theme.palette.primary.main,
+                          },
+                          padding: 0,
+                        }}
+                      />
+                    </Box>
+                  </Badge>
                 </Box>
               ) : label ? (
                 <Typography
@@ -156,7 +206,6 @@ const AvailabilityTable: React.FC<AvailabilityTableProps> = ({
                     </Typography>
                   </Grid>
                   <Grid item xs={1}>
-                    {' '}
                     <Typography
                       className='text-sm text-gray-600 dark:text-gray-300 truncate'
                       title={row.sms}

@@ -12,6 +12,7 @@ interface FormValues {
   emailAddress?: string;
   smsNotifications: boolean;
   smsNumber?: string;
+  unavailableReason?: string;
 }
 
 interface StatusConfigurationStepProps {
@@ -90,7 +91,7 @@ const StatusConfigurationStep: React.FC<StatusConfigurationStepProps> = ({
               className={`
                 relative flex items-center gap-3 p-4 border rounded-xl cursor-pointer transition-all duration-200
                 ${
-                  formData.availability === 'unavailable'
+                  formData?.availability === 'unavailable'
                     ? 'border-red-300 bg-red-50 dark:bg-red-900/20 dark:border-red-700'
                     : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-gray-300 dark:hover:border-gray-600'
                 }
@@ -118,6 +119,25 @@ const StatusConfigurationStep: React.FC<StatusConfigurationStepProps> = ({
             </label>
           </div>
         </div>
+
+        {formData.availability === 'unavailable' && (
+          <FormField
+            label='Reason for Unavailability'
+            htmlFor='unavailableReason'
+            required
+            error={fieldErrors.unavailableReason}
+          >
+            <Input
+              id='unavailableReason'
+              value={formData.unavailableReason}
+              onChange={onInputChange('unavailableReason')}
+              onKeyDown={onKeyPress}
+              placeholder='Enter reason for unavailability'
+              error={!!fieldErrors.unavailableReason}
+              autoFocus
+            />
+          </FormField>
+        )}
       </div>
     </section>
   );

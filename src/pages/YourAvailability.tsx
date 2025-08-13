@@ -13,8 +13,10 @@ import { useAvailabilities, useDeleteAvailabilities } from '../hooks/useAvailabi
 import type { AvailabilityItem } from '../types/availability';
 import AvailabilityTableWrapper from './AvailabilityTableWrapper';
 import toast from 'react-hot-toast';
+import ConfirmationModal from '../utils/ConfirmationModal';
 
 const PEOPLE_ID = import.meta.env.VITE_APP_PEOPLE_ID;
+const EmptyArr: AvailabilityItem[] = [];
 
 const YourAvailability: React.FC = () => {
   const navigate = useNavigate();
@@ -24,6 +26,7 @@ const YourAvailability: React.FC = () => {
   const [selectedFilter, setSelectedFilter] = useState('Status Name');
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
   const [selectAll, setSelectAll] = useState(false);
+  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
 
   const {
     data: availabilitiesResponse,
@@ -35,6 +38,7 @@ const YourAvailability: React.FC = () => {
     {
       onError: error => {
         console.error('Failed to fetch availabilities:', error);
+        toast.error('Failed to load availabilities');
       },
     }
   );
@@ -54,7 +58,6 @@ const YourAvailability: React.FC = () => {
         toast.success(state.message);
       }
 
-      // Clear the state to prevent repeated refreshes
       navigate(location.pathname, { replace: true, state: undefined });
     }
   }, [location.state, refetch, navigate, location.pathname]);
@@ -65,34 +68,37 @@ const YourAvailability: React.FC = () => {
       console.log('✅ Successfully deleted availabilities:', data);
       setSelectedRows([]);
       setSelectAll(false);
-      // Show success message or toast
+      toast.success(`Successfully deleted ${selectedRows.length} item(s)`);
     },
     onError: error => {
       console.error('❌ Failed to delete availabilities:', error);
-      // Show error message or toast
+      toast.error('Failed to delete selected items');
     },
   });
 
   const filterOptions = ['Status Name', 'Tel No'];
 
-  const availabilities = availabilitiesResponse?.data || [];
+  const availabilities = availabilitiesResponse?.data || EmptyArr;
 
   const filteredAvailabilities = useMemo(() => {
-    if (!availabilities.length) return [];
+    console.log(selectedFilter, availabilities, 'selectedFilter');
 
-    return availabilities.filter((item: AvailabilityItem) => {
-      if (!searchQuery) return true;
+    if (!availabilities?.length) return [];
 
-      const query = searchQuery.toLowerCase();
+    return availabilities?.filter((item: AvailabilityItem) => {
+      if (!searchQuery || searchQuery.trim() === '') return true;
+      const query = searchQuery.toLowerCase().trim();
 
       switch (selectedFilter) {
         case 'Status Name':
-          return item.name.toLowerCase().includes(query);
+          return item?.name?.toLowerCase().includes(query) || false;
         case 'Tel No':
-          return item.telNo.toLowerCase().includes(query);
+          return item?.telNo?.toLowerCase().includes(query) || false;
         default:
           return (
-            item.name.toLowerCase().includes(query) || item.telNo.toLowerCase().includes(query)
+            item.name?.toLowerCase().includes(query) ||
+            item.telNo?.toLowerCase().includes(query) ||
+            false
           );
       }
     });
@@ -129,12 +135,12 @@ const YourAvailability: React.FC = () => {
       const availabilityItem = availabilities.find(item => item.availabilitiesId === id);
 
       if (availabilityItem) {
-        console.log('🔗 Navigating to edit page with data:', availabilityItem.name);
         navigate(`/availability/${id}`, {
           state: { availability: availabilityItem },
         });
       } else {
         console.error('❌ Availability item not found for ID:', id);
+        toast.error('Item not found');
       }
     },
     [navigate, availabilities]
@@ -145,19 +151,28 @@ const YourAvailability: React.FC = () => {
     navigate('/availability/new');
   };
 
-  const handleDelete = async () => {
+  const handleDelete = () => {
     if (selectedRows.length === 0) {
-      console.log('No items selected for deletion');
+      toast.error('Please select items to delete');
       return;
     }
+    setIsDeleteConfirmOpen(true);
+  };
 
-    if (window.confirm(`Are you sure you want to delete ${selectedRows.length} item(s)?`)) {
-      try {
-        await deleteMutation.mutateAsync(selectedRows);
-      } catch (error) {
-        console.error('Delete failed:', error);
-      }
+  const handleConfirmDelete = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsDeleteConfirmOpen(false);
+
+    try {
+      await deleteMutation.mutateAsync(selectedRows);
+    } catch (error) {
+      console.error('Delete failed:', error);
     }
+  };
+
+  const handleCancelDelete = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsDeleteConfirmOpen(false);
   };
 
   const handleRetry = () => {
@@ -172,7 +187,7 @@ const YourAvailability: React.FC = () => {
           title='Your availability'
           description='Manage your availability across locations and roles'
         />
-        <div className='flex-1 flex items-center justify-center mt-16'>
+        <div className='flex-1 flex items-center justify-center min-h-0'>
           <div className='text-center space-y-4'>
             <CircularProgress size={48} />
             <div>
@@ -198,7 +213,7 @@ const YourAvailability: React.FC = () => {
           title='Your availability'
           description='Manage your availability across locations and roles'
         />
-        <div className='flex-1 flex items-center justify-center mt-16'>
+        <div className='flex-1 flex items-center justify-center min-h-0'>
           <div className='text-center space-y-4'>
             <div>
               <h3 className='text-lg font-semibold text-red-600 dark:text-red-400'>
@@ -237,7 +252,7 @@ const YourAvailability: React.FC = () => {
           title='Your availability'
           description='Manage your availability across locations and roles'
         />
-        <div className='flex-1 flex items-center justify-center mt-16'>
+        <div className='flex-1 flex items-center justify-center min-h-0'>
           <div className='text-center space-y-4'>
             <CalendarMonthIcon className='w-16 h-16 text-gray-400 mx-auto' />
             <div>
@@ -306,21 +321,6 @@ const YourAvailability: React.FC = () => {
             ]}
           />
         </div>
-
-        {/* Show selected count */}
-        {selectedRows.length > 0 && (
-          <div className='mt-3 p-2 bg-blue-50 dark:bg-blue-900/20 rounded-md'>
-            <p className='text-sm text-blue-700 dark:text-blue-300'>
-              {selectedRows.length} item(s) selected
-              {deleteMutation.isPending && (
-                <span className='ml-2'>
-                  <CircularProgress size={12} className='text-blue-600' />
-                  <span className='ml-1'>Deleting...</span>
-                </span>
-              )}
-            </p>
-          </div>
-        )}
       </section>
 
       <section className='flex-1 p-2 overflow-auto' aria-label='Availability Table'>
@@ -333,6 +333,17 @@ const YourAvailability: React.FC = () => {
           onRowClick={handleRowClick}
         />
       </section>
+
+      <ConfirmationModal
+        isOpen={isDeleteConfirmOpen}
+        onConfirm={handleConfirmDelete}
+        onCancel={handleCancelDelete}
+        title='Confirm Deletion'
+        message={`Are you sure you want to delete ${selectedRows?.length} item(s)? This action cannot be undone.`}
+        confirmText='Delete'
+        cancelText='Cancel'
+        confirmButtonClass='bg-red-600 hover:bg-red-700 text-white focus:ring-red-500/50'
+      />
     </main>
   );
 };

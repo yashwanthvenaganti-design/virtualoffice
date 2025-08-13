@@ -42,6 +42,7 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({ selected, options, onCh
       }}
     >
       <InputLabel className='!text-gray-500 dark:!text-gray-400 !font-semibold'>Filter</InputLabel>
+
       <Select
         label='Filter'
         value={selected}
@@ -87,7 +88,7 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({ selected, options, onCh
               '& .MuiMenuItem-root': {
                 fontSize: '14px',
                 fontWeight: 500,
-                padding: '8px 16px',
+                padding: '12px 16px',
                 margin: '2px 4px',
                 borderRadius: '6px',
                 color: 'rgb(17 24 39)',
