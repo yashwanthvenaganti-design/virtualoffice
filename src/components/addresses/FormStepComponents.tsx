@@ -1,5 +1,6 @@
 import React from 'react';
 import { Person, LocationOn, ContactPhone, Business } from '@mui/icons-material';
+import { CircularProgress } from '@mui/material';
 import SectionHeader from '../availability/SectionHeader';
 import FormField from '../availability/FormField';
 import Input from '../availability/Input';
@@ -8,18 +9,18 @@ import Select from './Select';
 export interface FormValues {
   name: string;
   description: string;
-  addressLine1: string;
-  addressLine2?: string;
-  addressLine3?: string;
+  addrLine1: string;
+  addrLine2?: string;
+  addrLine3?: string;
   town: string;
   county?: string;
   postcode: string;
   country: string;
-  telAreaCode: string;
+  telPrefix: string;
   telNo: string;
-  alternateTelNo?: string;
+  telNoAlt?: string;
   faxNo?: string;
-  emailAddress?: string;
+  emailAddr?: string;
   landmark?: string;
 }
 
@@ -31,6 +32,8 @@ export interface StepComponentProps {
   ) => (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
   handleKeyPress: (event: React.KeyboardEvent) => void;
   countryOptions: Array<{ value: string; label: string }>;
+  isLoadingCountries?: boolean;
+  countriesError?: Error | null;
 }
 
 // Step 1: Basic Information Component
@@ -88,6 +91,8 @@ export const AddressDetailsStep: React.FC<StepComponentProps> = ({
   handleInputChange,
   handleKeyPress,
   countryOptions,
+  isLoadingCountries = false,
+  countriesError = null,
 }) => {
   return (
     <section aria-labelledby='address-section' className='space-y-6'>
@@ -100,40 +105,40 @@ export const AddressDetailsStep: React.FC<StepComponentProps> = ({
       <div className='space-y-6'>
         <FormField
           label='Address Line 1'
-          htmlFor='addressLine1'
+          htmlFor='addrLine1'
           required
-          error={fieldErrors.addressLine1}
+          error={fieldErrors.addrLine1}
         >
           <Input
-            id='addressLine1'
-            value={formData.addressLine1}
-            onChange={handleInputChange('addressLine1')}
+            id='addrLine1'
+            value={formData.addrLine1}
+            onChange={handleInputChange('addrLine1')}
             onKeyDown={handleKeyPress}
             placeholder='Street address, building number'
-            error={!!fieldErrors.addressLine1}
+            error={!!fieldErrors.addrLine1}
             autoFocus
           />
         </FormField>
 
-        <FormField label='Address Line 2' htmlFor='addressLine2' error={fieldErrors.addressLine2}>
+        <FormField label='Address Line 2' htmlFor='addrLine2' error={fieldErrors.addrLine2}>
           <Input
-            id='addressLine2'
-            value={formData.addressLine2 || ''}
-            onChange={handleInputChange('addressLine2')}
+            id='addrLine2'
+            value={formData.addrLine2 || ''}
+            onChange={handleInputChange('addrLine2')}
             onKeyDown={handleKeyPress}
             placeholder='Apartment, suite, unit, building, floor, etc.'
-            error={!!fieldErrors.addressLine2}
+            error={!!fieldErrors.addrLine2}
           />
         </FormField>
 
-        <FormField label='Address Line 3' htmlFor='addressLine3' error={fieldErrors.addressLine3}>
+        <FormField label='Address Line 3' htmlFor='addrLine3' error={fieldErrors.addrLine3}>
           <Input
-            id='addressLine3'
-            value={formData.addressLine3 || ''}
-            onChange={handleInputChange('addressLine3')}
+            id='addrLine3'
+            value={formData.addrLine3 || ''}
+            onChange={handleInputChange('addrLine3')}
             onKeyDown={handleKeyPress}
             placeholder='Additional address information'
-            error={!!fieldErrors.addressLine3}
+            error={!!fieldErrors.addrLine3}
           />
         </FormField>
 
@@ -143,6 +148,7 @@ export const AddressDetailsStep: React.FC<StepComponentProps> = ({
               id='town'
               value={formData.town}
               onChange={handleInputChange('town')}
+              onKeyDown={handleKeyPress}
               placeholder='Enter town/city'
               error={!!fieldErrors.town}
             />
@@ -153,6 +159,7 @@ export const AddressDetailsStep: React.FC<StepComponentProps> = ({
               id='county'
               value={formData.county || ''}
               onChange={handleInputChange('county')}
+              onKeyDown={handleKeyPress}
               placeholder='Enter county/state'
               error={!!fieldErrors.county}
             />
@@ -172,14 +179,34 @@ export const AddressDetailsStep: React.FC<StepComponentProps> = ({
           </FormField>
 
           <FormField label='Country' htmlFor='country' required error={fieldErrors.country}>
-            <Select
-              id='country'
-              value={formData.country}
-              onChange={handleInputChange('country')}
-              onKeyDown={handleKeyPress}
-              options={countryOptions}
-              error={!!fieldErrors.country}
-            />
+            <div className='relative'>
+              <Select
+                id='country'
+                value={formData.country}
+                onChange={handleInputChange('country')}
+                options={countryOptions}
+                error={!!fieldErrors.country}
+                disabled={isLoadingCountries}
+                placeholder={
+                  isLoadingCountries
+                    ? 'Loading countries...'
+                    : countriesError
+                      ? 'Select a country (using fallback list)'
+                      : 'Select a country'
+                }
+                showEmptyOption={true}
+              />
+              {isLoadingCountries && (
+                <div className='absolute right-10 top-1/2 transform -translate-y-1/2'>
+                  <CircularProgress size={16} />
+                </div>
+              )}
+            </div>
+            {countriesError && !isLoadingCountries && (
+              <p className='mt-1 text-xs text-amber-600 dark:text-amber-400'>
+                Using fallback countries list
+              </p>
+            )}
           </FormField>
         </div>
       </div>
@@ -192,6 +219,7 @@ export const ContactDetailsStep: React.FC<StepComponentProps> = ({
   formData,
   fieldErrors,
   handleInputChange,
+  handleKeyPress,
 }) => {
   return (
     <section aria-labelledby='contact-section' className='space-y-6'>
@@ -202,19 +230,20 @@ export const ContactDetailsStep: React.FC<StepComponentProps> = ({
       />
 
       <div className='space-y-6'>
-        <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
+        <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
           <FormField
-            label='Area Code'
-            htmlFor='telAreaCode'
+            label='Telephone Prefix'
+            htmlFor='telPrefix'
             required
-            error={fieldErrors.telAreaCode}
+            error={fieldErrors.telPrefix}
           >
             <Input
-              id='telAreaCode'
-              value={formData.telAreaCode}
-              onChange={handleInputChange('telAreaCode')}
-              placeholder='0161'
-              error={!!fieldErrors.telAreaCode}
+              id='telPrefix'
+              value={formData.telPrefix}
+              onChange={handleInputChange('telPrefix')}
+              onKeyDown={handleKeyPress}
+              placeholder='+44 or 0161'
+              error={!!fieldErrors.telPrefix}
               autoFocus
             />
           </FormField>
@@ -224,23 +253,21 @@ export const ContactDetailsStep: React.FC<StepComponentProps> = ({
               id='telNo'
               value={formData.telNo}
               onChange={handleInputChange('telNo')}
+              onKeyDown={handleKeyPress}
               placeholder='Enter telephone number'
               error={!!fieldErrors.telNo}
             />
           </FormField>
         </div>
 
-        <FormField
-          label='Alternate Telephone'
-          htmlFor='alternateTelNo'
-          error={fieldErrors.alternateTelNo}
-        >
+        <FormField label='Alternate Telephone' htmlFor='telNoAlt' error={fieldErrors.telNoAlt}>
           <Input
-            id='alternateTelNo'
-            value={formData.alternateTelNo || ''}
-            onChange={handleInputChange('alternateTelNo')}
+            id='telNoAlt'
+            value={formData.telNoAlt || ''}
+            onChange={handleInputChange('telNoAlt')}
+            onKeyDown={handleKeyPress}
             placeholder='Enter alternate telephone number'
-            error={!!fieldErrors.alternateTelNo}
+            error={!!fieldErrors.telNoAlt}
           />
         </FormField>
 
@@ -249,19 +276,21 @@ export const ContactDetailsStep: React.FC<StepComponentProps> = ({
             id='faxNo'
             value={formData.faxNo || ''}
             onChange={handleInputChange('faxNo')}
+            onKeyDown={handleKeyPress}
             placeholder='Enter fax number'
             error={!!fieldErrors.faxNo}
           />
         </FormField>
 
-        <FormField label='Email Address' htmlFor='emailAddress' error={fieldErrors.emailAddress}>
+        <FormField label='Email Address' htmlFor='emailAddr' error={fieldErrors.emailAddr}>
           <Input
-            id='emailAddress'
+            id='emailAddr'
             type='email'
-            value={formData.emailAddress || ''}
-            onChange={handleInputChange('emailAddress')}
+            value={formData.emailAddr || ''}
+            onChange={handleInputChange('emailAddr')}
+            onKeyDown={handleKeyPress}
             placeholder='Enter email address'
-            error={!!fieldErrors.emailAddress}
+            error={!!fieldErrors.emailAddr}
           />
         </FormField>
       </div>

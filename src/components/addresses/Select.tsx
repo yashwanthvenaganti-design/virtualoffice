@@ -9,10 +9,35 @@ interface SelectOption {
 interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
   options: SelectOption[];
   error?: boolean;
+  placeholder?: string;
+  showEmptyOption?: boolean;
 }
 
 const Select = forwardRef<HTMLSelectElement, SelectProps>(
-  ({ options, error, className, ...props }, ref) => {
+  (
+    {
+      options,
+      error,
+      placeholder = 'Select an option...',
+      showEmptyOption = true,
+      className,
+      ...props
+    },
+    ref
+  ) => {
+    // Filter out invalid options
+    const validOptions =
+      options?.filter(
+        option =>
+          option &&
+          typeof option.value === 'string' &&
+          typeof option.label === 'string' &&
+          option.value.trim() !== '' &&
+          option.label.trim() !== ''
+      ) || [];
+
+    const hasValue = props.value && props.value !== '';
+
     return (
       <div className='relative'>
         <select
@@ -21,15 +46,14 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
           className={`
             w-full px-4 py-3 pr-12 text-sm
             bg-white dark:bg-gray-800
-            border rounded-xl
-            text-gray-900 dark:text-gray-100
-            placeholder-gray-500 dark:placeholder-gray-400
+            border rounded-md
             transition-all duration-200
             appearance-none
             focus:outline-none focus:ring-4
             disabled:bg-gray-50 dark:disabled:bg-gray-700
             disabled:text-gray-500 dark:disabled:text-gray-400
-            disabled:cursor-not-allowed
+            disabled:cursor-not-allowed cursor-pointer
+            ${hasValue ? 'text-gray-900 dark:text-gray-100' : 'text-gray-400 dark:text-gray-500'}
             ${
               error
                 ? 'border-red-300 dark:border-red-700 focus:border-red-500 dark:focus:border-red-400 focus:ring-red-500/20 dark:focus:ring-red-400/20'
@@ -38,11 +62,21 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
             ${className || ''}
           `}
         >
-          {options.map(option => (
-            <option key={option.value} value={option.value}>
-              {option.label}
+          {/* Empty option for placeholder */}
+          {showEmptyOption && <option value=''>{placeholder}</option>}
+
+          {/* Render only valid options */}
+          {validOptions.length > 0 ? (
+            validOptions.map(option => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))
+          ) : (
+            <option value='' disabled>
+              No valid options available
             </option>
-          ))}
+          )}
         </select>
 
         {/* Custom dropdown arrow */}

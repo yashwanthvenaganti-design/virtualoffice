@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import React, { useEffect, useMemo, useState } from 'react';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { z } from 'zod';
 import { ArrowBack, Person, LocationOn, ContactPhone, Business } from '@mui/icons-material';
 import { CircularProgress } from '@mui/material';
@@ -12,9 +12,19 @@ import {
   AddressDetailsStep,
   ContactDetailsStep,
   AdditionalInformationStep,
-  type FormValues,
   type StepComponentProps,
 } from './FormStepComponents';
+import toast from 'react-hot-toast';
+
+import {
+  useAddress,
+  useCreateAddress,
+  useUpdateAddress,
+  useCountries,
+} from '../../hooks/useAddress';
+import type { AddressFormData, AddressItem } from '../../types/address';
+
+const COMPANIES_ID = import.meta.env.VITE_APP_COMPANIES_ID;
 
 const formSchema = z.object({
   // Basic Information
@@ -22,24 +32,26 @@ const formSchema = z.object({
   description: z.string().trim().min(1, 'Description is required'),
 
   // Address Details
-  addressLine1: z.string().trim().min(1, 'Address line 1 is required'),
-  addressLine2: z.string().optional(),
-  addressLine3: z.string().optional(),
+  addrLine1: z.string().trim().min(1, 'Address line 1 is required'),
+  addrLine2: z.string().optional(),
+  addrLine3: z.string().optional(),
   town: z.string().trim().min(1, 'Town is required'),
   county: z.string().optional(),
   postcode: z.string().trim().min(1, 'Postcode is required'),
   country: z.string().min(1, 'Country is required'),
 
   // Contact Details
-  telAreaCode: z.string().trim().min(1, 'Area code is required'),
+  telPrefix: z.string().trim().min(1, 'Telephone prefix is required'),
   telNo: z.string().trim().min(1, 'Telephone number is required'),
-  alternateTelNo: z.string().optional(),
+  telNoAlt: z.string().optional(),
   faxNo: z.string().optional(),
-  emailAddress: z.union([z.string().email('Invalid email address'), z.literal('')]).optional(),
+  emailAddr: z.union([z.string().email('Invalid email address'), z.literal('')]).optional(),
 
   // Additional
   landmark: z.string().optional(),
 });
+
+type FormValues = z.infer<typeof formSchema>;
 
 const steps: StepDefinition[] = [
   { id: 'basic', label: 'Basic Information', icon: <Person className='w-4 h-4' /> },
@@ -48,75 +60,163 @@ const steps: StepDefinition[] = [
   { id: 'additional', label: 'Additional Info', icon: <Business className='w-4 h-4' /> },
 ];
 
-const countryOptions = [
-  { value: 'GB', label: 'United Kingdom' },
-  { value: 'US', label: 'United States' },
-  { value: 'CA', label: 'Canada' },
-  { value: 'AU', label: 'Australia' },
-];
-
-const addressData: Record<string, FormValues> = {
-  '1': {
-    name: 'Primary address',
-    description: 'Main company address',
-    addressLine1: '123 Main Street',
-    addressLine2: 'Suite 400',
-    addressLine3: 'District',
-    town: 'London',
-    county: 'Greater London',
-    postcode: 'AB12CD',
-    country: 'GB',
-    telAreaCode: '0161',
-    telNo: 'adpcx_dev',
-    alternateTelNo: '',
-    faxNo: '',
-    emailAddress: '',
-    landmark: 'test',
-  },
-};
-
 const AddressDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
   const isEdit = id !== 'new';
 
-  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const [error, setError] = useState<string | null>(null);
 
+  // Check if address data was passed via navigation state
+  const addressFromState = location.state?.address as AddressItem | undefined;
+
   const [formData, setFormData] = useState<FormValues>({
     name: '',
     description: '',
-    addressLine1: '',
-    addressLine2: '',
-    addressLine3: '',
+    addrLine1: '',
+    addrLine2: '',
+    addrLine3: '',
     town: '',
     county: '',
     postcode: '',
-    country: 'GB',
-    telAreaCode: '',
+    country: isEdit ? '' : 'GB',
+    telPrefix: '',
     telNo: '',
-    alternateTelNo: '',
+    telNoAlt: '',
     faxNo: '',
-    emailAddress: '',
+    emailAddr: '',
     landmark: '',
   });
 
   const [fieldErrors, setFieldErrors] = useState<Partial<Record<keyof FormValues, string>>>({});
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (isEdit && id && addressData[id]) {
-        const found = addressData[id];
-        setFormData(found);
-      }
-      setLoading(false);
-    }, 500);
+  // Fetch address data if editing and not passed via state
+  const {
+    data: addressData,
+    isLoading: isLoadingAddress,
+    error: addressError,
+  } = useAddress(id || '', COMPANIES_ID, {
+    enabled: isEdit && !addressFromState,
+    onError: error => {
+      console.error('Failed to fetch address:', error);
+      toast.error('Failed to load address data');
+    },
+  });
 
-    return () => clearTimeout(timer);
-  }, [id, isEdit]);
+  // Fetch countries for dropdown (non-blocking)
+  const {
+    data: countriesResponse,
+    isLoading: isLoadingCountries,
+    error: countriesError,
+  } = useCountries({
+    onError: error => {
+      console.error('Failed to fetch countries:', error);
+      // Don't show error toast for countries as it's not critical
+    },
+  });
+
+  // Create mutation
+  const createMutation = useCreateAddress({
+    onSuccess: data => {
+      setSaveSuccess(true);
+      toast.success('Address created successfully!');
+      setTimeout(() => {
+        navigate('/addresses', {
+          state: { refreshData: true, message: 'Address created successfully!' },
+        });
+      }, 1500);
+    },
+    onError: error => {
+      console.error('Failed to create address:', error);
+      setError('Failed to create address. Please try again.');
+      toast.error('Failed to create address');
+    },
+  });
+
+  // Update mutation
+  const updateMutation = useUpdateAddress({
+    onSuccess: data => {
+      setSaveSuccess(true);
+      toast.success('Address updated successfully!');
+      setTimeout(() => {
+        navigate('/addresses', {
+          state: { refreshData: true, message: 'Address updated successfully!' },
+        });
+      }, 1500);
+    },
+    onError: error => {
+      console.error('Failed to update address:', error);
+      setError('Failed to update address. Please try again.');
+      toast.error('Failed to update address');
+    },
+  });
+
+  // Country options from API or fallback
+  const countryOptions = useMemo(() => {
+    if (countriesResponse && countriesResponse?.data?.length > 0) {
+      const validCountries = countriesResponse?.data?.filter(
+        country =>
+          country &&
+          typeof country.iso === 'string' &&
+          typeof country.printableName === 'string' &&
+          country.iso.trim() !== '' &&
+          country.printableName.trim() !== ''
+      );
+
+      const options = validCountries?.map(country => ({
+        value: country.iso.trim(),
+        label: country.printableName.trim(),
+      }));
+
+      return options;
+    }
+
+    // Fallback countries if API fails
+    const fallbackOptions = [
+      { value: 'GB', label: 'United Kingdom' },
+      { value: 'US', label: 'United States' },
+      { value: 'CA', label: 'Canada' },
+      { value: 'AU', label: 'Australia' },
+      { value: 'IN', label: 'India' },
+      { value: 'DE', label: 'Germany' },
+      { value: 'FR', label: 'France' },
+      { value: 'JP', label: 'Japan' },
+      { value: 'BR', label: 'Brazil' },
+      { value: 'AR', label: 'Argentina' },
+      { value: 'GM', label: 'Gambia' },
+    ];
+    console.log('🌍 Using fallback countries:', fallbackOptions.slice(0, 3));
+    return fallbackOptions;
+  }, [countriesResponse, countriesError, isLoadingCountries]);
+
+  // Populate form data when address is loaded
+  useEffect(() => {
+    const addressToLoad = addressFromState || addressData;
+
+    if (addressToLoad) {
+      setFormData({
+        name: addressToLoad.name || '',
+        description: addressToLoad.description || '',
+        addrLine1: addressToLoad.addrLine1 || '',
+        addrLine2: addressToLoad.addrLine2 || '',
+        addrLine3: addressToLoad.addrLine3 || '',
+        town: addressToLoad.town || '',
+        county: addressToLoad.county || '',
+        postcode: addressToLoad.postcode || '',
+        country: addressToLoad.country || '',
+        telPrefix: addressToLoad.telPrefix || '',
+        telNo: addressToLoad.telNo || '',
+        telNoAlt: addressToLoad.telNoAlt || '',
+        faxNo: addressToLoad.faxNo || '',
+        emailAddr: addressToLoad.emailAddr || '',
+        landmark: addressToLoad.landmark || '',
+      });
+    }
+  }, [addressFromState, addressData]);
 
   const handleInputChange =
     (field: keyof FormValues) =>
@@ -126,7 +226,7 @@ const AddressDetailPage: React.FC = () => {
         [field]: event.target.value,
       }));
 
-      // Clear errors when user starts typing - like your LoginForm
+      // Clear errors when user starts typing
       if (error) setError(null);
       if (fieldErrors[field]) {
         setFieldErrors(prev => ({
@@ -159,16 +259,31 @@ const AddressDetailPage: React.FC = () => {
     setError(null);
 
     try {
-      console.log('Saving address:', formData);
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      setSaveSuccess(true);
-      setTimeout(() => {
-        setSaveSuccess(false);
-        // navigate('/addresses');
-      }, 2000);
+      const submitData: AddressFormData = {
+        name: formData.name,
+        description: formData.description,
+        addrLine1: formData.addrLine1,
+        addrLine2: formData.addrLine2,
+        addrLine3: formData.addrLine3,
+        town: formData.town,
+        county: formData.county,
+        postcode: formData.postcode,
+        country: formData.country,
+        telPrefix: formData.telPrefix,
+        telNo: formData.telNo,
+        telNoAlt: formData.telNoAlt,
+        faxNo: formData.faxNo,
+        emailAddr: formData.emailAddr,
+        landmark: formData.landmark,
+      };
+
+      if (isEdit && id) {
+        await updateMutation.mutateAsync({ id, data: submitData });
+      } else {
+        await createMutation.mutateAsync(submitData);
+      }
     } catch (error) {
-      console.error('Error saving address:', error);
-      setError('Failed to save address. Please try again.');
+      // Error handling is done in mutation callbacks
     } finally {
       setSaving(false);
     }
@@ -179,9 +294,9 @@ const AddressDetailPage: React.FC = () => {
       case 0:
         return ['name', 'description'];
       case 1:
-        return ['addressLine1', 'town', 'postcode', 'country'];
+        return ['addrLine1', 'town', 'postcode', 'country'];
       case 2:
-        return ['telAreaCode', 'telNo'];
+        return ['telPrefix', 'telNo'];
       case 3:
         return [];
       default:
@@ -195,7 +310,6 @@ const AddressDetailPage: React.FC = () => {
     if (fieldsToValidate.length === 0) return true;
 
     try {
-      // Create a schema with only the fields for this step
       const stepSchema = z.object(
         fieldsToValidate.reduce((acc, field) => {
           const originalField = formSchema.shape[field];
@@ -309,6 +423,8 @@ const AddressDetailPage: React.FC = () => {
       handleInputChange,
       handleKeyPress,
       countryOptions,
+      isLoadingCountries,
+      countriesError,
     };
 
     switch (currentStep) {
@@ -325,10 +441,36 @@ const AddressDetailPage: React.FC = () => {
     }
   };
 
-  if (loading) {
+  // Show loading state only for address data, not countries
+  if (isLoadingAddress) {
     return (
       <div className='flex items-center justify-center min-h-[300px]'>
-        <CircularProgress />
+        <div className='text-center space-y-4'>
+          <CircularProgress />
+          <p className='text-sm text-gray-600 dark:text-gray-400'>Loading address data...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (addressError) {
+    return (
+      <div className='flex items-center justify-center min-h-[300px]'>
+        <div className='text-center space-y-4'>
+          <h3 className='text-lg font-semibold text-red-600 dark:text-red-400'>
+            Failed to Load Address
+          </h3>
+          <p className='text-sm text-gray-600 dark:text-gray-400'>
+            {addressError.message || 'There was an error loading the address data.'}
+          </p>
+          <button
+            onClick={handleBack}
+            className='px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors'
+          >
+            Back to Addresses
+          </button>
+        </div>
       </div>
     );
   }

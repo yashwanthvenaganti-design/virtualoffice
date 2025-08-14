@@ -81,17 +81,18 @@ const YourAvailability: React.FC = () => {
   const availabilities = availabilitiesResponse?.data || EmptyArr;
 
   const filteredAvailabilities = useMemo(() => {
-    if (!availabilities?.length) return [];
+    if (!availabilities.length) return [];
 
-    return availabilities?.filter((item: AvailabilityItem) => {
+    return availabilities.filter((item: AvailabilityItem) => {
       if (!searchQuery || searchQuery.trim() === '') return true;
+
       const query = searchQuery.toLowerCase().trim();
 
       switch (selectedFilter) {
         case 'Status Name':
-          return item?.name?.toLowerCase().includes(query) || false;
+          return item.name?.toLowerCase().includes(query) || false;
         case 'Tel No':
-          return item?.telNo?.toLowerCase().includes(query) || false;
+          return item.telNo?.toLowerCase().includes(query) || false;
         default:
           return (
             item.name?.toLowerCase().includes(query) ||
@@ -300,7 +301,7 @@ const YourAvailability: React.FC = () => {
           <SearchInput
             value={searchQuery}
             onChange={setSearchQuery}
-            placeholder='Search by name or tel...'
+            placeholder={`Search by ${selectedFilter}...`}
           />
 
           <ActionsDropdown

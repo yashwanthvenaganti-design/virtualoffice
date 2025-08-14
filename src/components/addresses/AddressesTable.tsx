@@ -5,7 +5,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 
 interface AddressRowData {
-  id: number;
+  id: string;
   name: string;
   isDefault: boolean;
   landmark: string;
@@ -16,12 +16,12 @@ interface AddressRowData {
 
 interface AddressTableProps {
   rows: AddressRowData[];
-  selectedRows: number[];
-  onSelectRow: (id: number) => void;
+  selectedRows: string[];
+  onSelectRow: (id: string) => void;
   onSelectAll: (checked: boolean) => void;
   selectAll: boolean;
-  onRowClick?: (event: React.MouseEvent<HTMLDivElement>, id: number) => void;
-  onEditAddress?: (id: number) => void;
+  onRowClick?: (event: React.MouseEvent<HTMLDivElement>, id: string) => void;
+  onEditAddress?: (id: string) => void;
 }
 
 export const AddressTable: React.FC<AddressTableProps> = ({
@@ -130,10 +130,10 @@ export const AddressTable: React.FC<AddressTableProps> = ({
 
                           <IconButton
                             size='small'
-                            // onClick={e => {
-                            //   e.stopPropagation();
-                            //   onEditAddress?.(row.id);
-                            // }}
+                            onClick={e => {
+                              e.stopPropagation();
+                              onEditAddress?.(row.id);
+                            }}
                             className='opacity-0 group-hover:opacity-100 transition-opacity duration-200 !p-1 flex-shrink-0'
                           >
                             <EditIcon
@@ -146,7 +146,7 @@ export const AddressTable: React.FC<AddressTableProps> = ({
                           <Chip
                             label='default'
                             size='small'
-                            className='!bg-gray-100 !text-gray-600 dark:!bg-gray-700 dark:!text-gray-300 !text-xs !h-5 !font-medium mt-1 self-start'
+                            className='!bg-blue-100 !text-blue-700 dark:!bg-blue-900/50 dark:!text-blue-300 !text-xs !h-5 !font-medium mt-1 self-start'
                           />
                         )}
                       </div>
@@ -157,7 +157,7 @@ export const AddressTable: React.FC<AddressTableProps> = ({
                       className='text-sm text-gray-600 dark:text-gray-400 truncate'
                       title={row.landmark || ''}
                     >
-                      {row.landmark || '•'}
+                      {row.landmark || '—'}
                     </Typography>
                   </Grid>
                   <Grid item xs={2}>
@@ -165,7 +165,7 @@ export const AddressTable: React.FC<AddressTableProps> = ({
                       className='text-sm text-gray-600 dark:text-gray-400 truncate'
                       title={row.companyTelNo}
                     >
-                      {row.companyTelNo}
+                      {row.companyTelNo || '—'}
                     </Typography>
                   </Grid>
                   <Grid item xs={3}>

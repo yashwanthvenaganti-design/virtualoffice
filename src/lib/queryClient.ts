@@ -9,7 +9,7 @@ export const queryClient = new QueryClient({
       // How long data stays in cache (10 minutes)
       gcTime: 10 * 60 * 1000,
       // Retry failed requests 3 times
-      retry: 3,
+      retry: 2,
       // Don't refetch on window focus in development
       refetchOnWindowFocus: process.env.NODE_ENV === 'production',
       // Refetch on network reconnect

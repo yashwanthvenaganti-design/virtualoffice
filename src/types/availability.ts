@@ -1,4 +1,6 @@
 export interface AvailabilityItem {
+  message: any;
+  data: any;
   availabilitiesId: string;
   people: string | null;
   name: string;
