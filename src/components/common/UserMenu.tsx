@@ -160,7 +160,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ user, onLogout, onUserSettings, onP
           paper: {
             elevation: 0,
             className: `
-            mt-2 min-w-[300px] backdrop-blur-xl border-2 transition-all duration-200
+            mt-2 mr-3 min-w-[300px] backdrop-blur-xl border-2 transition-all duration-200
             bg-header-light-surface/98 border-header-light-border shadow-2xl
             dark:bg-header-dark-surface/98 dark:border-header-dark-border dark:shadow-2xl
           `,

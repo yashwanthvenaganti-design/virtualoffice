@@ -24,27 +24,13 @@ interface AddressPreviewProps {
     telAreaCode?: string;
     telNo?: string;
     alternateTelNo?: string;
-    faxNo?: string;
     emailAddress?: string;
     landmark?: string;
   };
   currentStep?: number;
 }
 
-const AddressPreview: React.FC<AddressPreviewProps> = ({ formData, currentStep = 0 }) => {
-  const formatAddress = () => {
-    const parts = [
-      formData.addressLine1,
-      formData.addressLine2,
-      formData.addressLine3,
-      formData.town,
-      formData.county,
-      formData.postcode,
-    ].filter(Boolean);
-
-    return parts.join(', ');
-  };
-
+const AddressPreview: React.FC<AddressPreviewProps> = ({ formData }) => {
   const formatPhone = () => {
     if (formData.telAreaCode && formData.telNo) {
       return `${formData.telAreaCode} ${formData.telNo}`;
@@ -208,15 +194,6 @@ const AddressPreview: React.FC<AddressPreviewProps> = ({ formData, currentStep =
                   <Phone className='w-3 h-3 text-gray-400' />
                   <span className='text-sm text-gray-600 dark:text-gray-400'>
                     {formData.alternateTelNo} (Alt)
-                  </span>
-                </div>
-              )}
-
-              {formData.faxNo && (
-                <div className='flex items-center gap-2'>
-                  <Fax className='w-3 h-3 text-gray-400' />
-                  <span className='text-sm text-gray-600 dark:text-gray-400'>
-                    {formData.faxNo} (Fax)
                   </span>
                 </div>
               )}

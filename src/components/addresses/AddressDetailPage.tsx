@@ -44,7 +44,6 @@ const formSchema = z.object({
   telPrefix: z.string().trim().min(1, 'Telephone prefix is required'),
   telNo: z.string().trim().min(1, 'Telephone number is required'),
   telNoAlt: z.string().optional(),
-  faxNo: z.string().optional(),
   emailAddr: z.union([z.string().email('Invalid email address'), z.literal('')]).optional(),
 
   // Additional
@@ -87,7 +86,6 @@ const AddressDetailPage: React.FC = () => {
     telPrefix: '',
     telNo: '',
     telNoAlt: '',
-    faxNo: '',
     emailAddr: '',
     landmark: '',
   });
@@ -211,7 +209,6 @@ const AddressDetailPage: React.FC = () => {
         telPrefix: addressToLoad.telPrefix || '',
         telNo: addressToLoad.telNo || '',
         telNoAlt: addressToLoad.telNoAlt || '',
-        faxNo: addressToLoad.faxNo || '',
         emailAddr: addressToLoad.emailAddr || '',
         landmark: addressToLoad.landmark || '',
       });
@@ -241,51 +238,6 @@ const AddressDetailPage: React.FC = () => {
       event.preventDefault();
       event.stopPropagation();
       return false;
-    }
-  };
-
-  const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    if (currentStep !== steps.length - 1) {
-      return;
-    }
-
-    if (!validateForm()) {
-      setError('Please fix the errors above and try again.');
-      return;
-    }
-
-    setSaving(true);
-    setError(null);
-
-    try {
-      const submitData: AddressFormData = {
-        name: formData.name,
-        description: formData.description,
-        addrLine1: formData.addrLine1,
-        addrLine2: formData.addrLine2,
-        addrLine3: formData.addrLine3,
-        town: formData.town,
-        county: formData.county,
-        postcode: formData.postcode,
-        country: formData.country,
-        telPrefix: formData.telPrefix,
-        telNo: formData.telNo,
-        telNoAlt: formData.telNoAlt,
-        faxNo: formData.faxNo,
-        emailAddr: formData.emailAddr,
-        landmark: formData.landmark,
-      };
-
-      if (isEdit && id) {
-        await updateMutation.mutateAsync({ id, data: submitData });
-      } else {
-        await createMutation.mutateAsync(submitData);
-      }
-    } catch (error) {
-      // Error handling is done in mutation callbacks
-    } finally {
-      setSaving(false);
     }
   };
 
@@ -412,6 +364,53 @@ const AddressDetailPage: React.FC = () => {
     });
   };
 
+  const handleSaveClick = async () => {
+    if (currentStep !== steps.length - 1) {
+      return;
+    }
+
+    if (!validateForm()) {
+      setError('Please fix the errors above and try again.');
+      return;
+    }
+
+    setSaving(true);
+    setError(null);
+
+    try {
+      const submitData: AddressFormData = {
+        name: formData.name,
+        description: formData.description,
+        addrLine1: formData.addrLine1,
+        addrLine2: formData.addrLine2,
+        addrLine3: formData.addrLine3,
+        town: formData.town,
+        county: formData.county,
+        postcode: formData.postcode,
+        country: formData.country,
+        telPrefix: formData.telPrefix,
+        telNo: formData.telNo,
+        telNoAlt: formData.telNoAlt,
+        emailAddr: formData.emailAddr,
+        landmark: formData.landmark,
+      };
+
+      if (isEdit && id) {
+        await updateMutation.mutateAsync({ id, data: submitData });
+      } else {
+        await createMutation.mutateAsync(submitData);
+      }
+    } catch (error) {
+      // Error handling is done in mutation callbacks
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+  };
+
   const handleBack = () => {
     navigate('/addresses');
   };
@@ -527,6 +526,7 @@ const AddressDetailPage: React.FC = () => {
                 onPrevious={handlePrevious}
                 onNext={handleNext}
                 onCancel={handleBack}
+                onSave={handleSaveClick}
               />
             </div>
           </div>

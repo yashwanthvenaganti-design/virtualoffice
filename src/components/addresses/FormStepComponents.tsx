@@ -19,7 +19,6 @@ export interface FormValues {
   telPrefix: string;
   telNo: string;
   telNoAlt?: string;
-  faxNo?: string;
   emailAddr?: string;
   landmark?: string;
 }
@@ -268,17 +267,6 @@ export const ContactDetailsStep: React.FC<StepComponentProps> = ({
             onKeyDown={handleKeyPress}
             placeholder='Enter alternate telephone number'
             error={!!fieldErrors.telNoAlt}
-          />
-        </FormField>
-
-        <FormField label='Fax Number' htmlFor='faxNo' error={fieldErrors.faxNo}>
-          <Input
-            id='faxNo'
-            value={formData.faxNo || ''}
-            onChange={handleInputChange('faxNo')}
-            onKeyDown={handleKeyPress}
-            placeholder='Enter fax number'
-            error={!!fieldErrors.faxNo}
           />
         </FormField>
 

@@ -7,7 +7,6 @@ export interface AddressItem {
   telPrefix: string;
   telNo: string;
   telNoAlt?: string | null;
-  faxNo?: string | null;
   emailAddr?: string | null;
   addrLine1: string;
   addrLine2?: string | null;
@@ -50,7 +49,6 @@ export interface AddressFormData {
   telPrefix: string;
   telNo: string;
   telNoAlt?: string;
-  faxNo?: string;
   emailAddr?: string;
   addrLine1: string;
   addrLine2?: string;

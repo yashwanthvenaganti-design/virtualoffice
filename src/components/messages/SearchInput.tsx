@@ -35,7 +35,7 @@ const SearchInput: React.FC<SearchInputProps> = ({
         placeholder={placeholder}
         value={value}
         onChange={e => onChange(e.target.value)}
-        className='w-full pl-12 pr-3 py-2 rounded-md text-gray-900 dark:text-gray-100'
+        className='w-full pl-12 pr-3 py-[9px] rounded-md text-gray-900 dark:text-gray-100'
         inputProps={{ 'aria-label': 'search messages' }}
         sx={{
           fontSize: '14px',

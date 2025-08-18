@@ -4,7 +4,7 @@ import ContactDetailsStep from './ContactDetailsStep';
 import NotificationPreferencesStep from './NotificationPreferencesStep';
 import ReviewAndSaveStep from './ReviewAndSaveStep';
 
-interface FormValues {
+export interface FormValues {
   statusName: string;
   availability: 'available' | 'unavailable';
   telNo: string;
@@ -12,6 +12,7 @@ interface FormValues {
   emailAddress?: string;
   smsNotifications: boolean;
   smsNumber?: string;
+  unavailableReason?: string;
 }
 
 interface StepContentProps {
