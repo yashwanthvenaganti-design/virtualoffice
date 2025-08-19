@@ -10,7 +10,7 @@ interface GreetingRowData {
   id: string;
   profileName: string;
   greeting: string;
-  timeOfDay: string;
+  salutation: boolean;
   isActive: boolean;
   isDefault: boolean;
 }
@@ -25,7 +25,7 @@ interface GreetingsTableProps {
   onEditGreeting?: (id: string) => void;
 }
 
-export const GreetingsTable: React.FC<GreetingsTableProps> = ({
+const GreetingsTable: React.FC<GreetingsTableProps> = ({
   rows,
   selectedRows,
   onSelectRow,
@@ -40,22 +40,10 @@ export const GreetingsTable: React.FC<GreetingsTableProps> = ({
     { key: 'select', label: '', colSpan: 1 },
     { key: 'profileName', label: 'Profile name', colSpan: 2 },
     { key: 'greeting', label: 'Greeting', colSpan: 4 },
-    { key: 'timeOfDay', label: 'Good morn/aft/eve', colSpan: 2 },
+    { key: 'salutation', label: 'Salutation', colSpan: 2 },
     { key: 'status', label: 'Status', colSpan: 1 },
     { key: 'actions', label: '', colSpan: 1 },
   ];
-
-  const getTimeOfDayChips = (timeOfDay: string) => {
-    const times = timeOfDay.split(', ').filter(Boolean);
-    return times.map((time, index) => (
-      <Chip
-        key={index}
-        label={time}
-        size='small'
-        className='!bg-blue-100 !text-blue-700 dark:!bg-blue-900/50 dark:!text-blue-300 !text-xs !h-6 !font-medium mr-1'
-      />
-    ));
-  };
 
   return (
     <div
@@ -182,14 +170,12 @@ export const GreetingsTable: React.FC<GreetingsTableProps> = ({
                     </div>
                   </Grid>
 
-                  {/* Time of Day */}
+                  {/* Salutaion */}
                   <Grid item xs={2}>
                     <div className='flex flex-wrap items-center gap-1'>
-                      {row.timeOfDay ? (
-                        getTimeOfDayChips(row.timeOfDay)
-                      ) : (
-                        <Typography className='text-sm text-gray-400'>—</Typography>
-                      )}
+                      <Typography className='text-sm text-gray-400'>
+                        {row?.salutation ? 'Enabled' : 'Disabled'}
+                      </Typography>
                     </div>
                   </Grid>
 
@@ -197,11 +183,11 @@ export const GreetingsTable: React.FC<GreetingsTableProps> = ({
                   <Grid item xs={1}>
                     <div className='flex items-center justify-center'>
                       {row.isActive ? (
-                        <CheckCircleIcon className='w-5 h-5 text-green-500' title='Active' />
+                        <CheckCircleIcon className='w-5 h-5 text-green-500' titleAccess='Active' />
                       ) : (
                         <RadioButtonUncheckedIcon
                           className='w-5 h-5 text-gray-400'
-                          title='Inactive'
+                          titleAccess='Inactive'
                         />
                       )}
                     </div>

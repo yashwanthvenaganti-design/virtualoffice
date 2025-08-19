@@ -108,9 +108,11 @@ const YourGreetings: React.FC = () => {
       salutation: item.salutation,
       verified: item.verified,
       isActive: item.status === 'A', // 'A' = Active, others = Inactive
-      isDefault: item.name.toLowerCase() === 'default', // Determine default by name
+      isDefault: item.isDefault,
     }));
   }, [filteredGreetings]);
+
+  console.log(tableData, 'Table Data');
 
   const handleSelectRow = (id: string) => {
     setSelectedRows(prev => {
@@ -334,7 +336,6 @@ const YourGreetings: React.FC = () => {
                   label: `Delete Selected (${selectedRows.length})`,
                   action: handleDeleteGreetings,
                   isDanger: true,
-                  disabled: selectedRows.length === 0,
                 },
               ]}
             />
