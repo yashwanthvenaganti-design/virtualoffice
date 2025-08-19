@@ -13,6 +13,7 @@ import YourAvailability from './pages/YourAvailability';
 import AvailabilityDetailPage from './components/availability/AvailabilityDetailPage';
 import YourAppDevices from './pages/YourAppDevices';
 import YourAddresses from './pages/YourAddresses';
+import YourGreetings from './pages/YourGreetings';
 import AddressDetailPage from './components/addresses/AddressDetailPage';
 import MainLayout from './components/layout/MainLayout';
 import ProtectedRoute from './components/common/ProtectedRoute';
@@ -31,6 +32,7 @@ const App: React.FC = () => {
         <div className='min-h-screen bg-background text-foreground'>
           <Routes>
             <Route path='/login' element={<LoginPage />} />
+
             <Route path='/forgot-password' element={<ForgotPasswordPage />} />
 
             <Route
@@ -39,6 +41,17 @@ const App: React.FC = () => {
                 <ProtectedRoute>
                   <MainLayout>
                     <HomePage />
+                  </MainLayout>
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path='/profile'
+              element={
+                <ProtectedRoute>
+                  <MainLayout>
+                    <ProfilePage />
                   </MainLayout>
                 </ProtectedRoute>
               }
@@ -111,27 +124,22 @@ const App: React.FC = () => {
             />
 
             <Route
-              path='/profile'
+              path='/greetings'
               element={
                 <ProtectedRoute>
                   <MainLayout>
-                    <ProfilePage />
+                    <YourGreetings />
                   </MainLayout>
                 </ProtectedRoute>
               }
             />
 
             <Route
-              path='/virtual-office'
+              path='/greetings/:id'
               element={
                 <ProtectedRoute>
                   <MainLayout>
-                    <div className='p-8'>
-                      <div className='card text-center'>
-                        <h1 className='text-2xl font-bold text-foreground mb-4'>Virtual Office</h1>
-                        <p className='text-muted'>Coming Soon</p>
-                      </div>
-                    </div>
+                    <YourGreetings />
                   </MainLayout>
                 </ProtectedRoute>
               }
