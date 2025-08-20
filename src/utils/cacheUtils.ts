@@ -47,7 +47,10 @@ export const cacheUtils = {
         info.countries = { hasCache: false };
       }
     } catch (error) {
-      info.countries = { hasCache: false, error: error.message };
+      info.countries = {
+        hasCache: false,
+        error: error instanceof Error ? error.message : String(error),
+      };
     }
 
     return info;
@@ -64,7 +67,7 @@ export const cacheUtils = {
       };
       return JSON.stringify(cacheData, null, 2);
     } catch (error) {
-      return `Error exporting cache: ${error.message}`;
+      return `Error exporting cache: ${error instanceof Error ? error.message : String(error)}`;
     }
   },
 };

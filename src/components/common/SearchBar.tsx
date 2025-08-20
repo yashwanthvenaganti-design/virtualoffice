@@ -40,7 +40,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
     <div className='flex-1' style={{ maxWidth }}>
       <div
         className={`
-        relative rounded-xl border-2 transition-all duration-300 ease-out group
+        relative rounded-lg border-2 transition-all duration-300 ease-out group
         bg-header-light-searchBg border-header-light-searchBorder shadow-search
         dark:bg-header-dark-searchBg dark:border-header-dark-searchBorder dark:shadow-search
         hover:border-header-light-searchFocus/50 hover:shadow-search-focus
@@ -49,7 +49,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
         dark:focus-within:border-header-dark-searchFocus dark:focus-within:ring-header-dark-searchFocus/10
       `}
       >
-        <div className='flex items-center px-4 py-1.5'>
+        <div className='flex items-center px-4 py-1'>
           <SearchIcon
             className={`
               mr-3 transition-colors duration-200

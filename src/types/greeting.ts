@@ -1,4 +1,5 @@
 export interface GreetingItem {
+  isDefault: any;
   greetingsId: string;
   companyId: string | null;
   name: string;

@@ -20,6 +20,7 @@ import ProtectedRoute from './components/common/ProtectedRoute';
 import AuthenticatedRedirect from './components/common/AuthenticatedRedirect';
 
 import './index.css';
+import GreetingDetailPage from './components/greeting/GreetingDetailPage';
 
 const App: React.FC = () => {
   const { isDark } = useTheme();
@@ -135,11 +136,22 @@ const App: React.FC = () => {
             />
 
             <Route
+              path='/greetings/new'
+              element={
+                <ProtectedRoute>
+                  <MainLayout>
+                    <GreetingDetailPage />
+                  </MainLayout>
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
               path='/greetings/:id'
               element={
                 <ProtectedRoute>
                   <MainLayout>
-                    <YourGreetings />
+                    <GreetingDetailPage />
                   </MainLayout>
                 </ProtectedRoute>
               }

@@ -203,9 +203,9 @@ const ProfilePage: React.FC = () => {
                   </p>
 
                   <div className='mb-6'>
-                    <span className={getRoleColor(user.role)}>
-                      {getRoleIcon(user.role)}
-                      <span className='ml-2'>{user.role.toUpperCase()}</span>
+                    <span className={getRoleColor(user.role || '')}>
+                      {getRoleIcon(user.role || '')}
+                      <span className='ml-2'>{user.role ? user.role.toUpperCase() : ''}</span>
                     </span>
                   </div>
 

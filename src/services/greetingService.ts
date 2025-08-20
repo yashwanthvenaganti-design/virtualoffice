@@ -118,7 +118,7 @@ class GreetingService {
       const response = await this.request<DeleteGreetingResponse>(
         `/vo/greetings/deleteGreetings?companiesId=${companiesId}`,
         {
-          method: 'DELETE',
+          method: 'POST',
           body: JSON.stringify(ids),
         }
       );

@@ -112,8 +112,6 @@ const YourGreetings: React.FC = () => {
     }));
   }, [filteredGreetings]);
 
-  console.log(tableData, 'Table Data');
-
   const handleSelectRow = (id: string) => {
     setSelectedRows(prev => {
       const updated = prev.includes(id) ? prev.filter(r => r !== id) : [...prev, id];
@@ -311,7 +309,7 @@ const YourGreetings: React.FC = () => {
           className='flex-shrink-0 p-3 border-b border-gray-200 bg-white/80 dark:border-gray-700 dark:bg-gray-800/50 backdrop-blur-sm'
           aria-label='Greeting controls'
         >
-          <div className='flex flex-col lg:flex-row gap-4'>
+          <div className='flex flex-col lg:flex-row gap-4 w-full min-w-0 flex-1 max-w-full'>
             <FilterDropdown
               selected={selectedFilter}
               options={filterOptions}
