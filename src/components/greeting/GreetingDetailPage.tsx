@@ -36,7 +36,7 @@ const GreetingDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const location = useLocation();
-  const isEdit = id !== 'new';
+  const isEdit = id && id !== 'new';
 
   const [saving, setSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
@@ -362,7 +362,7 @@ const GreetingDetailPage: React.FC = () => {
     <div className='min-h-screen bg-gray-50 dark:bg-gray-900'>
       <div className='max-w-8xl mx-auto px-4 sm:px-5 lg:px-6 py-4'>
         {/* Header */}
-        <header className='mb-8'>
+        <header className='mb-1'>
           <div className='flex items-center gap-4 mb-6'>
             <button
               onClick={handleBack}
