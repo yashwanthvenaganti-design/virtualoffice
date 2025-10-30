@@ -10,7 +10,6 @@ import { useTheme } from "@mui/material/styles";
 import Header from "../Header/Header";
 import Sidebar from "../Sidebar/Sidebar";
 import { Outlet } from "react-router-dom";
-
 import {
   Home,
   CalendarMonth,
@@ -88,48 +87,56 @@ export default function AppLayout() {
     setSidebarOpen(!isMobile);
   }, [isMobile]);
 
-  // 🎨 Theme with Custom Dark Palette
+  // 🎨 AllDayPA Color Tokens
+  const colors = {
+    pink: "#e91e63", // hsl(325, 79%, 53%)
+    pinkLight: "#f48fb1", // hsl(331, 70%, 73%)
+    green: "#43a047", // hsl(148, 44%, 51%)
+    cyan: "#4dd0e1", // hsl(180, 65%, 60%)
+    orange: "#ff9800", // hsl(24, 95%, 53%)
+    navy: "#2a2a45", // hsl(242, 28%, 19%)
+  };
+
+  // 🌈 MUI Theme Integration
   const theme = createTheme({
     palette: {
       mode: darkMode ? "dark" : "light",
       ...(darkMode
         ? {
-            // 🌙 Custom Dark Palette
             background: {
-              default: "rgba(17, 24, 39, 0.8)", // main app background
-              paper: "rgba(31, 41, 55, 0.9)", // cards, tables, etc.
+              // 🟣 Exact dark AllDayPA background gradient
+              default:
+                "linear-gradient(135deg, hsl(240 30% 10%) 0%, hsl(274 45% 18%) 50%, hsl(323 70% 22%) 100%)",
+              paper: "rgba(30, 30, 50, 0.8)", // glass-like panels
             },
             text: {
               primary: "#ffffff",
-              secondary: "#cbd5e1", // soft gray
+              secondary: "#bdbdbd",
             },
-            divider: "rgba(255, 255, 255, 0.1)",
-            primary: {
-              main: "#3b82f6", // blue accent
-            },
+            primary: { main: colors.pink },
+            secondary: { main: colors.cyan },
+            info: { main: colors.orange },
           }
         : {
-            // ☀️ Light Mode Palette
             background: {
-              default: "#f4f4f4",
+              // 🌤 Light gradient (unchanged)
+              default:
+                "linear-gradient(135deg, hsl(330 77% 95%) 0%, hsl(180 65% 92%) 50%, hsl(0 0% 98%) 100%)",
               paper: "#ffffff",
             },
             text: {
-              primary: "#111111",
+              primary: colors.navy,
               secondary: "#555555",
             },
-            divider: "rgba(0,0,0,0.1)",
-            primary: {
-              main: "#1976d2", // MUI blue
-            },
+            primary: { main: colors.pink },
+            secondary: { main: colors.green },
+            info: { main: colors.cyan },
           }),
     },
     typography: {
       fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
     },
-    shape: {
-      borderRadius: 12,
-    },
+    shape: { borderRadius: 12 },
   });
 
   const drawerWidth = sidebarOpen && !isMobile ? 240 : 70;
@@ -164,7 +171,7 @@ export default function AppLayout() {
             mt: 8,
             ml: { xs: 0, md: `${drawerWidth}px` },
             width: { xs: "100%", md: `calc(100% - ${drawerWidth}px)` },
-            backgroundColor: theme.palette.background.default,
+            background: theme.palette.background.default,
             color: theme.palette.text.primary,
             transition: "all 0.3s ease",
             overflowY: "auto",

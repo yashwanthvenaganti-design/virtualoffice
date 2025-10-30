@@ -261,7 +261,7 @@ export default function Header({ onMenuClick, darkMode, setDarkMode }) {
             <Box sx={{ display: "flex", alignItems: "center", gap: 2, ml: 2 }}>
               {/* Theme Toggle */}
               <IconButton
-                onClick={() => setDarkMode(!darkMode)}
+                onClick={() => setDarkMode((prev) => !prev)} // ✅ fixed toggle logic
                 sx={{
                   width: 44,
                   height: 44,
@@ -271,10 +271,11 @@ export default function Header({ onMenuClick, darkMode, setDarkMode }) {
                     : "rgba(0, 0, 0, 0.05)",
                 }}
               >
+                {/* ✅ Light <-> Dark switch */}
                 {darkMode ? (
-                  <DarkMode sx={{ color: "#ffca28" }} />
-                ) : (
                   <LightMode sx={{ color: "#f57c00" }} />
+                ) : (
+                  <DarkMode sx={{ color: "#ffca28" }} />
                 )}
               </IconButton>
 
