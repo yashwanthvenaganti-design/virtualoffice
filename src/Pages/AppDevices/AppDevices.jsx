@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useEffect } from "react";
 import ReusableTable from "../../Components/CustomTable/Customtable";
 import { IconButton, Stack, Chip } from "@mui/material";
-import { Visibility, Delete } from "@mui/icons-material";
+import { Visibility, Delete, Devices } from "@mui/icons-material"; // 💻 Added Devices icon
+import { getData } from "../../Axios/Axios";
 
 const columns = [
   { id: "name", label: "Name" },
@@ -109,6 +110,29 @@ export default function AppDevices() {
     alert(`🗑 Deleted message from ${row.name}`);
   };
 
+  const getNotifications =async() =>{
+    try{
+      const response = await getData("/notifications/viewNotifications");
+      const fetchedData = response?.data;
+     
+      console.log("Notifications fetched:", fetchedData);
+    }
+    catch(error) {
+      console.error("Error fetching notifications:", error);
+    } 
+  }
+
+  useEffect(() => {
+    getNotifications();
+  }, []);
+
+
+
+
+
+
+
+
   const getStatusChip = (status) => {
     let color = "default";
     if (status === "Read") color = "success";
@@ -136,11 +160,12 @@ export default function AppDevices() {
   return (
     <ReusableTable
       title="Your App Devices"
+      icon={<Devices />} // 💻 Added icon for header
       columns={columns}
       data={enhancedData}
       onAddClick={handleAddMessage}
       searchPlaceholder="Search by name or type..."
-      addButtonLabel="Add Message"
+      addButtonLabel="Add App Devices"
     />
   );
 }

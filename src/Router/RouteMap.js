@@ -1,0 +1,22 @@
+// src/routes/routeMap.js
+export const routeMap = {
+  home: "/",
+  availability: "/availabilities",
+  "add status": "/availabilities/add-status",
+  messages: "/messages",
+  "app devices": "/app-devices",
+  addresses: "/addresses",
+  greetings: "/greetings",
+  invoices: "/invoices",
+  "invoice settings": "/invoice-settings",
+  "company details": "/company-details",
+  "fax to email": "/fax-to-email",
+  "communication settings": "/modify/communication-settings",
+  "operating hours": "/modify/operating-hours",
+  notes: "/notes",
+  staff: "/staff",
+  statistics: "/statistics",
+  "useful numbers": "/useful-numbers",
+  feedback: "/feedback-form",
+  vips: "/vips",
+};

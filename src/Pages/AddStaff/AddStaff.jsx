@@ -21,6 +21,9 @@ import {
   Divider,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { postData } from "../../Axios/Axios";
+import { useSnackbar } from "../../Helpers/SnackBar/Snackbar";
+import { useNavigate } from "react-router-dom";
 
 export default function AddStaff() {
   const [formData, setFormData] = useState({
@@ -30,13 +33,15 @@ export default function AddStaff() {
     sex: "",
     jobTitle: "",
     department: "",
+    cc: false,
     defaultTelNo: "",
     defaultEmailAddr: "",
-    cc: "0",
-    isConfidential: "1",
-    isSearchable: "1",
-    createAvailability: true,
+    searchable: true,
+    confidential: false,
   });
+
+  const { showSnackbar } = useSnackbar(); 
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -46,25 +51,34 @@ export default function AddStaff() {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault();
-    console.log("Form Data Submitted:", formData);
-    alert("Staff details saved successfully!");
+    try{
+      const response = await postData("/staff/addStaff", formData);
+      console.log("Add Staff Response:", response);
+      showSnackbar("Staff member added successfully!", "success");
+      navigate("/staff");
+
+    }
+    catch(error){
+      console.error("Error adding staff member:", error);
+      showSnackbar("Failed to add staff member. Please try again.", "error");
+    }
   };
 
   return (
-    <Box sx={{ maxWidth: "auto", mx: "auto", p: 3 }}>
-      <Paper elevation={3} sx={{ p: 4, borderRadius: 3 }}>
+    <Box sx={{ maxWidth: "auto", mx: "auto", p: 2 ,mb:6}}>
+      <Paper elevation={2} sx={{ p: 2, borderRadius: 2 }}>
         <form onSubmit={handleSubmit}>
           {/* Personal Details */}
-          <Typography variant="h5" fontWeight={600} gutterBottom>
+          <Typography variant="h6" fontWeight={600} gutterBottom>
             Personal Details
           </Typography>
-          <Divider sx={{ mb: 3 }} />
+          <Divider sx={{ mb: 2 }} />
 
           <Grid container spacing={2}>
-            <Grid size={{xs:12,sm:6}}>
-              <FormControl fullWidth>
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <FormControl fullWidth size="small">
                 <InputLabel>Title</InputLabel>
                 <Select
                   name="title"
@@ -73,48 +87,43 @@ export default function AddStaff() {
                   label="Title"
                 >
                   <MenuItem value="">Select one</MenuItem>
-                  {[
-                    "Mr",
-                    "Mrs",
-                    "Miss",
-                    "Ms",
-                    "Dr",
-                    "Professor",
-                    "Sir",
-                    "Madam",
-                  ].map((title) => (
-                    <MenuItem key={title} value={title}>
-                      {title}
-                    </MenuItem>
-                  ))}
+                  {["Mr", "Mrs", "Miss", "Ms", "Dr", "Professor"].map(
+                    (title) => (
+                      <MenuItem key={title} value={title}>
+                        {title}
+                      </MenuItem>
+                    )
+                  )}
                 </Select>
               </FormControl>
             </Grid>
 
-            <Grid size={{xs:12,sm:6}}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <TextField
-                label="Forename*"
+                label="Forename"
                 name="forename"
                 value={formData.forename}
                 onChange={handleChange}
                 fullWidth
+                size="small"
                 required
               />
             </Grid>
 
-            <Grid size={{xs:12,sm:6}}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <TextField
-                label="Surname*"
+                label="Surname"
                 name="surname"
                 value={formData.surname}
                 onChange={handleChange}
                 fullWidth
+                size="small"
                 required
               />
             </Grid>
 
-            <Grid size={{xs:12,sm:6}}>
-              <FormControl fullWidth>
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <FormControl fullWidth size="small">
                 <InputLabel>Sex</InputLabel>
                 <Select
                   name="sex"
@@ -131,152 +140,162 @@ export default function AddStaff() {
             </Grid>
           </Grid>
 
-          <Box sx={{ my: 4 }}>
-            <Typography variant="h5" fontWeight={600} gutterBottom>
+          {/* Company Details */}
+          <Box sx={{ my: 3 }}>
+            <Typography variant="h6" fontWeight={600} gutterBottom>
               Company Details
             </Typography>
-            <Divider sx={{ mb: 3 }} />
+            <Divider sx={{ mb: 2 }} />
 
             <Grid container spacing={2}>
-              <Grid size={{xs:12,sm:6}}>
+              <Grid size={{ xs: 12, sm: 6 }}>
                 <TextField
                   label="Job Title*"
                   name="jobTitle"
                   value={formData.jobTitle}
                   onChange={handleChange}
                   fullWidth
+                  size="small"
                   required
                 />
               </Grid>
-              <Grid size={{xs:12,sm:6}}>
+              <Grid size={{ xs: 12, sm: 6 }}>
                 <TextField
-                  label="Department*"
+                  label="Department"
                   name="department"
                   value={formData.department}
                   onChange={handleChange}
                   fullWidth
+                  size="small"
                   required
                 />
               </Grid>
             </Grid>
           </Box>
 
-          <Box sx={{ my: 4 }}>
-            <Typography variant="h5" fontWeight={600} gutterBottom>
+          {/* Defaults */}
+          <Box sx={{ my: 3 }}>
+            <Typography variant="h6" fontWeight={600} gutterBottom>
               Defaults (Not displayed to PAs)
             </Typography>
             <Alert severity="info" sx={{ mb: 2 }}>
-              The default information is not displayed to PAs. It will only be used if
-              we need to contact you and no other means are available.
+              Default information is not displayed to PAs — used only if no other
+              means of contact are available.
             </Alert>
 
             <Grid container spacing={2}>
-              <Grid size={{xs:12,sm:6}}>
+              <Grid size={{ xs: 12, sm: 6 }}>
                 <TextField
-                  label="Default Telephone Number*"
+                  label="Default Telephone Number"
                   name="defaultTelNo"
                   value={formData.defaultTelNo}
                   onChange={handleChange}
                   fullWidth
+                  size="small"
                   required
                 />
               </Grid>
-              <Grid size={{xs:12,sm:6}}>
+              <Grid size={{ xs: 12, sm: 6 }}>
                 <TextField
-                  label="Default Email Address*"
+                  label="Default Email Address"
                   name="defaultEmailAddr"
                   value={formData.defaultEmailAddr}
                   onChange={handleChange}
                   fullWidth
+                  size="small"
                   required
                 />
               </Grid>
             </Grid>
           </Box>
 
-         <Accordion
-  sx={{
-    borderRadius: 2,
-    boxShadow: "none",
-    border: "1px solid #e0e0e0",
-    mt: 2,
-  }}
->
-  <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-    <Typography fontWeight={600}>Modify Advanced Settings</Typography>
-  </AccordionSummary>
+          {/* Advanced Settings */}
+          <Accordion
+            sx={{
+              borderRadius: 2,
+              boxShadow: "none",
+              border: "1px solid #e0e0e0",
+              mt: 1,
+            }}
+          >
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+              <Typography fontWeight={600}>Modify Advanced Settings</Typography>
+            </AccordionSummary>
 
-  <AccordionDetails sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-    {/* Company messages */}
-    <FormControl>
-      <Typography variant="subtitle1" gutterBottom>
-        Allow this staff member to see all company messages?
-      </Typography>
-      <RadioGroup
-        name="cc"
-        value={formData.cc}
-        onChange={handleChange}
-        row={false} // 👈 ensure vertical layout
-      >
-        <FormControlLabel value="1" control={<Radio />} label="Yes" />
-        <FormControlLabel value="0" control={<Radio />} label="No" />
-      </RadioGroup>
-    </FormControl>
+            <AccordionDetails sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+              {/* CC */}
+              <FormControl>
+                <Typography variant="subtitle1">
+                  Allow this staff member to see all company messages?
+                </Typography>
+                <RadioGroup
+                  name="cc"
+                  value={formData.cc ? "true" : "false"}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      cc: e.target.value === "true",
+                    }))
+                  }
+                >
+                  <FormControlLabel value="true" control={<Radio />} label="Yes" />
+                  <FormControlLabel value="false" control={<Radio />} label="No" />
+                </RadioGroup>
+              </FormControl>
 
-    {/* Confidential */}
-    <FormControl>
-      <Typography variant="subtitle1" gutterBottom>
-        Is this staff member’s information confidential?
-      </Typography>
-      <RadioGroup
-        name="isConfidential"
-        value={formData.isConfidential}
-        onChange={handleChange}
-        row={false} // 👈 stacked layout
-      >
-        <FormControlLabel value="1" control={<Radio />} label="Yes" />
-        <FormControlLabel value="0" control={<Radio />} label="No" />
-      </RadioGroup>
-    </FormControl>
+              {/* Confidential */}
+              <FormControl>
+                <Typography variant="subtitle1">
+                  Is this staff member’s information confidential?
+                </Typography>
+                <RadioGroup
+                  name="confidential"
+                  value={formData.confidential ? "true" : "false"}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      confidential: e.target.value === "true",
+                    }))
+                  }
+                >
+                  <FormControlLabel value="true" control={<Radio />} label="Yes" />
+                  <FormControlLabel value="false" control={<Radio />} label="No" />
+                </RadioGroup>
+              </FormControl>
 
-    {/* Searchable */}
-    <FormControl>
-      <Typography variant="subtitle1" gutterBottom>
-        Should this staff member appear in your staff list?
-      </Typography>
-      <RadioGroup
-        name="isSearchable"
-        value={formData.isSearchable}
-        onChange={handleChange}
-        row={false} // 👈 stacked layout
-      >
-        <FormControlLabel value="1" control={<Radio />} label="Yes" />
-        <FormControlLabel value="0" control={<Radio />} label="No" />
-      </RadioGroup>
-    </FormControl>
-  </AccordionDetails>
-</Accordion>
+              {/* Searchable */}
+              <FormControl>
+                <Typography variant="subtitle1">
+                  Should this staff member appear in your staff list?
+                </Typography>
+                <RadioGroup
+                  name="searchable"
+                  value={formData.searchable ? "true" : "false"}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      searchable: e.target.value === "true",
+                    }))
+                  }
+                >
+                  <FormControlLabel value="true" control={<Radio />} label="Yes" />
+                  <FormControlLabel value="false" control={<Radio />} label="No" />
+                </RadioGroup>
+              </FormControl>
+            </AccordionDetails>
+          </Accordion>
 
-          <Divider sx={{ my: 3 }} />
-
+          {/* Submit */}
+          <Divider sx={{ my: 2 }} />
           <Box sx={{ display: "flex", alignItems: "center" }}>
             <Button
               type="submit"
               variant="contained"
               color="success"
-              sx={{ px: 4, py: 1.2 }}
+              sx={{ px: 4, py: 1 }}
             >
               Save
             </Button>
-
-            <Box sx={{ ml: "auto", display: "flex", alignItems: "center" }}>
-              <Checkbox
-                name="createAvailability"
-                checked={formData.createAvailability}
-                onChange={handleChange}
-              />
-              <Typography variant="body2">Create availability next</Typography>
-            </Box>
           </Box>
         </form>
       </Paper>

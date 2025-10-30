@@ -1,82 +1,50 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ReusableTable from "../../Components/CustomTable/Customtable";
 import { IconButton, Stack, Chip } from "@mui/material";
-import { Delete, ArrowUpward, ArrowDownward } from "@mui/icons-material";
+import {
+  Delete,
+  ArrowUpward,
+  ArrowDownward,
+  LocationOn,
+} from "@mui/icons-material";
+import { getData, postData } from "../../Axios/Axios";
+import { useSnackbar } from "../../Helpers/SnackBar/Snackbar";
+import { useNavigate } from "react-router-dom";
 
 const columns = [
   { id: "name", label: "Name" },
   { id: "landmark", label: "Landmark" },
   { id: "companyTel", label: "Company Tel No" },
-  { id: "address", label: "Addr Line 1" },
+  { id: "address", label: "Address" },
   { id: "postcode", label: "Postcode" },
   { id: "priority", label: "Priority" },
   { id: "actions", label: "Action" },
 ];
 
-const initialData = [
-  {
-    name: "Primary address high",
-    landmark: "London Eye",
-    companyTel: "+1 234 567 890",
-    address: "Test main road",
-    postcode: "560102",
-    priority: "High",
-  },
-  {
-    name: "Primary address high",
-    landmark: "Esher House",
-    companyTel: "1212121211",
-    address: "123 Main Street",
-    postcode: "560102",
-    priority: "High",
-  },
-  {
-    name: "Test current addressessss high",
-    landmark: "Test current City Park",
-    companyTel: "9234567890",
-    address: "Test main road",
-    postcode: "Test3456",
-    priority: "High",
-  },
-  {
-    name: "Test present address high",
-    landmark: "Test present City Park",
-    companyTel: "1234567890",
-    address: "Test main road",
-    postcode: "Test3456",
-    priority: "High",
-  },
-  {
-    name: "Test previous address high",
-    landmark: "test landmark",
-    companyTel: "8888888888",
-    address: "Test12345",
-    postcode: "TEST12345",
-    priority: "Low",
-  },
-  {
-    name: "Test virtualoffice high",
-    landmark: "Test current City Park",
-    companyTel: "9234567890",
-    address: "Test main road",
-    postcode: "Test3456",
-    priority: "High",
-  },
-];
-
 export default function Addresses() {
-  const [tableData, setTableData] = useState(initialData);
-  const [sortConfig, setSortConfig] = useState({ key: "priority", direction: "desc" }); // Default: High first
+  const [tableData, setTableData] = useState([]);
+  const [sortConfig, setSortConfig] = useState({
+    key: "priority",
+    direction: "desc",
+  });
+  const { showSnackbar } = useSnackbar();
+  const navigate = useNavigate();
 
-  const handleDelete = (row) => {
-    if (window.confirm(`Delete address: ${row.name}?`)) {
-      setTableData((prev) => prev.filter((r) => r.name !== row.name));
+  const handleDelete = async (row) => {
+    try {
+      const payload = [row]; 
+      const response = await postData("/addresses/deleteAddresses", payload);
+      console.log("Delete response:", response);
+      getAddresses();
+      showSnackbar("Address deleted successfully!", "success");
+    } catch (error) {
+      console.error("Delete failed:", error);
     }
   };
 
+
   const handleSort = (key) => {
     setSortConfig((prev) => {
-      // Toggle between asc/desc
       if (prev.key === key) {
         return { key, direction: prev.direction === "asc" ? "desc" : "asc" };
       } else {
@@ -95,7 +63,6 @@ export default function Addresses() {
         : order[b.priority] - order[a.priority];
     }
 
-    // Generic alphabetical sort for text columns
     const valueA = a[key]?.toString().toLowerCase() || "";
     const valueB = b[key]?.toString().toLowerCase() || "";
     if (valueA < valueB) return direction === "asc" ? -1 : 1;
@@ -103,6 +70,7 @@ export default function Addresses() {
     return 0;
   });
 
+  // 🔖 Chip for priority
   const getPriorityChip = (priority) => (
     <Chip
       label={priority}
@@ -111,22 +79,47 @@ export default function Addresses() {
     />
   );
 
-  const enhancedData = sortedData.map((row) => ({
-    ...row,
-    priority: getPriorityChip(row.priority),
-    actions: (
-      <Stack direction="row" spacing={1}>
-        <IconButton color="error" onClick={() => handleDelete(row)}>
-          <Delete />
-        </IconButton>
-      </Stack>
-    ),
-  }));
+  // ⚙️ Map API data into table rows
+  const getAddresses = async () => {
+    try {
+      const response = await getData("/addresses/viewAddresses");
+      console.log("Fetched addresses:", response);
 
-  // Add sorting icons dynamically in headers
+      if (response?.data?.length) {
+        const mapped = response.data.map((addr) => ({
+          name: addr.name || "—",
+          landmark: addr.landmark || "—",
+          companyTel: addr.telNo || "—",
+          address:
+            [addr.addrLine1, addr.addrLine2, addr.addrLine3]
+              .filter(Boolean)
+              .join(", ") || "—",
+          postcode: addr.postcode || "—",
+          priority: "High", // defaulting since backend doesn't provide
+          actions: (
+            <Stack direction="row" spacing={1}>
+              <IconButton color="error" onClick={() => handleDelete(addr.addressesId)}>
+                <Delete />
+              </IconButton>
+            </Stack>
+          ),
+        }));
+
+        setTableData(mapped);
+      }
+    } catch (error) {
+      console.error("Error fetching addresses:", error);
+    }
+  };
+
+  // 📦 Fetch on mount
+  useEffect(() => {
+    getAddresses();
+  }, []);
+
+  // 🧭 Add sorting icons in header labels
   const sortableColumns = columns.map((col) => {
     if (col.id === "actions") return col;
-
     return {
       ...col,
       label: (
@@ -149,13 +142,23 @@ export default function Addresses() {
       ),
     };
   });
-
+  
+  const handleAddAddress = () => {
+    navigate("/add-address");
+  }
+  
   return (
     <ReusableTable
       title="Your Addresses"
+      icon={<LocationOn />} // 📍 Header icon
       columns={sortableColumns}
-      data={enhancedData}
+      data={sortedData.map((row) => ({
+        ...row,
+        priority: getPriorityChip(row.priority),
+      }))}
       searchPlaceholder="Search by name, landmark, or postcode..."
+       addButtonLabel="Add Address"
+       onAddClick={handleAddAddress}
     />
   );
 }

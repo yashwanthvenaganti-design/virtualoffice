@@ -8,12 +8,12 @@ import {
     MenuItem,
     InputLabel,
     FormControl,
-    RadioGroup,
-    FormControlLabel,
-    Radio,
     Button,
     Divider,
 } from "@mui/material";
+import { postData } from "../../Axios/Axios";
+import { useSnackbar } from "../../Helpers/SnackBar/Snackbar";
+import { useNavigate } from "react-router-dom";
 
 export default function AddVip() {
     const [formData, setFormData] = useState({
@@ -26,16 +26,53 @@ export default function AddVip() {
         tel_no_alt: "",
         email_addr: "",
     });
-
+    const {showSnackbar} = useSnackbar();
+    const navigate = useNavigate();
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log("VIP Form Data:", formData);
-        alert("Form submitted successfully!");
+
+        const payload = {
+            title: formData.title,
+            forename: formData.forename,
+            surname: formData.surname,
+            sex: formData.sex,
+            companyName: formData.company_name,
+            telNo: formData.tel_no,
+            telNoAlt: formData.tel_no_alt,
+            emailAddr: formData.email_addr,
+        };
+
+        console.log("Submitting VIP Data:", payload);
+
+        try {
+            const response = await postData("/vips/addVip", payload);
+            console.log("Add VIP Response:", response);
+
+            if (response?.status === 200 || response?.status === 201) {
+                showSnackbar("VIP added successfully!", "success");
+                setFormData({
+                    title: "",
+                    forename: "",
+                    surname: "",
+                    sex: "",
+                    company_name: "",
+                    tel_no: "",
+                    tel_no_alt: "",
+                    email_addr: "",
+                });
+                navigate("/vips");
+            } else {
+                showSnackbar("Failed to add VIP. Please try again.", "error");
+            }
+        } catch (error) {
+            console.error("Error adding VIP:", error);
+            showSnackbar("An error occurred while adding VIP.", "error");
+        }
     };
 
     return (
@@ -51,20 +88,20 @@ export default function AddVip() {
                 mx: "auto",
             }}
         >
-            {/* Header */}
+         
             <Typography variant="h5" sx={{ color: "#e91e63", fontWeight: 600, mb: 3 }}>
                 Add VIP
             </Typography>
 
             <Grid container spacing={2}>
-                {/* Left Column */}
-                <Grid size={{ xs: 12, md: 6,lg:6 }}>
+              
+                <Grid size={{ xs: 12, md: 6, lg: 6 }}>
                     <Typography variant="h6" sx={{ mb: 1 }}>
                         Personal Details
                     </Typography>
                     <Divider sx={{ mb: 2 }} />
 
-                    {/* Title */}
+                   
                     <FormControl fullWidth sx={{ mb: 2 }}>
                         <InputLabel>Title</InputLabel>
                         <Select
@@ -99,7 +136,6 @@ export default function AddVip() {
                         </Select>
                     </FormControl>
 
-                    {/* Forename */}
                     <TextField
                         fullWidth
                         required
@@ -110,7 +146,6 @@ export default function AddVip() {
                         sx={{ mb: 2 }}
                     />
 
-                    {/* Surname */}
                     <TextField
                         fullWidth
                         required
@@ -121,7 +156,6 @@ export default function AddVip() {
                         sx={{ mb: 2 }}
                     />
 
-                    {/* Sex */}
                     <FormControl fullWidth sx={{ mb: 2 }}>
                         <InputLabel>Sex</InputLabel>
                         <Select
@@ -136,11 +170,9 @@ export default function AddVip() {
                             <MenuItem value="U">Unspecified</MenuItem>
                         </Select>
                     </FormControl>
-
                 </Grid>
-
-                {/* Right Column */}
-                <Grid size={{ xs: 12, md: 6 ,lg:6}}>
+ 
+                <Grid size={{ xs: 12, md: 6, lg: 6 }}>
                     <Typography variant="h6" sx={{ mb: 1 }}>
                         Company & Contact Details
                     </Typography>
@@ -186,8 +218,7 @@ export default function AddVip() {
                 </Grid>
             </Grid>
 
-
-            <Box textAlign={{md:"left",xs:"center"}}>
+            <Box textAlign={{ md: "left", xs: "center" }}>
                 <Button
                     type="submit"
                     variant="contained"

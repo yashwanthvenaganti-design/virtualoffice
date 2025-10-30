@@ -1,4 +1,6 @@
+import React from "react";
 import ReusableTable from "../../Components/CustomTable/Customtable";
+import { ReceiptLong } from "@mui/icons-material"; // 🧾 Added invoice icon
 
 const columns = [
   { id: "type", label: "Type" },
@@ -72,10 +74,12 @@ export default function Invoices() {
   return (
     <ReusableTable
       title="Invoice List"
+      icon={<ReceiptLong />} // 🧾 Added invoice icon beside title
       columns={columns}
       data={data}
       onAddClick={handleAddInvoice}
       searchPlaceholder="Search by type, invoice number, or date..."
+      addButtonLabel="Add Invoice"
     />
   );
 }

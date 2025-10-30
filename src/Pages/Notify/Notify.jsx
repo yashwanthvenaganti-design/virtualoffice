@@ -1,99 +1,95 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { IconButton } from "@mui/material";
-import { Delete } from "@mui/icons-material";
+import { Delete, NoteAlt } from "@mui/icons-material";
 import ReusableTable from "../../Components/CustomTable/Customtable";
-
-const columns = [
-  { id: "comment", label: "Comment" },
-  { id: "kind", label: "Kind" },
-  { id: "validNow", label: "Valid now?" },
-  { id: "addedDate", label: "Added (Date)" },
-  { id: "status", label: "Status" },
-  {
-    id: "actions",
-    label: "Actions",
-    align: "center",
-    render: (row) => (
-      <IconButton
-        color="error"
-        onClick={() => handleDelete(row)}
-        title="Delete"
-      >
-        <Delete />
-      </IconButton>
-    ),
-  },
-];
-
-// Dummy data
-const data = [
-  {
-    comment: "System outage during call handling.",
-    kind: "Bug Report",
-    validNow: "Yes",
-    addedDate: "2025-10-20",
-    status: "Open",
-  },
-  {
-    comment: "Need clarification on billing details.",
-    kind: "Billing",
-    validNow: "No",
-    addedDate: "2025-09-28",
-    status: "Resolved",
-  },
-  {
-    comment: "Customer appreciated quick response.",
-    kind: "Customer Service",
-    validNow: "Yes",
-    addedDate: "2025-10-05",
-    status: "Closed",
-  },
-  {
-    comment: "Feature request for dark mode in dashboard.",
-    kind: "Sales",
-    validNow: "Yes",
-    addedDate: "2025-10-12",
-    status: "Pending",
-  },
-  {
-    comment: "Unable to access reports page intermittently.",
-    kind: "IT",
-    validNow: "No",
-    addedDate: "2025-08-15",
-    status: "Open",
-  },
-];
+import { getData, postData } from "../../Axios/Axios";
+import { useNavigate } from "react-router-dom";
+import { useSnackbar } from "../../Helpers/SnackBar/Snackbar";
 
 export default function Notes() {
-  // Delete handler
-  const handleDelete = (row) => {
-    alert(`Deleted note: "${row.comment}"`);
+  const [notesData, setNotesData] = useState([]);
+  const navigate = useNavigate();
+  const { showSnackbar } = useSnackbar();
+
+
+  const handleDelete = async(row) => {
+    try{
+      const response = await postData("/notes/deleteNotes", [ row.notesId ]);
+      console.log("Delete Note Response:", response);
+      showSnackbar("Note deleted successfully!", "success");
+      getNotes();
+    }
+    catch(error){ 
+      console.error("Error deleting note:", error);
+      showSnackbar("Failed to delete note. Please try again.", "error"); 
+    }
   };
 
   const handleAddNotify = () => {
-    alert("Add new feedback clicked!");
+    navigate("/add-note");
   };
+
+  // 📦 Fetch Notes
+  const getNotes = async () => {
+    try {
+      const response = await getData("/notes/viewNotes");
+      console.log("Fetched notes:", response);
+
+      // Adjust for your actual data structure
+      const apiData = response?.data|| response?.data || [];
+
+      if (apiData.length > 0) {
+        const formatted = apiData.map((note) => ({
+          comment: note.comment || "-",
+          kind: note.kind || "-",
+          validNow: note.valid || "No",
+          addedDate: note.added
+            ? new Date(note.added).toLocaleDateString()
+            : "-",
+          status: note.status || "-",
+          notesId: note.notesId || "", // ✅ correct property name
+        }));
+        setNotesData(formatted);
+      } else {
+        setNotesData([]);
+      }
+    } catch (error) {
+      console.error("Error fetching notes:", error);
+    }
+  };
+
+  useEffect(() => {
+    getNotes();
+  }, []);
+
+  const columns = [
+    { id: "comment", label: "Comment" },
+    { id: "kind", label: "Kind" },
+    { id: "validNow", label: "Valid now?" },
+    { id: "addedDate", label: "Added (Date)" },
+    { id: "status", label: "Status" },
+    {
+      id: "actions",
+      label: "Actions",
+      align: "center",
+      render: (row) => (
+        <IconButton
+          color="error"
+          onClick={() => handleDelete(row)}
+          title="Delete"
+        >
+          <Delete />
+        </IconButton>
+      ),
+    },
+  ];
 
   return (
     <ReusableTable
       title="Your Notes"
-      columns={columns.map((col) =>
-        col.id === "actions"
-          ? {
-              ...col,
-              render: (row) => (
-                <IconButton
-                  color="error"
-                  onClick={() => handleDelete(row)}
-                  title="Delete"
-                >
-                  <Delete />
-                </IconButton>
-              ),
-            }
-          : col
-      )}
-      data={data}
+      icon={<NoteAlt />}
+      columns={columns}
+      data={notesData}
       onAddClick={handleAddNotify}
       searchPlaceholder="Search by comment, kind, or status..."
       addButtonLabel="Add Note"

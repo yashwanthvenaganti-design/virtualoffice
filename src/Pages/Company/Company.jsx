@@ -7,13 +7,14 @@ import {
   Grid,
   Divider,
 } from "@mui/material";
+import { postData, putData } from "../../Axios/Axios";
 
 export default function Company() {
   const [formData, setFormData] = useState({
     fullName: "",
     activity: "",
-    email: "",
-    webAddress: "",
+    emailAddr: "",
+    url: "",
   });
 
   const handleChange = (e) => {
@@ -24,10 +25,16 @@ export default function Company() {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault();
-    console.log("Company Form Data:", formData);
-    alert("Company details saved successfully!");
+    try{
+      const response = await putData("/companies/updateCompany", formData);
+      console.log("Company Response:", response);
+    }
+    catch(error){
+      console.error("Error adding company:", error);
+    }
+  
   };
 
   return (
@@ -48,6 +55,7 @@ export default function Company() {
         <Divider sx={{ mb: 3 }} />
 
         <Grid container spacing={2}>
+          {/* Full Name */}
           <Grid size={{xs:12,sm:6}}>
             <TextField
               label="Full Company Name"
@@ -59,6 +67,7 @@ export default function Company() {
             />
           </Grid>
 
+          {/* Activity */}
           <Grid size={{xs:12,sm:6}}>
             <TextField
               label="Activity"
@@ -70,11 +79,12 @@ export default function Company() {
             />
           </Grid>
 
+          {/* Email Address */}
           <Grid size={{xs:12,sm:6}}>
             <TextField
               label="Email Address"
-              name="email"
-              value={formData.email}
+              name="emailAddr"
+              value={formData.emailAddr}
               onChange={handleChange}
               type="email"
               fullWidth
@@ -82,11 +92,12 @@ export default function Company() {
             />
           </Grid>
 
+          {/* Web Address / URL */}
           <Grid size={{xs:12,sm:6}}>
             <TextField
               label="Web Address"
-              name="webAddress"
-              value={formData.webAddress}
+              name="url"
+              value={formData.url}
               onChange={handleChange}
               fullWidth
               placeholder="https://example.com"

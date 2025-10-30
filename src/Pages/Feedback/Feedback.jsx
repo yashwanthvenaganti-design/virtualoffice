@@ -12,84 +12,117 @@ import {
   Paper,
 } from "@mui/material";
 import { CommentOutlined } from "@mui/icons-material";
+import { postData } from "../../Axios/Axios";
+import { useSnackbar } from "../../Helpers/SnackBar/Snackbar";
 
 export default function FeedbackForm() {
   const [formData, setFormData] = useState({
     name: "",
-    tel_no: "",
-    email_addr: "",
-    department: "",
+    telNo: "",
+    emailAddr: "",
+    kind: "",
     comments: "",
   });
+
+  const { showSnackbar } = useSnackbar();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form submitted:", formData);
+    console.log("Submitting Feedback:", formData);
+
+    try {
+      const response = await postData("/support/addFeedback", formData);
+      console.log("Response:", response);
+
+      if (response?.status === 200 || response?.status === 201) {
+        showSnackbar("Feedback submitted successfully!", "success");
+        setFormData({
+          name: "",
+          telNo: "",
+          emailAddr: "",
+          kind: "",
+          comments: "",
+        });
+      } else {
+        showSnackbar("Failed to submit feedback. Please try again.", "error");
+      }
+    } catch (error) {
+      console.error("Error submitting feedback:", error);
+      showSnackbar("An error occurred. Please try again later.", "error");
+    }
   };
 
   return (
     <Paper
-      elevation={3}
+      elevation={2}
       sx={{
-        p: 3,
-        mt: 2,
-        borderRadius: 3,
+        p: 2,
+        borderRadius: 2,
+        mb: 1,
+        backgroundColor: "#fff",
       }}
     >
-      {/* --- Header --- */}
-      <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
-        <CommentOutlined sx={{ mr: 1, color: "#1976d2", fontSize: 30 }} />
-        <Typography variant="h5" fontWeight={600}>
+      {/* Header */}
+      <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+        <CommentOutlined sx={{ mr: 1, color: "#1976d2", fontSize: 26 }} />
+        <Typography variant="h6" fontWeight={600}>
           Feedback Form
         </Typography>
       </Box>
 
-      {/* --- Form --- */}
+      {/* Form */}
       <form onSubmit={handleSubmit}>
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-          <Typography variant="h6" color="text.primary">
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            gap: 1.5, // Reduced spacing
+          }}
+        >
+          <Typography variant="subtitle1" color="text.primary">
             About You
           </Typography>
 
           <TextField
+            size="small"
             label="Name"
             name="name"
             value={formData.name}
             onChange={handleChange}
             fullWidth
-            InputProps={{ readOnly: true }}
             required
           />
 
           <TextField
-            label="Tel no"
-            name="tel_no"
-            value={formData.tel_no}
+            size="small"
+            label="Tel No"
+            name="telNo"
+            value={formData.telNo}
             onChange={handleChange}
             fullWidth
             required
           />
 
           <TextField
-            label="Email address"
-            name="email_addr"
-            value={formData.email_addr}
+            size="small"
+            label="Email Address"
+            name="emailAddr"
+            value={formData.emailAddr}
             onChange={handleChange}
             fullWidth
             required
           />
 
-          {/* --- Department Dropdown --- */}
-          <FormControl fullWidth required>
+          <FormControl fullWidth required size="small">
             <InputLabel>Department</InputLabel>
             <Select
-              name="department"
-              value={formData.department}
+              name="kind"
+              value={formData.kind}
               onChange={handleChange}
               label="Department"
             >
@@ -100,21 +133,21 @@ export default function FeedbackForm() {
             </Select>
           </FormControl>
 
-          {/* --- Comments --- */}
-          <Box sx={{width:{xs:"95%",md:"98%"}}}>
-            <Typography variant="subtitle1" sx={{ mb: 1 }}>
+          {/* Comments */}
+          <Box sx={{ width: "100%" }}>
+            <Typography variant="subtitle2" sx={{ mb: 0.5 }}>
               Comments
             </Typography>
             <TextareaAutosize
               name="comments"
               value={formData.comments}
               onChange={handleChange}
-              minRows={6}
+              minRows={3} // reduced from 6 → 3
               style={{
                 width: "100%",
-                fontSize: "1rem",
-                padding: "12px",
-                borderRadius: "8px",
+                fontSize: "0.95rem",
+                padding: "8px",
+                borderRadius: "6px",
                 borderColor: "#ccc",
                 outline: "none",
               }}
@@ -122,18 +155,24 @@ export default function FeedbackForm() {
             />
           </Box>
 
-          {/* --- Submit --- */}
-          <Box sx={{display:"flex",justifyContent:{xs:"center",md:"left"}}}>
+          {/* Submit */}
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: { xs: "center", md: "flex-start" },
+              mt: 1,
+            }}
+          >
             <Button
               type="submit"
               variant="contained"
               color="success"
               sx={{
-                px: 4,
-                py: 1,
-                fontSize: 16,
+                px: 3,
+                py: 0.8,
+                fontSize: 14,
                 textTransform: "none",
-                borderRadius: 2,
+                borderRadius: 1.5,
               }}
             >
               Save

@@ -1,77 +1,90 @@
+import React, { useEffect, useState } from "react";
+import { IconButton, Tooltip } from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { AccessTimeFilled } from "@mui/icons-material"; // ⏰
 import ReusableTable from "../../Components/CustomTable/Customtable";
-
-const columns = [
-  { id: "statusName", label: "Status Name" },
-  { id: "availability", label: "Availability" },
-  { id: "tel", label: "Tel No" },
-  { id: "email", label: "E-mail" },
-  { id: "sms", label: "SMS" },
-];
-
-const data = [
-  {
-    statusName: "Available - Office",
-    availability: "Available",
-    tel: "555-111-2222",
-    email: "office.status@company.com",
-    sms: "Yes",
-  },
-  {
-    statusName: "In a Meeting",
-    availability: "Busy",
-    tel: "555-333-4444",
-    email: "meeting.status@company.com",
-    sms: "No",
-  },
-  {
-    statusName: "On Leave",
-    availability: "Unavailable",
-    tel: "555-555-6666",
-    email: "leave.status@company.com",
-    sms: "Yes",
-  },
-  {
-    statusName: "Working from Home",
-    availability: "Available",
-    tel: "555-777-8888",
-    email: "remote.status@company.com",
-    sms: "Yes",
-  },
-  {
-    statusName: "Do Not Disturb",
-    availability: "Busy",
-    tel: "555-999-0000",
-    email: "dnd.status@company.com",
-    sms: "No",
-  },
-  {
-    statusName: "Training Session",
-    availability: "Partially Available",
-    tel: "555-121-2121",
-    email: "training.status@company.com",
-    sms: "No",
-  },
-  {
-    statusName: "Traveling",
-    availability: "Unavailable",
-    tel: "555-343-5656",
-    email: "travel.status@company.com",
-    sms: "Yes",
-  },
-];
+import { getData, postData } from "../../Axios/Axios";
+import { useNavigate } from "react-router-dom";
+import { useSnackbar } from "../../Helpers/SnackBar/Snackbar";
 
 export default function AvailableStatus() {
+  const [statusData, setStatusData] = useState([]);
+  const navigate = useNavigate();
+  const { showSnackbar } = useSnackbar() || {};
+
+  const columns = [
+    { id: "name", label: "Status Name" },
+    { id: "availability", label: "Availability" },
+    { id: "telNo", label: "Tel No" },
+    { id: "emailAddr", label: "E-mail" },
+    { id: "sms", label: "SMS" },
+    { id: "action", label: "Action" },
+  ];
+
+  const getStatus = async () => {
+    try {
+      const response = await getData("/availabilities/viewStatuses");
+      if (response?.data) {
+        const mappedData = response.data.map((item) => ({
+          name: item.name || "—",
+          availability: item.availability || "—",
+          telNo: item.telNo || "—",
+          emailAddr: item.emailAddr || "—",
+          sms: item.sms ? "Yes" : "No",
+          availabilitiesId: item.availabilitiesId, 
+        }));
+        setStatusData(mappedData);
+      }
+    } catch (error) {
+      console.error("Error fetching statuses:", error);
+    }
+  };
+
+  useEffect(() => {
+    getStatus();
+  }, []);
+
+  const handleDelete = async(id) => {
+   try{
+    const response = await postData("/availabilities/deleteStatuses", [ id ]);
+    console.log("Delete Status Response:", response);
+    getStatus();
+    showSnackbar("Status deleted successfully!", "success");
+   }
+   catch(error){
+    console.error("Error deleting status:", error);
+    showSnackbar("Failed to delete status. Please try again.", "error");
+   } 
+  };
+
+  const tableData = statusData.map((row) => ({
+    ...row,
+    action: (
+      <Tooltip title="Delete">
+        <IconButton
+          color="error"
+          size="small"
+          onClick={() => handleDelete(row.availabilitiesId)}
+        >
+          <DeleteIcon />
+        </IconButton>
+      </Tooltip>
+    ),
+  }));
+
   const handleAddStatus = () => {
-    alert("Add new status clicked!");
+    navigate("/availabilities/add-status");
   };
 
   return (
     <ReusableTable
-      title="Availability statuses"
+      title="Availability Statuses"
+      icon={<AccessTimeFilled />}
       columns={columns}
-      data={data}
+      data={tableData}
       onAddClick={handleAddStatus}
       searchPlaceholder="Search by status name, email, or availability..."
+      addButtonLabel="Add Status"
     />
   );
 }
