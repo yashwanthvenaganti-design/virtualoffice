@@ -16,7 +16,7 @@ const stats = [
     borderColor: "#e91e63",
     bgColor: "linear-gradient(135deg, hsl(325 79% 53%) 0%, hsl(331 70% 73%) 100%)",
     numberColor: "#e62897d4",
-    iconBgColor: "#e028e680", // Light pink
+    iconBgColor: "rgba(233, 30, 99, 0.1)", // 🌸 very light pink
   },
   {
     title: "ANSWERED",
@@ -26,17 +26,17 @@ const stats = [
     borderColor: "#26a69a",
     bgColor: "#e8f5f3",
     numberColor: "#009688",
-    iconBgColor: "#4bb97e8c", // Light teal
+    iconBgColor: "rgba(38, 166, 154, 0.15)", // 💚 soft teal
   },
   {
     title: "MESSAGES",
     value: "350",
     subtitle: "",
-    icon: <ChatBubbleOutline fontSize="medium" sx={{ color: "#fff" }} />,
+    icon: <ChatBubbleOutline fontSize="medium" sx={{ color: "#7c4dff" }} />,
     borderColor: "#7c4dff",
     bgColor: "#f3f0ff",
     numberColor: "#7c4dff",
-    iconBgColor: "#e62897", // Light purple
+    iconBgColor: "rgba(124, 77, 255, 0.12)", // 💜 light purple
   },
   {
     title: "AVG. TIME",
@@ -46,7 +46,7 @@ const stats = [
     borderColor: "#ff9800",
     bgColor: "#fff7e6",
     numberColor: "#f57c00",
-    iconBgColor: "#e4a260ff", // Light orange
+    iconBgColor: "rgba(255, 152, 0, 0.15)", // 🧡 light orange
   },
 ];
 
@@ -82,7 +82,7 @@ export default function DashboardCards() {
             }}
           >
             <Box display="flex" alignItems="center" gap={1}>
-              {/* Icon with Square Light Background + Padding */}
+              {/* 🌈 Icon with soft background */}
               <Box
                 sx={{
                   display: "flex",
@@ -92,7 +92,6 @@ export default function DashboardCards() {
                   height: 36,
                   borderRadius: 1,
                   backgroundColor: item.iconBgColor,
-                  p: 0.5,
                 }}
               >
                 {item.icon}
