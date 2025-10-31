@@ -23,9 +23,9 @@ export default function Footer() {
   const [available, setAvailable] = useState(true);
 
   return (
-    <Grid container spacing={2} sx={{ mt: 2, mb: 7 }}>
+    <Grid container spacing={2} sx={{ mt: 2, mb: 6 }}>
       {/* ===== Call Types ===== */}
-      <Grid size={{ xs: 12, md: 3, sm: 6 }}>
+      <Grid size={{ xs: 12, md: 4, sm: 6 }}>
         <Paper
           elevation={0}
           sx={{
@@ -66,7 +66,7 @@ export default function Footer() {
                   align="center"
                   iconType="circle"
                   layout="horizontal"
-                  wrapperStyle={{ fontSize: "0.75rem" }}
+                  wrapperStyle={{ fontSize: "0.75rem" ,m:-10}}
                 />
               </PieChart>
             </ResponsiveContainer>
@@ -75,7 +75,7 @@ export default function Footer() {
       </Grid>
 
       {/* ===== PA Instructions ===== */}
-      <Grid size={{ xs: 12, md: 3, sm: 6 }}>
+      <Grid size={{ xs: 12, md: 4, sm: 6 }}>
         <Paper
           elevation={0}
           sx={{
@@ -118,10 +118,10 @@ export default function Footer() {
             variant="contained"
             fullWidth
             sx={{
-              mt: 2,
+              mt: 3,
               textTransform: "none",
               fontWeight: 600,
-              borderRadius: 2,
+              borderRadius: 1,
               background: "linear-gradient(135deg, hsl(325 79% 53%) 0%, hsl(331 70% 73%) 100%)",
               color: "#fff",
               boxShadow: "0 3px 6px rgba(233, 30, 99, 0.3)",
@@ -138,12 +138,12 @@ export default function Footer() {
       </Grid>
 
       {/* ===== Availability ===== */}
-      <Grid size={{ xs: 12, md: 3, sm: 6 }}>
+      <Grid size={{ xs: 12, md: 4, sm: 6 }}>
         <Paper
           elevation={0}
           sx={{
             p: 2.5,
-            borderRadius: 2,
+            borderRadius: 1,
             height: "100%",
             backgroundColor: "#fff",
             border: "1px solid #e0e0e0",
@@ -151,13 +151,14 @@ export default function Footer() {
             display: "flex",
             flexDirection: "column",
             justifyContent: "center",
+           
 
           }}
         >
           <Typography
             variant="subtitle1"
             fontWeight={700}
-            sx={{ mb: 2, color: "#1e1e1e" }}
+            sx={{ color: "#1e1e1e",mt:10 }}
           >
             Availability
           </Typography>
@@ -165,9 +166,10 @@ export default function Footer() {
           <Box
             display="flex"
             alignItems="center"
-            sx={{ display: 'flex', justifyContent: "space-between", flexGrow: 1 }}
+            sx={{ display: 'flex', justifyContent: "space-between", flexGrow: 1 ,alignItems:"center"}}
             gap={2}
             mt={1}
+            mb={7}
           >
             <Box display="flex" alignItems="center" gap={1} >
               <CheckCircleIcon sx={{ color: "#00bfa5", fontSize: 22 }} />
@@ -218,10 +220,10 @@ export default function Footer() {
         </Paper>
       </Grid>
 
-      <Grid size={{ xs: 12, md: 3, sm: 6 }}>
+      {/* <Grid size={{ xs: 12, md: 4, sm: 6 }}>
 
         <FrequentCallers />
-      </Grid>
+      </Grid> */}
 
 
 

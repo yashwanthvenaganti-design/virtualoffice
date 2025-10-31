@@ -12,41 +12,45 @@ const stats = [
     title: "TOTAL CALLS",
     value: "1,240",
     subtitle: "This Month",
-    icon: <PhoneInTalk fontSize="medium" sx={{ color: "#e91e63" }} />,
+    icon: <PhoneInTalk fontSize="medium" sx={{ color: "white" }} />,
     borderColor: "#e91e63",
-    bgColor: "linear-gradient(135deg, hsl(325 79% 53%) 0%, hsl(331 70% 73%) 100%)",
-    numberColor: "#e62897d4",
-    iconBgColor: "rgba(233, 30, 99, 0.1)", // 🌸 very light pink
+    bgColor: "linear-gradient(135deg, #fde7f0 0%, #fff 100%)",
+    numberColor: "#e62897c2",
+    iconBgColor:
+      "linear-gradient(135deg, hsl(325 79% 53%) 0%, hsl(331 70% 73%) 100%)",
   },
   {
     title: "ANSWERED",
     value: "890",
     subtitle: "72% Rate",
-    icon: <Group fontSize="medium" sx={{ color: "#26a69a" }} />,
+    icon: <Group fontSize="medium" sx={{ color: "white" }} />,
     borderColor: "#26a69a",
-    bgColor: "#e8f5f3",
-    numberColor: "#009688",
-    iconBgColor: "rgba(38, 166, 154, 0.15)", // 💚 soft teal
+    bgColor: "linear-gradient(135deg, #e8f5f3 0%, #ffffff 100%)",
+    numberColor: "#009688a6",
+    iconBgColor:
+      "linear-gradient(135deg, hsl(158 64% 40%) 0%, hsl(158 60% 55%) 100%)",
   },
   {
     title: "MESSAGES",
     value: "350",
-    subtitle: "",
-    icon: <ChatBubbleOutline fontSize="medium" sx={{ color: "#7c4dff" }} />,
+    subtitle: "This Week",
+    icon: <ChatBubbleOutline fontSize="medium" sx={{ color: "white" }} />,
     borderColor: "#7c4dff",
-    bgColor: "#f3f0ff",
+    bgColor: "linear-gradient(135deg, #f3f0ff 0%, #ffffff 100%)",
     numberColor: "#7c4dff",
-    iconBgColor: "rgba(124, 77, 255, 0.12)", // 💜 light purple
+    iconBgColor:
+      "linear-gradient(135deg, hsl(180 65% 60%) 0%, hsl(325 79% 53%) 100%)",
   },
   {
     title: "AVG. TIME",
     value: "62s",
-    subtitle: "Goal: < 60s",
-    icon: <AccessTime fontSize="medium" sx={{ color: "#ff9800" }} />,
+    subtitle: "Goal: &lt; 60s",
+    icon: <AccessTime fontSize="medium" sx={{ color: "white" }} />,
     borderColor: "#ff9800",
-    bgColor: "#fff7e6",
+    bgColor: "linear-gradient(135deg, #fff7e6 0%, #ffffff 100%)",
     numberColor: "#f57c00",
-    iconBgColor: "rgba(255, 152, 0, 0.15)", // 🧡 light orange
+    iconBgColor:
+      "linear-gradient(135deg, rgb(249, 112, 21) 0%, rgb(251, 149, 81) 100%)",
   },
 ];
 
@@ -62,7 +66,7 @@ export default function DashboardCards() {
       }}
     >
       {stats.map((item, index) => (
-        <Grid key={index} size={{ xs: 12, sm: 6, md: 3 }}>
+        <Grid key={index} size={{xs:12,md:3,sm:6}}>
           <Paper
             elevation={0}
             sx={{
@@ -70,7 +74,7 @@ export default function DashboardCards() {
               borderRadius: 1,
               minHeight: 110,
               border: `1px solid ${item.borderColor}`,
-              backgroundColor: item.bgColor,
+              background: item.bgColor,
               display: "flex",
               flexDirection: "column",
               justifyContent: "space-between",
@@ -82,7 +86,7 @@ export default function DashboardCards() {
             }}
           >
             <Box display="flex" alignItems="center" gap={1}>
-              {/* 🌈 Icon with soft background */}
+            
               <Box
                 sx={{
                   display: "flex",
@@ -91,7 +95,7 @@ export default function DashboardCards() {
                   width: 36,
                   height: 36,
                   borderRadius: 1,
-                  backgroundColor: item.iconBgColor,
+                  background: item.iconBgColor,
                 }}
               >
                 {item.icon}
@@ -113,7 +117,7 @@ export default function DashboardCards() {
               variant="h5"
               sx={{
                 fontWeight: 800,
-                color: item.numberColor || "#111",
+                color: item.numberColor,
                 fontSize: "1.5rem",
               }}
             >

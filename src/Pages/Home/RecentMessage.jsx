@@ -19,7 +19,8 @@ export default function RecentMessages() {
         border: "1px solid #e0e0e0",
         boxShadow: "0 2px 10px rgba(0,0,0,0.03)",
         transition: "0.3s",
-        height: "100%", // ✅ full height
+        height: {xs:"100%",md:"80%"}, // ✅ full height
+        width: "100%",
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
@@ -42,10 +43,10 @@ export default function RecentMessages() {
             <Typography
               variant="body2"
               sx={{
-                color: "#00bfa5",
-                fontWeight: 600,
+                color: "#57dbdb",
+                fontWeight: 400,
                 minWidth: 60,
-                textAlign: "right",
+                textAlign: "left",
               }}
             >
               {msg.time}

@@ -18,7 +18,9 @@ export default function FrequentCallers() {
         backgroundColor: "#fff",
         border: "1px solid #e0e0e0",
         boxShadow: "0 2px 10px rgba(0,0,0,0.03)",
-        height: "100%",
+        height: {xs:"100%",md:"113%"},
+        mt:{xs:0,md:"-100px"},
+        mb:10
       }}
     >
       {/* Header */}
