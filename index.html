@@ -4,8 +4,35 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/ADPA.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- ✅ Inter Font Import (Google Fonts) -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
     <title>The Virtual Office</title>
+
+    <style>
+      /* ✅ Apply Inter globally (base HTML) */
+      html,
+      body {
+        font-family: "Inter", system-ui, sans-serif;
+        font-weight: 400;
+        margin: 0;
+        padding: 0;
+        background-color: #f9fafb;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      /* Optional: make sure buttons and inputs inherit font */
+      * {
+        font-family: inherit;
+      }
+    </style>
   </head>
+
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
