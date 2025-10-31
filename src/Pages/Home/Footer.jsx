@@ -25,7 +25,7 @@ export default function Footer() {
   return (
     <Grid container spacing={2} sx={{ mt: 2, mb: 7 }}>
       {/* ===== Call Types ===== */}
-      <Grid size={{xs:12,md:3,sm:6}}>
+      <Grid size={{ xs: 12, md: 3, sm: 6 }}>
         <Paper
           elevation={0}
           sx={{
@@ -75,7 +75,7 @@ export default function Footer() {
       </Grid>
 
       {/* ===== PA Instructions ===== */}
-      <Grid size={{xs:12,md:3,sm:6}}>
+      <Grid size={{ xs: 12, md: 3, sm: 6 }}>
         <Paper
           elevation={0}
           sx={{
@@ -120,39 +120,44 @@ export default function Footer() {
             sx={{
               mt: 2,
               textTransform: "none",
-              background: "linear-gradient(90deg, #ff80ab, #e91e63)",
               fontWeight: 600,
               borderRadius: 2,
+              background: "linear-gradient(135deg, hsl(325 79% 53%) 0%, hsl(331 70% 73%) 100%)",
+              color: "#fff",
+              boxShadow: "0 3px 6px rgba(233, 30, 99, 0.3)",
               "&:hover": {
-                background: "linear-gradient(90deg, #f06292, #d81b60)",
+                background: "linear-gradient(135deg, hsl(325 79% 48%) 0%, hsl(331 70% 68%) 100%)",
+                boxShadow: "0 4px 10px rgba(233, 30, 99, 0.4)",
               },
             }}
           >
             Update
           </Button>
+
         </Paper>
       </Grid>
 
       {/* ===== Availability ===== */}
-      <Grid size={{xs:12,md:3,sm:6}}>
+      <Grid size={{ xs: 12, md: 3, sm: 6 }}>
         <Paper
           elevation={0}
           sx={{
             p: 2.5,
-            borderRadius: 1,
+            borderRadius: 2,
             height: "100%",
             backgroundColor: "#fff",
             border: "1px solid #e0e0e0",
             boxShadow: "0 2px 8px rgba(0,0,0,0.03)",
             display: "flex",
             flexDirection: "column",
-            justifyContent: "space-between",
+            justifyContent: "center",
+
           }}
         >
           <Typography
             variant="subtitle1"
             fontWeight={700}
-            sx={{ mb: 1.5, color: "#1e1e1e" }}
+            sx={{ mb: 2, color: "#1e1e1e" }}
           >
             Availability
           </Typography>
@@ -160,13 +165,14 @@ export default function Footer() {
           <Box
             display="flex"
             alignItems="center"
-            justifyContent="space-between"
+            sx={{ display: 'flex', justifyContent: "space-between", flexGrow: 1 }}
+            gap={2}
             mt={1}
           >
-            <Box display="flex" alignItems="center" gap={1}>
-              <CheckCircleIcon sx={{ color: "#00bfa5", fontSize: 20 }} />
+            <Box display="flex" alignItems="center" gap={1} >
+              <CheckCircleIcon sx={{ color: "#00bfa5", fontSize: 22 }} />
               <Typography
-                variant="body2"
+                variant="body1"
                 sx={{
                   color: "#00bfa5",
                   fontWeight: 600,
@@ -175,22 +181,44 @@ export default function Footer() {
                 {available ? "Available" : "Unavailable"}
               </Typography>
             </Box>
+
             <Switch
               checked={available}
               onChange={() => setAvailable(!available)}
               sx={{
-                "& .MuiSwitch-switchBase.Mui-checked": {
-                  color: "#e91e63",
+                width: 50,
+                height: 28,
+                padding: 0,
+                "& .MuiSwitch-switchBase": {
+                  padding: "2.3px",
+                  "&.Mui-checked": {
+                    transform: "translateX(22px)",
+                    color: "#fff",
+                    "& + .MuiSwitch-track": {
+                      backgroundColor: "#e91e63",
+                      opacity: 1,
+                    },
+                  },
                 },
-                "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
-                  backgroundColor: "#f48fb1",
+                "& .MuiSwitch-thumb": {
+                  width: 24,
+                  height: 24,
+                  backgroundColor: "#fff",
+                  boxShadow: "none", // ✅ flat look
+                },
+                "& .MuiSwitch-track": {
+                  borderRadius: 20,
+                  backgroundColor: "#e91e63", // ✅ bright pink track
+                  opacity: 1,
+                  boxShadow: "none",
                 },
               }}
             />
           </Box>
         </Paper>
       </Grid>
-      <Grid size={{xs:12,md:3,sm:6}}>
+
+      <Grid size={{ xs: 12, md: 3, sm: 6 }}>
 
         <FrequentCallers />
       </Grid>

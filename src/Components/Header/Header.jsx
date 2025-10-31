@@ -188,7 +188,7 @@ export default function Header({ onMenuClick, darkMode, setDarkMode }) {
 
               <Box
                 component="img"
-                src="https://virtualoffice.dev.adhkistaging.com/static/img/adp-logo-white.png"
+                src="ADPA.svg"
                 alt="Logo"
                 sx={{
                   height: 32,

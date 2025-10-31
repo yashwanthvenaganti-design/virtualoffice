@@ -43,19 +43,26 @@ export default function CallVolumeChart() {
 
       <Box sx={{ width: "100%", height: 270 }}>
         <ResponsiveContainer>
-          <BarChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
-            <CartesianGrid vertical={false} stroke="#f0f0f0" />
+          <BarChart
+            data={data}
+            margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
+          >
+            {/* ✅ Grid */}
+            <CartesianGrid stroke="#f0f0f0" />
+
+            {/* ✅ Visible axis lines and ticks */}
             <XAxis
               dataKey="name"
               tick={{ fill: "#555", fontSize: 12 }}
-              axisLine={false}
-              tickLine={false}
+              axisLine={{ stroke: "black", strokeWidth: 1 }}
+              tickLine={{ stroke: "#ccc" }}
             />
             <YAxis
               tick={{ fill: "#555", fontSize: 12 }}
-              axisLine={false}
-              tickLine={false}
+              axisLine={{ stroke: "black", strokeWidth: 1 }}
+              tickLine={{ stroke: "#ccc" }}
             />
+
             <Tooltip
               cursor={{ fill: "rgba(0,0,0,0.05)" }}
               contentStyle={{
@@ -65,23 +72,25 @@ export default function CallVolumeChart() {
                 boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
               }}
             />
+
             <Legend
               verticalAlign="bottom"
               align="center"
-              iconType="circle"
+              iconType="square"
               wrapperStyle={{ paddingTop: 10 }}
             />
+
             <Bar
               dataKey="totalCalls"
               name="Total Calls"
-              fill="#ec3b83"
+              fill="#e62897"
               radius={[6, 6, 0, 0]}
               barSize={30}
             />
             <Bar
               dataKey="answered"
               name="Answered"
-              fill="#2ecc71"
+              fill="#4bb97e"
               radius={[6, 6, 0, 0]}
               barSize={30}
             />

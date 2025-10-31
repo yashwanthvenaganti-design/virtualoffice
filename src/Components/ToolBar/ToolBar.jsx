@@ -24,6 +24,7 @@ import {
   BarChart,
   Support,
   Star,
+  Forum,
 } from "@mui/icons-material";
 
 // 📋 Sidebar Menu Items
@@ -40,7 +41,7 @@ const menuItems = [
   { label: "Messages", icon: <Message />, path: "/messages" },
   { label: "APP Devices", icon: <Notifications />, path: "/app-devices" },
   { label: "Addresses", icon: <Public />, path: "/addresses" },
-  { label: "Greetings", icon: <Chat />, path: "/greetings" },
+  { label: "Greetings", icon: <Forum />, path: "/greetings" },
   {
     label: "Invoices",
     icon: <Description />,

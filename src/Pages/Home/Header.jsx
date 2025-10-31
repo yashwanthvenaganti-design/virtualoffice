@@ -13,28 +13,40 @@ const stats = [
     value: "1,240",
     subtitle: "This Month",
     icon: <PhoneInTalk fontSize="medium" sx={{ color: "#e91e63" }} />,
-    borderColor: "linear-gradient(90deg, #ffffff, #ebd0d9)",
+    borderColor: "#e91e63",
+    bgColor: "linear-gradient(135deg, hsl(325 79% 53%) 0%, hsl(331 70% 73%) 100%)",
+    numberColor: "#e62897d4",
+    iconBgColor: "#e028e680", // Light pink
   },
   {
     title: "ANSWERED",
     value: "890",
     subtitle: "72% Rate",
     icon: <Group fontSize="medium" sx={{ color: "#26a69a" }} />,
-    borderColor: "linear-gradient(90deg, #f4f5f4, #b0d6db)",
+    borderColor: "#26a69a",
+    bgColor: "#e8f5f3",
+    numberColor: "#009688",
+    iconBgColor: "#4bb97e8c", // Light teal
   },
   {
     title: "MESSAGES",
     value: "350",
     subtitle: "",
-    icon: <ChatBubbleOutline fontSize="medium" sx={{ color: "#7c4dff" }} />,
-    borderColor: "linear-gradient(90deg, #fbfbfb, #c5bfd1)",
+    icon: <ChatBubbleOutline fontSize="medium" sx={{ color: "#fff" }} />,
+    borderColor: "#7c4dff",
+    bgColor: "#f3f0ff",
+    numberColor: "#7c4dff",
+    iconBgColor: "#e62897", // Light purple
   },
   {
     title: "AVG. TIME",
     value: "62s",
     subtitle: "Goal: < 60s",
     icon: <AccessTime fontSize="medium" sx={{ color: "#ff9800" }} />,
-    borderColor: "linear-gradient(90deg, #fbf9f6, #fbe5c4)",
+    borderColor: "#ff9800",
+    bgColor: "#fff7e6",
+    numberColor: "#f57c00",
+    iconBgColor: "#e4a260ff", // Light orange
   },
 ];
 
@@ -46,21 +58,19 @@ export default function DashboardCards() {
       sx={{
         m: 0,
         mt: -5,
-        alignItems: "flex-start", // ✅ keeps all cards aligned at top
+        alignItems: "flex-start",
       }}
     >
       {stats.map((item, index) => (
-        <Grid size={{xs:12,sm:6,md:3}} key={index}>
+        <Grid key={index} size={{ xs: 12, sm: 6, md: 3 }}>
           <Paper
             elevation={0}
             sx={{
               p: 1.5,
-              minHeight: 110, // ✅ compact height
-             
-              border: "2px solid transparent",
-              backgroundImage: `${item.borderColor}, linear-gradient(145deg, #fff, #f9f9f9)`,
-              backgroundOrigin: "border-box",
-              backgroundClip: "padding-box, border-box",
+              borderRadius: 1,
+              minHeight: 110,
+              border: `1px solid ${item.borderColor}`,
+              backgroundColor: item.bgColor,
               display: "flex",
               flexDirection: "column",
               justifyContent: "space-between",
@@ -72,7 +82,22 @@ export default function DashboardCards() {
             }}
           >
             <Box display="flex" alignItems="center" gap={1}>
-              {item.icon}
+              {/* Icon with Square Light Background + Padding */}
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  width: 36,
+                  height: 36,
+                  borderRadius: 1,
+                  backgroundColor: item.iconBgColor,
+                  p: 0.5,
+                }}
+              >
+                {item.icon}
+              </Box>
+
               <Typography
                 variant="subtitle2"
                 sx={{
@@ -89,7 +114,7 @@ export default function DashboardCards() {
               variant="h5"
               sx={{
                 fontWeight: 800,
-                color: "#111",
+                color: item.numberColor || "#111",
                 fontSize: "1.5rem",
               }}
             >
@@ -100,12 +125,11 @@ export default function DashboardCards() {
               variant="body2"
               sx={{
                 color: "#777",
-                fontWeight: 500,
-                fontSize: "0.75rem",
+                fontWeight: 600,
+                fontSize: "0.85rem",
               }}
-            >
-              {item.subtitle}
-            </Typography>
+              dangerouslySetInnerHTML={{ __html: item.subtitle }}
+            />
           </Paper>
         </Grid>
       ))}
